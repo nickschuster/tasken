@@ -1,6 +1,7 @@
 <script lang="ts">
 	import Input from '$lib/ui/Input.svelte';
 	import Task from '$lib/ui/task/Task.svelte';
+	import { index } from 'drizzle-orm/gel-core';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
@@ -53,9 +54,14 @@
 
 <a href="/">Sales</a>
 
-<div class="p-4">
-	{#each data.tasks as task (task.id)}
-		<div class="mb-2 rounded-xl border-1 p-4"><Task {task} {updateTask} /></div>
+<div class="flex flex-col gap-2 p-4">
+	{#each data.tasks as task, i (task.id)}
+		<div
+			class="rounded-lg p-4 transition-all duration-200
+            {task.isCompleted ? 'scale-99' : 'shadow-sm ease-out hover:shadow-md'}"
+		>
+			<Task {task} {updateTask} />
+		</div>
 	{/each}
 </div>
 

@@ -4,14 +4,14 @@
 
 	function toggleCheck(event: Event) {
 		event.preventDefault();
-		event.stopImmediatePropagation();
+		event.stopPropagation();
 		toggleChecked(!checked);
 	}
 </script>
 
 <input
 	type="checkbox"
-	class="h-6 w-6 accent-black"
+	class="h-6 w-6 cursor-pointer rounded accent-black hover:bg-gray-200"
 	{checked}
 	on:keydown={(e) => {
 		if (e.code === 'Enter') {

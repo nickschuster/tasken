@@ -10,5 +10,16 @@
 	<TaskCheck
 		checked={task.isCompleted}
 		toggleChecked={(checked) => updateTask(task.id, { isCompleted: checked })}
-	/> <input bind:value={task.content} type="text" />
+	/>
+	{#if task.isCompleted}
+		<span class="line-through">{task.content}</span>
+	{:else}
+		<input
+			bind:value={task.content}
+			type="text"
+			class="w-full outline-none"
+			onkeypress={(e) => e.stopPropagation()}
+			onclick={(e) => e.stopPropagation()}
+		/>
+	{/if}
 </div>
