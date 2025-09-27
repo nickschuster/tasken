@@ -1,18 +1,24 @@
 <script lang="ts">
 	export let checked = false;
+	export let toggleChecked: (checked: boolean) => void = () => {};
 
-	function toggleOnMouseDown(event: MouseEvent) {
+	function toggleCheck(event: Event) {
 		event.preventDefault();
 		event.stopImmediatePropagation();
-		checked = !checked;
+		toggleChecked(!checked);
 	}
 </script>
 
 <input
 	type="checkbox"
 	class="h-6 w-6 accent-black"
-	bind:checked
-	on:mousedown={toggleOnMouseDown}
+	{checked}
+	on:keydown={(e) => {
+		if (e.code === 'Enter') {
+			toggleCheck(e);
+		}
+	}}
+	on:mousedown={toggleCheck}
 	on:mouseup={(e) => e.preventDefault()}
 	on:click={(e) => e.preventDefault()}
 />
