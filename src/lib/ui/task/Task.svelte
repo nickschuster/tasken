@@ -18,6 +18,7 @@
 			bind:value={task.content}
 			type="text"
 			class="w-full outline-none"
+			onchange={() => updateTask(task.id, { content: task.content })}
 			onkeypress={(e) => e.stopPropagation()}
 			onclick={(e) => e.stopPropagation()}
 		/>

@@ -1,10 +1,12 @@
 <script lang="ts">
 	import Input from '$lib/ui/Input.svelte';
 	import Task from '$lib/ui/task/Task.svelte';
-	import { index } from 'drizzle-orm/gel-core';
+	import { CircleCheckBigIcon } from '@lucide/svelte';
+	import { DateTime } from 'luxon';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
+	let today = DateTime.now().toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);
 
 	const createTask = async (content: string) => {
 		const result = await fetch('/api/tasks', {
@@ -50,19 +52,32 @@
 	};
 </script>
 
-<h1>task list</h1>
+<div class="flex h-screen flex-col dark:bg-black dark:text-white">
+	<div class="px-4 pt-4 text-5xl">My Day</div>
+	<div class="px-4">{today}</div>
 
-<a href="/">Sales</a>
+	<div class="flex grow flex-col gap-2 overflow-y-auto p-2">
+		{#each data.tasks as task, i (task.id)}
+			<div
+				class="rounded-lg p-4 transition-all duration-200
+			{task.isCompleted
+					? 'scale-99'
+					: 'shadow-xs ease-out hover:shadow-md dark:shadow-neutral-900 dark:hover:shadow-md'}"
+			>
+				<Task {task} {updateTask} />
+			</div>
+		{/each}
 
-<div class="flex flex-col gap-2 p-4">
-	{#each data.tasks as task, i (task.id)}
-		<div
-			class="rounded-lg p-4 transition-all duration-200
-            {task.isCompleted ? 'scale-99' : 'shadow-sm ease-out hover:shadow-md'}"
-		>
-			<Task {task} {updateTask} />
-		</div>
-	{/each}
+		{#if data.tasks.length === 0}
+			<div
+				class="flex grow flex-col items-center justify-center text-gray-200 dark:text-neutral-950"
+			>
+				<CircleCheckBigIcon size="300" />
+			</div>
+		{/if}
+	</div>
+
+	<div class="p-4">
+		<Input onEnter={createTask} bind:newTaskContent />
+	</div>
 </div>
-
-<Input onEnter={createTask} bind:newTaskContent />
