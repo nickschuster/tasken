@@ -1,19 +1,20 @@
 <script lang="ts">
-	export let value: string = '';
-	export let onInput: (event: Event) => void = () => {};
+	export let newTaskContent: string = '';
 	export let onEnter: (value: string) => void = () => {};
 </script>
 
 <input
 	type="text"
-	class="w-full rounded border px-2 py-1"
-	bind:value
-	on:change={onInput}
+	class="w-full rounded-lg border border-neutral-300 bg-white px-4
+      py-3 text-lg text-neutral-800 transition-all
+      duration-200 ease-in-out placeholder:text-neutral-400
+      focus:border-transparent focus:ring-2 focus:ring-black focus:outline-none
+      dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200
+      dark:placeholder:text-neutral-500 dark:focus:ring-white"
+	bind:value={newTaskContent}
 	on:keydown={(event) => {
-		console.log(event.code);
-
 		if (event.code === 'Enter') {
-			onEnter(value);
+			onEnter(newTaskContent);
 		}
 	}}
 />

@@ -3,8 +3,24 @@
 	import TaskCheck from './TaskCheck.svelte';
 
 	export let task: Task;
+	export let updateTask: (taskId: string, updates: Partial<Task>) => void = () => {};
 </script>
 
 <div class="flex items-center gap-2">
-	<TaskCheck checked={task.isCompleted} /> <span>{task.content}</span>
+	<TaskCheck
+		checked={task.isCompleted}
+		toggleChecked={(checked) => updateTask(task.id, { isCompleted: checked })}
+	/>
+	{#if task.isCompleted}
+		<span class="line-through">{task.content}</span>
+	{:else}
+		<input
+			bind:value={task.content}
+			type="text"
+			class="w-full outline-none"
+			onchange={() => updateTask(task.id, { content: task.content })}
+			onkeypress={(e) => e.stopPropagation()}
+			onclick={(e) => e.stopPropagation()}
+		/>
+	{/if}
 </div>
