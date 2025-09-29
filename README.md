@@ -1,10 +1,11 @@
-## Conventions
+## Conventions 
+TODO: create contributing.md
 
 - yourname/feature for branches
-- every branch needs an e2e test if its new functionanlity
-- every branch needs unit tests and component tests
+- every branch needs an e2e test if its new functionanlity and unit tests and component tests
 - if you fix a bug, add a test for it
 - make sure you have prettier extension installed and configured as default
+- PR names should follow [convential commits](https://www.conventionalcommits.org/en/v1.0.0/#summary)
 
 ## Setup
 
@@ -45,6 +46,6 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
-## Deployment 
+## Deployment
 
 TBA
