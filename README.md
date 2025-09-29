@@ -1,22 +1,33 @@
-# sv
+## Conventions 
+TODO: create contributing.md
 
-Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+- yourname/feature for branches
+- every branch needs an e2e test if its new functionanlity and unit tests and component tests
+- if you fix a bug, add a test for it
+- make sure you have prettier extension installed and configured as default
+- PR names should follow [convential commits](https://www.conventionalcommits.org/en/v1.0.0/#summary)
 
-## Creating a project
+## Setup
 
-If you're seeing this, you've probably already done this step. Congrats!
+After cloning the repo, setup your database:
 
 ```sh
-# create a new project in the current directory
-npx sv create
+cd tasken
 
-# create a new project in my-app
-npx sv create my-app
+docker compose up
+
+npm run db:migrate:run
+```
+
+And setup your env file:
+
+```sh
+cp .env.example .env
 ```
 
 ## Developing
 
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+Install dependencies with `npm install` and start a development server:
 
 ```sh
 npm run dev
@@ -27,7 +38,7 @@ npm run dev -- --open
 
 ## Building
 
-To create a production version of your app:
+To create a production version of the app:
 
 ```sh
 npm run build
@@ -35,4 +46,6 @@ npm run build
 
 You can preview the production build with `npm run preview`.
 
-> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.
+## Deployment
+
+TBA
