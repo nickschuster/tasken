@@ -4,7 +4,6 @@ on:
   pull_request:
     branches: ['main', 'master', 'dev']
   workflow_dispatch:
-  push:
 
 jobs:
   test:
@@ -31,7 +30,7 @@ jobs:
         run: npm ci
 
       - name: Start services
-        run: docker-compose up -d
+        run: docker compose up -d
 
         # sleep hack to wait for db accept connections ready TODO: fix
       - name: Wait for services
