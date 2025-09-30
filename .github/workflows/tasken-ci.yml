@@ -63,11 +63,8 @@ jobs:
       - name: Run database migrations
         run: npm run db:migrate:run
 
-      - name: Build SvelteKit app
+      - name: Test SvelteKit Build
         run: npm run build
-
-      - name: Start SvelteKit app
-        run: npm run preview &
 
       - name: Run Playwright tests
         run: npm run test:e2e
