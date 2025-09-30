@@ -32,13 +32,13 @@
 			</p>
 			<div class="mt-4 flex flex-col gap-4 sm:flex-row">
 				<a
-					href="/signup"
+					href="/home"
 					class="flex items-center justify-center gap-2 rounded-md bg-black px-8 py-3 font-semibold text-white transition-transform duration-200 ease-in-out hover:scale-105 dark:bg-white dark:text-black"
 				>
 					Start Focusing Now
 				</a>
 				<a
-					href="https://github.com"
+					href="https://github.com/nickschuster/tasken"
 					target="_blank"
 					rel="noopener noreferrer"
 					class="group flex items-center justify-center gap-2 rounded-md border border-neutral-300 px-8 py-3 font-semibold text-neutral-800 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:bg-neutral-900"
@@ -200,7 +200,7 @@
 								</li>
 							</ul>
 							<a
-								href="/signup/basic"
+								href="/home"
 								class="mt-8 block w-full rounded-md bg-black py-3 text-center font-semibold text-white transition-transform hover:scale-105 dark:bg-white dark:text-black"
 								>Choose Basic</a
 							>

@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { invalidate } from '$app/navigation';
 	import Input from '$lib/ui/Input.svelte';
 	import Task from '$lib/ui/task/Task.svelte';
 	import { CircleCheckBigIcon } from '@lucide/svelte';
@@ -26,6 +27,8 @@
 
 			newTaskContent = '';
 		}
+
+		await invalidate('/home');
 	};
 
 	const updateTask = async (taskId: string, updates: Partial<Task>) => {
@@ -49,6 +52,8 @@
 				tasks: data.tasks.map((task) => (task.id === taskId ? currentTask : task))
 			};
 		}
+
+		await invalidate('/home');
 	};
 </script>
 
