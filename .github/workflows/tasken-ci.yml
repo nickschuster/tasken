@@ -13,10 +13,10 @@ jobs:
     env:
       DATABASE_URL: 'postgres://postgres:local@localhost:5433/local'
       PUBLIC_POSTHOG_KEY: 'test'
-      PORT: 5173
+      PORT: 4173
       CI: true
       PUBLIC_CI: true
-      BASE_URL: http://localhost:5173
+      BASE_URL: http://localhost:4173
 
     steps:
       - name: Checkout code
