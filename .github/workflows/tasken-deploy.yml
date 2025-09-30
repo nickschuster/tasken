@@ -31,15 +31,17 @@ jobs:
         run: npm run build
 
       - name: Decrypt SSH key
+        id: ssh_key
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ./encrypted_key
           openssl rsa -in ./encrypted_key -out ./decrypted_key -passin pass:"${{ secrets.SSH_KEY_PASSPHRASE }}"
           chmod 600 ./decrypted_key
+          echo "key=$(cat ./decrypted_key)" >> $GITHUB_OUTPUT
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ cat ./decrypted_key }}
+          key: ${{ steps.ssh_key.outputs.key }}
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
 
       - name: Deploy to DigitalOcean
