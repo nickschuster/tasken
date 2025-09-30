@@ -1,0 +1,82 @@
+name: Tasken CI
+
+on:
+  pull_request:
+    branches: ['main', 'master', 'dev']
+  workflow_dispatch:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+
+    env:
+      DATABASE_URL: 'postgres://postgres:local@localhost:5433/local'
+      PUBLIC_POSTHOG_KEY: 'test'
+      PORT: 4173
+      CI: true
+      PUBLIC_CI: true
+      PUBLIC_DEV: true
+      BASE_URL: http://localhost:4173
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '20'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Start services
+        run: docker compose up -d
+
+        # sleep hack to wait for db accept connections ready TODO: fix
+      - name: Wait for services
+        run: sleep 5
+
+      - name: Cache Playwright browsers
+        uses: actions/cache@v4
+        id: playwright-cache
+        with:
+          path: ~/.cache/ms-playwright
+          # The cache key invalidates when package-lock.json changes.
+          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+          restore-keys: |
+            ${{ runner.os }}-playwright-
+
+        # skip if we found cached
+      - name: Install Playwright Chromium
+        if: steps.playwright-cache.outputs.cache-hit != 'true'
+        run: npx playwright install --with-deps chromium
+
+      - name: Run unit tests
+        run: npm run test:unit
+
+      - name: Install TSX
+        run: npm install -g tsx
+
+      - name: Run database migrations
+        run: npm run db:migrate:run
+
+      - name: Test SvelteKit Build
+        run: npm run build
+
+      - name: Run Playwright tests
+        run: npm run test:e2e
+
+      - name: Upload Playwright report
+        if: failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: playwright-report
+          path: playwright-report/
+          retention-days: 7
+
+      - name: Stop services
+        if: always()
+        run: docker compose down

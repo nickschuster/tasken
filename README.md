@@ -1,6 +1,8 @@
 ## Conventions 
 TODO: create contributing.md
 
+- need global tsx
+- node v22 minimum
 - yourname/feature for branches
 - every branch needs an e2e test if its new functionanlity and unit tests and component tests
 - if you fix a bug, add a test for it
@@ -12,6 +14,8 @@ TODO: create contributing.md
 After cloning the repo, setup your database:
 
 ```sh
+npm install -g tsx
+
 cd tasken
 
 docker compose up

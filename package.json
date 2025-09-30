@@ -3,6 +3,7 @@
   "private": true,
   "version": "0.0.1",
   "type": "module",
+  "testEnvironment": "jsdom",
   "scripts": {
     "dev": "vite dev",
     "build": "vite build",
@@ -71,7 +72,9 @@
   "dependencies": {
     "@lucide/svelte": "^0.544.0",
     "@node-rs/argon2": "^2.0.2",
+    "@testing-library/svelte": "^5.2.8",
     "@types/pg": "^8.15.5",
+    "jsdom": "^27.0.0",
     "luxon": "^3.7.2",
     "pg": "^8.16.3",
     "postgres": "^3.4.5",
