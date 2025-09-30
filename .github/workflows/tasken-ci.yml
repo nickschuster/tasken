@@ -54,6 +54,9 @@ jobs:
       - name: Run unit tests
         run: npm run test:unit
 
+      - name: Install TSX
+        run: npm install -g tsx
+
       - name: Run database migrations
         run: npm run db:migrate:run
 
@@ -76,4 +79,4 @@ jobs:
 
       - name: Stop services
         if: always()
-        run: docker-compose down
+        run: docker compose down
