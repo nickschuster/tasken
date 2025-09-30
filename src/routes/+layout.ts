@@ -3,7 +3,7 @@ import { browser } from '$app/environment';
 import { PUBLIC_POSTHOG_KEY as POSTHOG_KEY } from '$env/static/public';
 
 export function _initTelemetry() {
-	if (!browser) {
+	if (!browser && POSTHOG_KEY && !process.env.CI) {
 		return;
 	}
 
