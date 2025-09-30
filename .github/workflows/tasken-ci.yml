@@ -15,6 +15,7 @@ jobs:
       PUBLIC_POSTHOG_KEY: 'test'
       PORT: 5173
       CI: true
+      PUBLIC_CI: true
       BASE_URL: http://localhost:5173
 
     steps:
