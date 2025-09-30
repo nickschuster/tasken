@@ -64,7 +64,9 @@
 	<div class="px-4">{today}</div>
 
 	<div class="flex grow flex-col gap-2 overflow-y-auto p-2">
-		{#each data.tasks.filter((task) => !task.isCompleted) as task, i (task.id)}
+		{#each data.tasks
+			.filter((task) => !task.isCompleted)
+			.sort((a, b) => new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()) as task, i (task.id)}
 			<div
 				out:fly={{ y: 0, x: 150, duration: 250 }}
 				class="rounded-lg p-4 transition-all duration-200
