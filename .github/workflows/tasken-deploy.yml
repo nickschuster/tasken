@@ -34,9 +34,9 @@ jobs:
         id: ssh_key
         run: |
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ./encrypted_key
-          openssl rsa -in ./encrypted_key -out ./decrypted_key -passin pass:"${{ secrets.SSH_KEY_PASSPHRASE }}"
-          chmod 600 ./decrypted_key
-          echo "key=$(cat ./decrypted_key)" >> $GITHUB_OUTPUT
+          chmod 600 ./encrypted_key
+          SSH_ASKPASS="$(pwd)/passphrase.sh" DISPLAY=1 setsid -w ssh-keygen -p -P "${{ secrets.SSH_KEY_PASSPHRASE }}" -N "" -f ./encrypted_key
+          echo "key=$(cat ./encrypted_key)" >> $GITHUB_OUTPUT
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2

@@ -45,9 +45,9 @@ jobs:
         with:
           path: ~/.cache/ms-playwright
           # The cache key invalidates when package-lock.json changes.
-          key: ${{ runner.os }}-playwright-${{ hashFiles('**/package-lock.json') }}
+          key: ${{ runner.os }}-playwright
           restore-keys: |
-            ${{ runner.os }}-playwright-
+            ${{ runner.os }}-playwright
 
         # skip if we found cached
       - name: Install Playwright Chromium
