@@ -1,0 +1,55 @@
+name: Deploy to Production
+
+on:
+  push:
+    # branches: [master]
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      PUBLIC_POSTHOG_KEY: ${{ secrets.PUBLIC_POSTHOG_KEY }}
+      PUBLIC_CI: false
+      PUBLIC_DEV: false
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build application
+        run: npm run build
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
+          passphrase: ${{ secrets.SSH_KEY_PASSPHRASE }}
+
+      - name: Deploy to DigitalOcean
+        env:
+          DEPLOY_PATH: /var/www/tasken
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          # Sync build files
+          rsync -avz --delete ./build/ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/build/
+          rsync -avz package*.json $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/
+
+          # Run remote deployment commands
+          ssh $DEPLOY_USER@$DEPLOY_HOST "\
+            cd $DEPLOY_PATH && \
+            npm ci --production && \
+            pm2 reload tasken || pm2 start build/index.js --name tasken && \
+            sudo systemctl reload nginx"
