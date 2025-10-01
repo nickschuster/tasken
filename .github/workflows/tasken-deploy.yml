@@ -43,8 +43,8 @@ jobs:
             npm install -g pm2 tsx && \
             cd ~/tasken && \
             npm ci && \
-            npm run db:migrate:run && \
-            npm run build && \
+            DATABASE_URL=${{ secrets.DATABASE_URL }} PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false npm run db:migrate:run && \
+            DATABASE_URL=${{ secrets.DATABASE_URL }} PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false npm run build && \
             sudo rsync -avz --delete \
               build/ $DEPLOY_PATH/build/ && \
             cd $DEPLOY_PATH && \
