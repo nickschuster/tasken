@@ -30,27 +30,27 @@ jobs:
       - name: Build application
         run: npm run build
 
-      - name: Decrypt SSH key
-        id: ssh_key
-        env:
-          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
-          SSH_PASSPHRASE: ${{ secrets.SSH_KEY_PASSPHRASE }}
-        run: |
-          DECRYPTED_KEY=$(echo "$SSH_KEY" | openssl aes-256-cbc -d -a -pass pass:"$SSH_PASSPHRASE")
+      # - name: Decrypt SSH key
+      #   id: ssh_key
+      #   env:
+      #     SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+      #     SSH_PASSPHRASE: ${{ secrets.SSH_KEY_PASSPHRASE }}
+      #   run: |
+      #     DECRYPTED_KEY=$(echo "$SSH_KEY" | openssl aes-256-cbc -d -a -pass pass:"$SSH_PASSPHRASE")
 
-          if [ $? -ne 0 ]; then
-            echo "::error::Failed to decrypt SSH key. Please check your SSH_KEY and SSH_PASSPHRASE secrets."
-            exit 1
-          fi
+      #     if [ $? -ne 0 ]; then
+      #       echo "::error::Failed to decrypt SSH key. Please check your SSH_KEY and SSH_PASSPHRASE secrets."
+      #       exit 1
+      #     fi
 
-          echo "key<<EOF" >> $GITHUB_OUTPUT
-          echo "$DECRYPTED_KEY" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+      #     echo "key<<EOF" >> $GITHUB_OUTPUT
+      #     echo "$DECRYPTED_KEY" >> $GITHUB_OUTPUT
+      #     echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
-          key: ${{ steps.ssh_key.outputs.key }}
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
           known_hosts: ${{ secrets.SSH_KNOWN_HOSTS }}
 
       - name: Deploy to DigitalOcean
