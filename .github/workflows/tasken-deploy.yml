@@ -18,18 +18,6 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '22'
-          cache: 'npm'
-
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build application
-        run: npm run build
-
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
@@ -42,14 +30,23 @@ jobs:
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
         run: |
-          rsync -avz --delete ./build/ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/build/
+          rsync -avz --delete \
+            --exclude 'node_modules' \
+            --exclude '.git' \
+            --exclude 'build' \
+            ./ $DEPLOY_USER@$DEPLOY_HOST:~/tasken
 
-          # Execute remote commands to restart the application
           ssh $DEPLOY_USER@$DEPLOY_HOST "\
             export NVM_DIR=~/.nvm && \
             source \$NVM_DIR/nvm.sh && \
             nvm use 22 && \
-            npm install -g pm2 && \
+            npm install -g pm2 tsx && \
+            cd ~/tasken && \
+            npm ci && \
+            npm run db:migrate:run && \
+            npm run build && \
+            sudo rsync -avz --delete \
+              build/ $DEPLOY_PATH/build/ && \
             cd $DEPLOY_PATH && \
             npm ci --production && \
             DATABASE_URL=${{ secrets.DATABASE_URL }} PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false pm2 reload tasken --update-env || DATABASE_URL=${{ secrets.DATABASE_URL }} PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false pm2 start build/index.js --name tasken && \
