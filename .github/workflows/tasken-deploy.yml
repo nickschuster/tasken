@@ -43,10 +43,8 @@ jobs:
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
         run: |
           rsync -avz --delete ./build/ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/build/
-          rsync -avz package*.json $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/
 
           ssh $DEPLOY_USER@$DEPLOY_HOST "\
             cd $DEPLOY_PATH && \
-            npm ci --production && \
             pm2 reload tasken || pm2 start build/index.js --name tasken && \
             sudo systemctl reload nginx"
