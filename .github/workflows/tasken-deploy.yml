@@ -51,5 +51,6 @@ jobs:
             nvm use 22 && \
             npm install -g pm2 && \
             cd $DEPLOY_PATH && \
+            npm ci --production && \
             pm2 reload tasken || pm2 start build/index.js --name tasken && \
             sudo systemctl reload nginx"
