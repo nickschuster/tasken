@@ -52,4 +52,4 @@ jobs:
             npm install -g pm2 && \
             cd $DEPLOY_PATH && \
             pm2 reload tasken || pm2 start build/index.js --name tasken && \
-            sudo systemctl reload nginx
+            sudo systemctl reload nginx"
