@@ -44,9 +44,12 @@ jobs:
         run: |
           rsync -avz --delete ./build/ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/build/
 
+          # Execute remote commands to restart the application
           ssh $DEPLOY_USER@$DEPLOY_HOST "\
+            export NVM_DIR=~/.nvm && \
+            source \$NVM_DIR/nvm.sh && \
             nvm use 22 && \
             npm install -g pm2 && \
             cd $DEPLOY_PATH && \
             pm2 reload tasken || pm2 start build/index.js --name tasken && \
-            systemctl reload nginx"
+            sudo systemctl reload nginx
