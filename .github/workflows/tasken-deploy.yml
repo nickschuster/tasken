@@ -46,5 +46,7 @@ jobs:
 
           ssh $DEPLOY_USER@$DEPLOY_HOST "\
             cd $DEPLOY_PATH && \
-            pm2 reload tasken || pm2 start build/index.js --name tasken && \
-            sudo systemctl reload nginx"
+            echo $DEPLOY_USER && \
+            echo $PATH && \
+            /root/.nvm/versions/node/v22.20.0/bin/pm2 reload tasken || /root/.nvm/versions/node/v22.20.0/bin/pm2 start build/index.js --name tasken && \
+            systemctl reload nginx"
