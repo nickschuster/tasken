@@ -2,7 +2,7 @@ name: Deploy to Production
 
 on:
   push:
-    # branches: [master]
+    branches: [master]
   workflow_dispatch:
 
 jobs:
@@ -44,12 +44,21 @@ jobs:
         run: |
           rsync -avz --delete ./build/ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/build/
 
-          # Execute remote commands to restart the application
+          rsync -avz --delete \
+            --exclude 'node_modules' \
+            --exclude '.git' \
+            --exclude 'build' \
+            ./ $DEPLOY_USER@$DEPLOY_HOST:~/tasken
+
           ssh $DEPLOY_USER@$DEPLOY_HOST "\
             export NVM_DIR=~/.nvm && \
             source \$NVM_DIR/nvm.sh && \
             nvm use 22 && \
-            npm install -g pm2 && \
+            npm install -g pm2 tsx && \
+            cd ~/tasken && \
+            npm ci && \
+            DATABASE_URL='${{ secrets.DATABASE_URL }}' PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false npm run db:migrate:run && \
             cd $DEPLOY_PATH && \
-            pm2 reload tasken || pm2 start build/index.js --name tasken && \
+            npm ci --production && \
+            DATABASE_URL='${{ secrets.DATABASE_URL }}' PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false pm2 reload tasken --update-env || DATABASE_URL='${{ secrets.DATABASE_URL }}' PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false pm2 start build/index.js --name tasken && \
             sudo systemctl reload nginx"
