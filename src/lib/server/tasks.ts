@@ -4,7 +4,7 @@ import { task, type Task } from './db/schema';
 import { UUIDV4 } from './helper';
 
 export const getUncompletedTasks = async () => {
-	const query = db.select().from(task).where(eq(task.isCompleted, false));
+	const query = db.select().from(task).where(eq(task.isCompleted, false)).orderBy(task.createdAt);
 
 	return query.execute();
 };

@@ -2,8 +2,10 @@
 	import { invalidate } from '$app/navigation';
 	import Input from '$lib/ui/Input.svelte';
 	import Task from '$lib/ui/task/Task.svelte';
+	import Collapsible from '$lib/ui/Collapsible.svelte';
 	import { CircleCheckBigIcon } from '@lucide/svelte';
 	import { DateTime } from 'luxon';
+	import { fly } from 'svelte/transition';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
@@ -61,9 +63,10 @@
 	<div class="px-4 pt-4 text-5xl">My Day</div>
 	<div class="px-4">{today}</div>
 
-	<div class="flex grow flex-col gap-2 overflow-y-auto p-2">
-		{#each data.tasks as task, i (task.id)}
+	<div class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2">
+		{#each data.tasks.filter((task) => !task.isCompleted) as task, i (task.id)}
 			<div
+				out:fly={{ y: 0, x: 150, duration: 250 }}
 				class="rounded-lg p-4 transition-all duration-200
 			{task.isCompleted
 					? 'scale-99'
@@ -79,6 +82,16 @@
 			>
 				<CircleCheckBigIcon size="300" />
 			</div>
+		{/if}
+
+		{#if data.tasks.some((task) => task.isCompleted)}
+			<Collapsible headerText="Completed">
+				{#each data.tasks.filter((task) => task.isCompleted) as task, i (task.id)}
+					<div class="scale-99 rounded-lg p-4">
+						<Task {task} {updateTask} />
+					</div>
+				{/each}
+			</Collapsible>
 		{/if}
 	</div>
 
