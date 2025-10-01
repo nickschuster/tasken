@@ -11,7 +11,7 @@
 	<h2>
 		<button
 			on:click={() => (isOpen = !isOpen)}
-			class="flex w-full cursor-pointer justify-between border-none bg-black p-2"
+			class="flex w-full cursor-pointer justify-between border-none bg-white p-2 text-neutral-800 dark:bg-black dark:text-neutral-200"
 		>
 			{headerText}
 			<ChevronDown class="transition-transform duration-100 {isOpen ? 'rotate-180' : ''}" />
