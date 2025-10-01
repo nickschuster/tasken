@@ -45,8 +45,8 @@ jobs:
           rsync -avz --delete ./build/ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/build/
 
           ssh $DEPLOY_USER@$DEPLOY_HOST "\
+            nvm use 22 && \
+            npm install -g pm2 && \
             cd $DEPLOY_PATH && \
-            echo $DEPLOY_USER && \
-            echo $PATH && \
-            /root/.nvm/versions/node/v22.20.0/bin/pm2 reload tasken || /root/.nvm/versions/node/v22.20.0/bin/pm2 start build/index.js --name tasken && \
+            pm2 reload tasken || pm2 start build/index.js --name tasken && \
             systemctl reload nginx"
