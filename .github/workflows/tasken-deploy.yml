@@ -32,11 +32,20 @@ jobs:
 
       - name: Decrypt SSH key
         id: ssh_key
+        env:
+          SSH_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_PASSPHRASE: ${{ secrets.SSH_KEY_PASSPHRASE }}
         run: |
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ./encrypted_key
-          chmod 600 ./encrypted_key
-          SSH_ASKPASS="$(pwd)/passphrase.sh" DISPLAY=1 setsid -w ssh-keygen -p -P "${{ secrets.SSH_KEY_PASSPHRASE }}" -N "" -f ./encrypted_key
-          echo "key=$(cat ./encrypted_key)" >> $GITHUB_OUTPUT
+          DECRYPTED_KEY=$(echo "$SSH_KEY" | openssl aes-256-cbc -d -a -pass pass:"$SSH_PASSPHRASE")
+
+          if [ $? -ne 0 ]; then
+            echo "::error::Failed to decrypt SSH key. Please check your SSH_KEY and SSH_PASSPHRASE secrets."
+            exit 1
+          fi
+
+          echo "key<<EOF" >> $GITHUB_OUTPUT
+          echo "$DECRYPTED_KEY" >> $GITHUB_OUTPUT
+          echo "EOF" >> $GITHUB_OUTPUT
 
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
@@ -50,11 +59,9 @@ jobs:
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
         run: |
-          # Sync build files
           rsync -avz --delete ./build/ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/build/
           rsync -avz package*.json $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/
 
-          # Run remote deployment commands
           ssh $DEPLOY_USER@$DEPLOY_HOST "\
             cd $DEPLOY_PATH && \
             npm ci --production && \
