@@ -5,8 +5,6 @@ import dotenv from 'dotenv';
 
 dotenv.config();
 
-console.log('Starting migrations...', process.env.DATABASE_URL?.split('/'));
-
 if (!process.env.DATABASE_URL) {
 	throw new Error('DATABASE_URL is not set');
 }
