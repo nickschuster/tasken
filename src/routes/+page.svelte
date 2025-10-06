@@ -32,7 +32,7 @@
 			</p>
 			<div class="mt-4 flex flex-col gap-4 sm:flex-row">
 				<a
-					href="/home"
+					href="/auth/signup"
 					class="flex items-center justify-center gap-2 rounded-md bg-black px-8 py-3 font-semibold text-white transition-transform duration-200 ease-in-out hover:scale-105 dark:bg-white dark:text-black"
 				>
 					Start Focusing Now
@@ -200,7 +200,7 @@
 								</li>
 							</ul>
 							<a
-								href="/home"
+								href="/auth/signup"
 								class="mt-8 block w-full rounded-md bg-black py-3 text-center font-semibold text-white transition-transform hover:scale-105 dark:bg-white dark:text-black"
 								>Choose Basic</a
 							>
@@ -274,7 +274,7 @@
 					have your tools work as fast as you do.
 				</p>
 				<a
-					href="/home"
+					href="/auth/signup"
 					class="mt-4 flex items-center justify-center gap-2 rounded-md bg-black px-8 py-3 font-semibold text-white transition-transform duration-200 ease-in-out hover:scale-105 dark:bg-white dark:text-black"
 				>
 					Get Started with Tasken <ArrowRight size={20} />

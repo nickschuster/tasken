@@ -3,12 +3,13 @@
 	import { CircleCheckBigIcon } from '@lucide/svelte';
 
 	let { form } = $props();
-	$inspect(form);
 
 	let sent = $state(false);
 
 	$effect(() => {
-		sent = form?.success === true;
+		if (form?.success) {
+			sent = true;
+		}
 	});
 </script>
 
@@ -24,24 +25,10 @@
 				<div class="mt-auto mb-auto flex w-xs flex-col gap-2 text-center lg:w-md">
 					<h1 class="text-3xl font-bold tracking-tighter lg:text-4xl">Welcome to Tasken.</h1>
 					<p class="text-lg text-neutral-600 dark:text-neutral-400">Sync. Share. Succeed.</p>
-					<div class="flex flex-row justify-center gap-1">
-						<button
-							type="button"
-							class="w-full rounded-md border border-neutral-300 px-8 py-3 font-semibold text-neutral-800 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:bg-neutral-900"
-						>
-							Google
-						</button>
-						<button
-							type="button"
-							class="w-full rounded-md border border-neutral-100 px-8 py-3 font-semibold text-neutral-800 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:bg-neutral-900"
-						>
-							GitHub
-						</button>
-					</div>
-					<h2 class="mt-2 mb-3 w-full border-b border-neutral-300 text-center leading-[0.1]">
-						<span class="bg-white px-2 dark:bg-black">or</span>
-					</h2>
-					<form method="POST" use:enhance class="flex flex-col gap-2">
+					{#if form?.error}
+						<p class="text-small text-red-500">{form.error}</p>
+					{/if}
+					<form method="POST" use:enhance class="flex flex-col gap-3">
 						<input
 							type="email"
 							name="email"
@@ -56,13 +43,27 @@
 						/>
 						<button
 							type="submit"
-							class="rounded-md bg-black px-8 py-3 font-semibold text-white transition-transform duration-200 ease-in-out hover:scale-101 dark:bg-white dark:text-black"
+							class="rounded-md bg-black px-8 py-3 font-semibold text-white transition-transform duration-200 ease-in-out will-change-transform hover:scale-101 dark:bg-white dark:text-black"
 							>Continue with email</button
 						>
-						{#if form?.success === false}
-							<p class="error">{form.message}</p>
-						{/if}
 					</form>
+					<h2 class="mt-2 mb-3 w-full border-b border-neutral-300 text-center leading-[0.1]">
+						<span class="bg-white px-2 dark:bg-black">or</span>
+					</h2>
+					<div class="flex flex-col justify-center gap-2">
+						<button
+							type="button"
+							class="w-full rounded-md border border-neutral-300 px-8 py-3 font-semibold text-neutral-800 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:bg-neutral-900"
+						>
+							Google
+						</button>
+						<button
+							type="button"
+							class="w-full rounded-md border border-neutral-300 px-8 py-3 font-semibold text-neutral-800 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:bg-neutral-900"
+						>
+							GitHub
+						</button>
+					</div>
 				</div>
 			{:else}
 				<div
@@ -73,9 +74,13 @@
 					<p class="text-lg text-neutral-600 dark:text-neutral-400">
 						We sent a login link to your email address.
 					</p>
-					<small class="text-neutral-500 dark:text-neutral-600" on:click={() => (sent = false)}>
-						Didn't receive the email?</small
+					<button
+						type="button"
+						class="text-neutral-500 hover:cursor-pointer dark:text-neutral-600"
+						onclick={() => (sent = false)}
 					>
+						Didn't receive the email?
+					</button>
 				</div>
 			{/if}
 			<div class="mb-8 flex gap-6">
