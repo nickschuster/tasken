@@ -10,10 +10,20 @@ export const load: PageServerLoad = async ({ url }) => {
 		return redirect(302, '/auth/signup');
 	}
 
-	if (!isValidMagicLinkToken(token)) {
-		return redirect(302, '/auth/signup');
+	try {
+		const isValid = await isValidMagicLinkToken(token);
+
+		if (!isValid) {
+			console.log('Invalid or expired token');
+			return redirect(302, '/auth/login?error=invalid_token');
+		}
+	} catch (e) {
+		console.error('Error validating token', e);
+		return redirect(302, '/auth/login?error=server_error');
 	}
 
-	// switch on token type (oauth, magic link etc)
+	// create lucia session
+
+	console.log('Token is valid, user logged in ', token);
 	return redirect(302, '/home');
 };

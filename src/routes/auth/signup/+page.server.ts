@@ -1,4 +1,8 @@
-import { generateMagicLinkToken, sendMagicLinkEmail } from '$lib/server/magiclink.js';
+import {
+	generateMagicLinkToken,
+	sendMagicLinkEmail,
+	storeMagicLink
+} from '$lib/server/magiclink.js';
 import { fail } from '@sveltejs/kit';
 
 export const actions = {
@@ -13,6 +17,7 @@ export const actions = {
 		const token = generateMagicLinkToken();
 
 		try {
+			await storeMagicLink(email, token);
 			await sendMagicLinkEmail(email, token);
 		} catch {
 			return fail(500, { error: 'An unexpected error occurred. Please try again later.' });
