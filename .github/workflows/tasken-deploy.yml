@@ -14,6 +14,7 @@ jobs:
       PUBLIC_POSTHOG_KEY: ${{ secrets.PUBLIC_POSTHOG_KEY }}
       PUBLIC_CI: false
       PUBLIC_DEV: false
+      PUBLIC_WS_URL: ws://localhost:3001
 
     steps:
       - uses: actions/checkout@v4
