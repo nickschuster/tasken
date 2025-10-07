@@ -25,8 +25,8 @@ export const task = pgTable('task', {
 export const verification = pgTable('verification', {
 	id: text('id').primaryKey(),
 	email: text('email').notNull(),
-	type: text().notNull(),
-	status: text().notNull(),
+	type: text('type').notNull(),
+	status: text('status').notNull(),
 	token_hash: text('token_hash').notNull().unique(),
 	created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
 	expires_at: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),

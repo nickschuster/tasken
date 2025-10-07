@@ -2,6 +2,7 @@
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { isValidMagicLinkToken } from '$lib/server/magiclink';
+import * as auth from '$lib/server/auth';
 
 export const load: PageServerLoad = async ({ url }) => {
 	const token = url.searchParams.get('token');
@@ -23,6 +24,9 @@ export const load: PageServerLoad = async ({ url }) => {
 	}
 
 	// create lucia session
+	const sessionToken = auth.generateSessionToken();
+	const session = await auth.createSession(sessionToken, existingUser.id);
+	auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 
 	console.log('Token is valid, user logged in ', token);
 	return redirect(302, '/home');
