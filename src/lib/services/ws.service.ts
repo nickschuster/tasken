@@ -21,19 +21,24 @@ class WebSocketService {
 		if (!browser || (this.socket && this.socket.readyState < 2)) {
 			return;
 		}
-		this.socket = new WebSocket(PUBLIC_WS_URL);
 
-		this.socket.onmessage = (event) => {
-			try {
-				const message = JSON.parse(event.data);
+		try {
+			this.socket = new WebSocket(PUBLIC_WS_URL);
 
-				if (message.event && message.payload !== undefined) {
-					this.emitter.emit(message.event, message.payload);
+			this.socket.onmessage = (event) => {
+				try {
+					const message = JSON.parse(event.data);
+
+					if (message.event && message.payload !== undefined) {
+						this.emitter.emit(message.event, message.payload);
+					}
+				} catch (e) {
+					console.error('WebSocket message parse error:', e);
 				}
-			} catch (e) {
-				console.error('WebSocket message parse error:', e);
-			}
-		};
+			};
+		} catch (error) {
+			console.error('WebSocket connection error:', error);
+		}
 	}
 
 	public on(event: string, callback: Function) {
@@ -45,8 +50,12 @@ class WebSocketService {
 	}
 
 	public sendMessage(event: Event, payload: unknown): void {
-		if (this.socket && this.socket.readyState === WebSocket.OPEN) {
-			this.socket.send(JSON.stringify({ event, payload }));
+		try {
+			if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+				this.socket.send(JSON.stringify({ event, payload }));
+			}
+		} catch (error) {
+			console.error('WebSocket send message error:', error);
 		}
 	}
 }
