@@ -14,7 +14,7 @@ jobs:
       PUBLIC_POSTHOG_KEY: ${{ secrets.PUBLIC_POSTHOG_KEY }}
       PUBLIC_CI: false
       PUBLIC_DEV: false
-      PUBLIC_WS_URL: ws://tasken.app/ws/
+      PUBLIC_WS_URL: wss://tasken.app/ws/
 
     steps:
       - uses: actions/checkout@v4
@@ -58,8 +58,8 @@ jobs:
             npm install -g pm2 tsx && \
             cd ~/tasken && \
             npm ci && \
-            DATABASE_URL='${{ secrets.DATABASE_URL }}' PUBLIC_WS_URL='ws://tasken.app/ws/' PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false PUBLIC_WS_URL='ws://tasken.app/ws/' npm run db:migrate:run && \
+            DATABASE_URL='${{ secrets.DATABASE_URL }}' PUBLIC_WS_URL='wss://tasken.app/ws/' PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false PUBLIC_WS_URL='wss://tasken.app/ws/' npm run db:migrate:run && \
             cd $DEPLOY_PATH && \
             npm ci --production && \
-            DATABASE_URL='${{ secrets.DATABASE_URL }}' PUBLIC_WS_URL='ws://tasken.app/ws/' PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false PUBLIC_WS_URL='ws://tasken.app/ws/' pm2 reload tasken --update-env || DATABASE_URL='${{ secrets.DATABASE_URL }}' PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false pm2 start build/index.js --name tasken && \
+            DATABASE_URL='${{ secrets.DATABASE_URL }}' PUBLIC_WS_URL='wss://tasken.app/ws/' PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false PUBLIC_WS_URL='wss://tasken.app/ws/' pm2 reload tasken --update-env || DATABASE_URL='${{ secrets.DATABASE_URL }}' PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false pm2 start build/index.js --name tasken && \
             sudo systemctl reload nginx"
