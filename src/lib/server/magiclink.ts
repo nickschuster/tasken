@@ -79,6 +79,23 @@ export const isValidMagicLinkToken = async (token: string) => {
 	return true;
 };
 
+export const getEmailFromMagicLinkToken = async (
+	token: string
+): Promise<{ email: string | null }> => {
+	const tokenHash = hashToken(token);
+
+	const [verification] = await db
+		.select()
+		.from(table.verification)
+		.where(eq(table.verification.token_hash, tokenHash));
+
+	if (!verification) {
+		return { email: null };
+	}
+
+	return { email: verification.email };
+};
+
 const invalidateMagicLinkToken = async (
 	token: string,
 	status: Exclude<VerificationStatus, VerificationStatus.PENDING>

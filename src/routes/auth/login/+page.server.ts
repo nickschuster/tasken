@@ -1,11 +1,19 @@
 // import { redirect } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { isValidMagicLinkToken } from '$lib/server/magiclink';
+import { getEmailFromMagicLinkToken, isValidMagicLinkToken } from '$lib/server/magiclink';
 import * as auth from '$lib/server/auth';
+import { db } from '$lib/server/db';
+import * as table from '$lib/server/db/schema';
+import { eq } from 'drizzle-orm';
+import { encodeBase32LowerCase } from '@oslojs/encoding';
 
-export const load: PageServerLoad = async ({ url }) => {
-	const token = url.searchParams.get('token');
+export const load: PageServerLoad = async (event) => {
+	if (event.locals.user) {
+		return redirect(302, '/home');
+	}
+
+	const token = event.url.searchParams.get('token');
 
 	if (typeof token !== 'string' || token.length === 0) {
 		return redirect(302, '/auth/signup');
@@ -16,18 +24,38 @@ export const load: PageServerLoad = async ({ url }) => {
 
 		if (!isValid) {
 			console.log('Invalid or expired token');
-			return redirect(302, '/auth/login?error=invalid_token');
+			return redirect(302, '/auth/signup');
 		}
-	} catch (e) {
-		console.error('Error validating token', e);
-		return redirect(302, '/auth/login?error=server_error');
-	}
 
-	// create lucia session
-	const sessionToken = auth.generateSessionToken();
-	const session = await auth.createSession(sessionToken, existingUser.id);
-	auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
+		const { email } = await getEmailFromMagicLinkToken(token);
+
+		if (!email) {
+			console.log('No email found for token');
+			return redirect(302, '/auth/signup');
+		}
+
+		let [user] = await db.select().from(table.user).where(eq(table.user.email, email));
+
+		if (!user) {
+			const userId = generateUserId();
+
+			[user] = await db.insert(table.user).values({ id: userId, email }).returning();
+		}
+
+		const sessionToken = auth.generateSessionToken();
+		const session = await auth.createSession(sessionToken, user.id);
+		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
+	} catch (e) {
+		console.error('Server error', e);
+		return redirect(302, '/auth/signup');
+	}
 
 	console.log('Token is valid, user logged in ', token);
 	return redirect(302, '/home');
 };
+
+function generateUserId() {
+	const bytes = crypto.getRandomValues(new Uint8Array(15));
+	const id = encodeBase32LowerCase(bytes);
+	return id;
+}

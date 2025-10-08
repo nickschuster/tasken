@@ -2,8 +2,9 @@ import { pgTable, text, timestamp, boolean } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('user', {
 	id: text('id').primaryKey(),
-	username: text('username').notNull().unique(),
-	passwordHash: text('password_hash').notNull()
+	email: text('email').notNull().unique(),
+	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow()
+	// add oauth_id column later or separate identity table, or identity_id and identity_provider
 });
 
 export const session = pgTable('session', {

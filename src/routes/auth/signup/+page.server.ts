@@ -3,7 +3,15 @@ import {
 	sendMagicLinkEmail,
 	storeMagicLink
 } from '$lib/server/magiclink.js';
-import { fail } from '@sveltejs/kit';
+import { fail, redirect } from '@sveltejs/kit';
+import type { PageServerLoad } from './$types';
+
+export const load: PageServerLoad = async (event) => {
+	if (event.locals.user) {
+		return redirect(302, '/home');
+	}
+	return {};
+};
 
 export const actions = {
 	default: async ({ request }) => {
