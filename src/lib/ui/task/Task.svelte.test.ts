@@ -2,6 +2,7 @@ import { render, fireEvent } from '@testing-library/svelte';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
 const vibrateMock = vi.fn();
+const ANIMATION_DURATION = 250;
 
 import Task from './Task.svelte';
 
@@ -81,7 +82,7 @@ describe('Task component vibration', () => {
 		await fireEvent.click(button);
 
 		// advance timers so the delayed toggle in TaskCheck fires
-		vi.advanceTimersByTime(200);
+		vi.advanceTimersByTime(ANIMATION_DURATION);
 
 		expect(vibrateMock).toHaveBeenCalledTimes(1);
 		expect(vibrateMock).toHaveBeenCalledWith(50);

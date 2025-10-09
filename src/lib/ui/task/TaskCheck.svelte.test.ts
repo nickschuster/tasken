@@ -2,7 +2,7 @@ import { render, fireEvent } from '@testing-library/svelte';
 import TaskCheck from './TaskCheck.svelte';
 import { vi, describe, it, expect, beforeEach, afterEach } from 'vitest';
 
-const ANIMATION_DURATION = 200;
+const ANIMATION_DURATION = 250;
 
 describe('TaskCheck component', () => {
 	beforeEach(() => {
