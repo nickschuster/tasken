@@ -70,11 +70,8 @@
 	<div class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2">
 		{#each tasks.filter((task) => !task.isCompleted) as task, i (task.id)}
 			<div
-				out:fly={{ y: 0, x: 150, duration: 250 }}
 				class="rounded-lg p-4 transition-all duration-200
-			{task.isCompleted
-					? 'scale-99'
-					: 'shadow-xs ease-out hover:shadow-md dark:shadow-neutral-900 dark:hover:shadow-md'}"
+			{task.isCompleted ? '' : 'hover:bg-neutral-100'}"
 			>
 				<TaskComponent {task} updateTask={updateTaskFetch} />
 			</div>
@@ -91,7 +88,7 @@
 		{#if tasks.some((task) => task.isCompleted)}
 			<Collapsible headerText="Completed">
 				{#each tasks.filter((task) => task.isCompleted) as task, i (task.id)}
-					<div class="scale-99 rounded-lg p-4">
+					<div class="rounded-lg p-4">
 						<TaskComponent {task} updateTask={updateTaskFetch} />
 					</div>
 				{/each}
