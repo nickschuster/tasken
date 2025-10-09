@@ -45,6 +45,7 @@
     "@tailwindcss/vite": "^4.0.0",
     "@types/luxon": "^3.7.1",
     "@types/node": "^20",
+    "@vite-pwa/sveltekit": "^1.0.0",
     "@vitest/browser": "^3.2.3",
     "dotenv": "^17.2.2",
     "drizzle-kit": "^0.30.2",
