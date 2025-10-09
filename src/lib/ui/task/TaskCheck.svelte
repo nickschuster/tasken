@@ -3,7 +3,7 @@
 	export let toggleChecked: (checked: boolean) => void;
 
 	let visuallyChecked = checked;
-	const ANIMATION_DURATION = 200; // ms
+	const ANIMATION_DURATION = 250; // ms
 
 	function handleToggle(event: Event) {
 		event.preventDefault();
@@ -79,14 +79,12 @@
 	}
 
 	.checkbox-container:active {
-		transform: scale(0.9);
 		transition-duration: 0.05s;
 	}
 
 	.checkbox-container.checked {
 		background-color: var(--primary-color);
 		border-color: var(--primary-color);
-		transform: scale(1.1);
 	}
 
 	.checkbox-container:hover {
