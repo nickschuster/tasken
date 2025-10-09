@@ -20,6 +20,7 @@ export const hashToken = (token: string) => {
 };
 
 export const sendMagicLinkEmail = async (email: string, token: string) => {
+	// get prod and dev urls
 	const magicLinkUrl = `http://localhost:5173/auth/login?token=${token}`;
 
 	const { data, error } = await sendEmail(
@@ -44,10 +45,10 @@ export const storeMagicLink = async (email: string, token: string) => {
 		email,
 		type: VerificationType.MAGIC_LINK,
 		status: VerificationStatus.PENDING,
-		token_hash: tokenHash,
-		created_at: new Date(),
-		expires_at: expiresAt,
-		used_at: null
+		tokenHash: tokenHash,
+		createdAt: new Date(),
+		expiresAt: expiresAt,
+		usedAt: null
 	};
 
 	await db.insert(table.verification).values(verification);
@@ -60,7 +61,7 @@ export const isValidMagicLinkToken = async (token: string) => {
 	const [verification] = await db
 		.select()
 		.from(table.verification)
-		.where(eq(table.verification.token_hash, tokenHash));
+		.where(eq(table.verification.tokenHash, tokenHash));
 
 	if (!verification) {
 		return false;
@@ -70,7 +71,7 @@ export const isValidMagicLinkToken = async (token: string) => {
 		return false;
 	}
 
-	if (verification.expires_at.getTime() < Date.now()) {
+	if (verification.expiresAt.getTime() < Date.now()) {
 		await invalidateMagicLinkToken(token, VerificationStatus.EXPIRED);
 		return false;
 	}
@@ -87,7 +88,7 @@ export const getEmailFromMagicLinkToken = async (
 	const [verification] = await db
 		.select()
 		.from(table.verification)
-		.where(eq(table.verification.token_hash, tokenHash));
+		.where(eq(table.verification.tokenHash, tokenHash));
 
 	if (!verification) {
 		return { email: null };
@@ -108,5 +109,5 @@ const invalidateMagicLinkToken = async (
 	await db
 		.update(table.verification)
 		.set(updateStatus)
-		.where(eq(table.verification.token_hash, tokenHash));
+		.where(eq(table.verification.tokenHash, tokenHash));
 };

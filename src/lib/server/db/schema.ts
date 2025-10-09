@@ -28,10 +28,10 @@ export const verification = pgTable('verification', {
 	email: text('email').notNull(),
 	type: text('type').notNull(),
 	status: text('status').notNull(),
-	token_hash: text('token_hash').notNull().unique(),
-	created_at: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
-	expires_at: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
-	used_at: timestamp('used_at', { withTimezone: true, mode: 'date' })
+	tokenHash: text('token_hash').notNull().unique(),
+	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+	expiresAt: timestamp('expires_at', { withTimezone: true, mode: 'date' }).notNull(),
+	usedAt: timestamp('used_at', { withTimezone: true, mode: 'date' })
 });
 
 export type Session = typeof session.$inferSelect;
