@@ -3,7 +3,7 @@
 	import Input from '$lib/ui/Input.svelte';
 	import Task from '$lib/ui/task/Task.svelte';
 	import Collapsible from '$lib/ui/Collapsible.svelte';
-	import { CircleCheckBigIcon } from '@lucide/svelte';
+	import { CircleCheckBigIcon, UserIcon } from '@lucide/svelte';
 	import { DateTime } from 'luxon';
 	import { fly } from 'svelte/transition';
 
@@ -60,7 +60,23 @@
 </script>
 
 <div class="flex h-screen flex-col dark:bg-black dark:text-white">
-	<div class="px-4 pt-4 text-5xl">My Day</div>
+	<div class="flex w-full justify-between">
+		<div class="px-4 pt-4 text-5xl">My Day</div>
+		<div class="px-4 pt-4 text-2xl">
+			<form method="POST" action="?/logout">
+				<button
+					type="submit"
+					title="logout"
+					class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-neutral-300 text-center dark:bg-neutral-900"
+				>
+					{#if data.user}
+						{data.user.email.charAt(0)}
+					{/if}
+				</button>
+			</form>
+		</div>
+	</div>
+
 	<div class="px-4">{today}</div>
 
 	<div class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2">

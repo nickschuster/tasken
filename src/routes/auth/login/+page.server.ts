@@ -30,7 +30,7 @@ export const load: PageServerLoad = async (event) => {
 		const { email } = await getEmailFromMagicLinkToken(token);
 
 		if (!email) {
-			console.log('No email found for token');
+			console.log('No email found');
 			return redirect(302, '/auth/signup');
 		}
 
@@ -50,7 +50,6 @@ export const load: PageServerLoad = async (event) => {
 		return redirect(302, '/auth/signup');
 	}
 
-	console.log('Token is valid, user logged in ', token);
 	return redirect(302, '/home');
 };
 
