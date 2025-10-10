@@ -1,17 +1,24 @@
 <script lang="ts">
 	import { invalidate } from '$app/navigation';
 	import Input from '$lib/ui/Input.svelte';
-	import Task from '$lib/ui/task/Task.svelte';
+	import TaskComponent from '$lib/ui/task/Task.svelte';
 	import Collapsible from '$lib/ui/Collapsible.svelte';
 	import { CircleCheckBigIcon, UserIcon } from '@lucide/svelte';
 	import { DateTime } from 'luxon';
 	import { fly } from 'svelte/transition';
+	import { addTask, getTasks, setTasks, updateTask } from '$lib/states/task.state.svelte.js';
+	import { wsService } from '$lib/services/ws.service.js';
+	import { Event } from '$lib/models/event.js';
+	import type { Task } from '$lib/server/db/schema';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
 	let today = DateTime.now().toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);
+	let tasks = $derived(getTasks());
 
-	const createTask = async (content: string) => {
+	setTasks(data.tasks);
+
+	const createTaskFetch = async (content: string) => {
 		const result = await fetch('/api/tasks', {
 			method: 'POST',
 			headers: {
@@ -23,9 +30,9 @@
 		if (result.ok) {
 			const newTask = await result.json();
 
-			const tasks = [...data.tasks, newTask];
+			addTask(newTask);
 
-			data = { ...data, tasks };
+			wsService.sendMessage(Event.TaskAdded, newTask);
 
 			newTaskContent = '';
 		}
@@ -33,12 +40,10 @@
 		await invalidate('/home');
 	};
 
-	const updateTask = async (taskId: string, updates: Partial<Task>) => {
-		const currentTask = data.tasks.find((task) => task.id === taskId);
+	const updateTaskFetch = async (taskId: string, updates: Partial<Task>) => {
+		const currentTask = tasks.find((task) => task.id === taskId);
 
-		const tasks = data.tasks.map((task) => (task.id === taskId ? { ...task, ...updates } : task));
-
-		data = { ...data, tasks };
+		updateTask(taskId, updates);
 
 		const result = await fetch(`/api/tasks/${taskId}`, {
 			method: 'PATCH',
@@ -49,10 +54,9 @@
 		});
 
 		if (!result.ok && currentTask) {
-			data = {
-				...data,
-				tasks: data.tasks.map((task) => (task.id === taskId ? currentTask : task))
-			};
+			updateTask(taskId, currentTask);
+		} else {
+			wsService.sendMessage(Event.TaskUpdated, { ...currentTask, ...updates });
 		}
 
 		await invalidate('/home');
@@ -80,19 +84,16 @@
 	<div class="px-4">{today}</div>
 
 	<div class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2">
-		{#each data.tasks.filter((task) => !task.isCompleted) as task, i (task.id)}
+		{#each tasks.filter((task) => !task.isCompleted) as task, i (task.id)}
 			<div
-				out:fly={{ y: 0, x: 150, duration: 250 }}
 				class="rounded-lg p-4 transition-all duration-200
-			{task.isCompleted
-					? 'scale-99'
-					: 'shadow-xs ease-out hover:shadow-md dark:shadow-neutral-900 dark:hover:shadow-md'}"
+			{task.isCompleted ? '' : 'hover:bg-neutral-100'}"
 			>
-				<Task {task} {updateTask} />
+				<TaskComponent {task} updateTask={updateTaskFetch} />
 			</div>
 		{/each}
 
-		{#if data.tasks.length === 0}
+		{#if tasks.length === 0}
 			<div
 				class="flex grow flex-col items-center justify-center text-gray-200 dark:text-neutral-950"
 			>
@@ -100,11 +101,11 @@
 			</div>
 		{/if}
 
-		{#if data.tasks.some((task) => task.isCompleted)}
+		{#if tasks.some((task) => task.isCompleted)}
 			<Collapsible headerText="Completed">
-				{#each data.tasks.filter((task) => task.isCompleted) as task, i (task.id)}
-					<div class="scale-99 rounded-lg p-4">
-						<Task {task} {updateTask} />
+				{#each tasks.filter((task) => task.isCompleted) as task, i (task.id)}
+					<div class="rounded-lg p-4">
+						<TaskComponent {task} updateTask={updateTaskFetch} />
 					</div>
 				{/each}
 			</Collapsible>
@@ -112,6 +113,6 @@
 	</div>
 
 	<div class="p-4">
-		<Input onEnter={createTask} bind:newTaskContent />
+		<Input onEnter={createTaskFetch} bind:newTaskContent />
 	</div>
 </div>

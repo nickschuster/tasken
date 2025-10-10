@@ -1,16 +1,22 @@
 <script lang="ts">
 	import type { Task } from '$lib/server/db/schema';
+	import { vibrate } from '$lib/utils/vibrate';
 	import TaskCheck from './TaskCheck.svelte';
 
 	export let task: Task;
 	export let updateTask: (taskId: string, updates: Partial<Task>) => void = () => {};
+
+	function toggleChecked(checked: boolean) {
+		if (checked) {
+			vibrate(50);
+		}
+
+		updateTask(task.id, { isCompleted: checked });
+	}
 </script>
 
 <div class="flex items-center gap-2">
-	<TaskCheck
-		checked={task.isCompleted}
-		toggleChecked={(checked) => updateTask(task.id, { isCompleted: checked })}
-	/>
+	<TaskCheck checked={task.isCompleted} {toggleChecked} />
 	{#if task.isCompleted}
 		<span class="line-through">{task.content}</span>
 	{:else}
