@@ -2,12 +2,15 @@ import { getUncompletedTasks } from '$lib/server/tasks';
 import type { Actions, PageServerLoad } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 import { invalidateSession, deleteSessionTokenCookie } from '$lib/server/auth';
-import { getRequestEvent } from '$app/server';
 
-export const load: PageServerLoad = async () => {
+export const load: PageServerLoad = async ({ locals }) => {
+	if (!locals.user) {
+		return redirect(302, '/auth/signup');
+	}
+
 	return {
 		tasks: await getUncompletedTasks(),
-		user: requireLogin()
+		user: locals.user
 	};
 };
 
@@ -23,13 +26,3 @@ export const actions: Actions = {
 		return redirect(302, '/');
 	}
 };
-
-function requireLogin() {
-	const { locals } = getRequestEvent();
-
-	if (!locals.user) {
-		return redirect(302, '/auth/signup');
-	}
-
-	return locals.user;
-}

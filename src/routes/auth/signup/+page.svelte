@@ -1,6 +1,8 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
 	import { CircleCheckBigIcon } from '@lucide/svelte';
+	import GoogleButton from '$lib/ui/oauth/GoogleButton.svelte';
+	import GithubButton from '$lib/ui/oauth/GithubButton.svelte';
 
 	let { form } = $props();
 
@@ -51,18 +53,8 @@
 						<span class="bg-white px-2 dark:bg-black">or</span>
 					</h2>
 					<div class="flex flex-col justify-center gap-2">
-						<button
-							type="button"
-							class="w-full rounded-md border border-neutral-300 px-8 py-3 font-semibold text-neutral-800 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:bg-neutral-900"
-						>
-							Google
-						</button>
-						<button
-							type="button"
-							class="w-full rounded-md border border-neutral-300 px-8 py-3 font-semibold text-neutral-800 transition-colors hover:bg-neutral-100 dark:border-neutral-700 dark:text-neutral-300 dark:hover:border-neutral-500 dark:hover:bg-neutral-900"
-						>
-							GitHub
-						</button>
+						<GoogleButton />
+						<GithubButton />
 					</div>
 				</div>
 			{:else}

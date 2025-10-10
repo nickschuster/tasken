@@ -5,7 +5,9 @@ import * as table from '$lib/server/db/schema';
 import { db } from './db';
 import { eq } from 'drizzle-orm';
 import { VerificationStatus, VerificationType } from '$lib/models/verification';
-import { sendEmail } from './email';
+import { sendEmail } from './emails/email';
+import { EmailType } from '$lib/models/email';
+import { BASE_URL } from '$env/static/private';
 
 const MAGIC_LINK_EXPIRY_MS = 1000 * 60 * 15;
 
@@ -20,14 +22,10 @@ export const hashToken = (token: string) => {
 };
 
 export const sendMagicLinkEmail = async (email: string, token: string) => {
-	// get prod and dev urls
-	const magicLinkUrl = `http://localhost:5173/auth/login?token=${token}`;
-
-	const { data, error } = await sendEmail(
-		[email],
-		'Welcome to Tasken',
-		`<a href="${magicLinkUrl}">Login</a>`
-	);
+	console.log(BASE_URL);
+	const { data, error } = await sendEmail([email], EmailType.MAGIC_LINK, {
+		link: `${BASE_URL}/auth/login?token=${token}`
+	});
 
 	if (error) {
 		throw new Error('Failed to send email: ' + error.message);

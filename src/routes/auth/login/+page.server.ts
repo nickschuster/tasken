@@ -1,4 +1,3 @@
-// import { redirect } from '@sveltejs/kit';
 import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getEmailFromMagicLinkToken, isValidMagicLinkToken } from '$lib/server/magiclink';
@@ -6,7 +5,7 @@ import * as auth from '$lib/server/auth';
 import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
 import { eq } from 'drizzle-orm';
-import { encodeBase32LowerCase } from '@oslojs/encoding';
+import { UUIDV4 } from '$lib/server/helper';
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -37,7 +36,7 @@ export const load: PageServerLoad = async (event) => {
 		let [user] = await db.select().from(table.user).where(eq(table.user.email, email));
 
 		if (!user) {
-			const userId = generateUserId();
+			const userId = UUIDV4();
 
 			[user] = await db.insert(table.user).values({ id: userId, email }).returning();
 		}
@@ -52,9 +51,3 @@ export const load: PageServerLoad = async (event) => {
 
 	return redirect(302, '/home');
 };
-
-function generateUserId() {
-	const bytes = crypto.getRandomValues(new Uint8Array(15));
-	const id = encodeBase32LowerCase(bytes);
-	return id;
-}
