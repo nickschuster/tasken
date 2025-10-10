@@ -22,7 +22,6 @@ export const hashToken = (token: string) => {
 };
 
 export const sendMagicLinkEmail = async (email: string, token: string) => {
-	console.log(BASE_URL);
 	const { data, error } = await sendEmail([email], EmailType.MAGIC_LINK, {
 		link: `${BASE_URL}/auth/login?token=${token}`
 	});
