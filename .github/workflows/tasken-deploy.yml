@@ -32,7 +32,7 @@ jobs:
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
         run: |
-          rsync -avz --delete --exclude 'node_modules' ./ $DEPLOY_USER@$DEPLOY_HOST:~/tasken
+          rsync -avz --delete --exclude 'node_modules' --exclude '.git' ./ $DEPLOY_USER@$DEPLOY_HOST:~/tasken
 
           ssh $DEPLOY_USER@$DEPLOY_HOST "\
             export NVM_DIR=~/.nvm && \
@@ -40,7 +40,7 @@ jobs:
             nvm use 22 && \
             npm install -g pm2 tsx && \
             cd ~/tasken && \
-            npm ci --production && \
+            npm install --production && \
             npm run build && \
             BASE_URL='https://tasken.app' RESEND_API_KEY='${{ secrets.RESEND_API_KEY }}' DATABASE_URL='${{ secrets.DATABASE_URL }}' PUBLIC_WS_URL='wss://tasken.app/ws/' PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false PUBLIC_WS_URL='wss://tasken.app/ws/' npm run db:migrate:run && \
             BASE_URL='https://tasken.app' RESEND_API_KEY='${{ secrets.RESEND_API_KEY }}' DATABASE_URL='${{ secrets.DATABASE_URL }}' PUBLIC_WS_URL='wss://tasken.app/ws/' PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false PUBLIC_WS_URL='wss://tasken.app/ws/' pm2 reload tasken --update-env || RESEND_API_KEY='${{ secrets.RESEND_API_KEY }}' BASE_URL='https://tasken.app' DATABASE_URL='${{ secrets.DATABASE_URL }}' PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false pm2 start build/index.js --name tasken && \
