@@ -13,10 +13,10 @@ export const getUncompletedTasks = async (userId: string) => {
 	return query.execute();
 };
 
-export const createTask = async (taskToCreate: Pick<Task, 'content'>) => {
+export const createTask = async (userId: string, taskToCreate: Pick<Task, 'content'>) => {
 	const insert = db
 		.insert(task)
-		.values({ id: UUIDV4(), ...taskToCreate })
+		.values({ id: UUIDV4(), ...taskToCreate, userId })
 		.returning();
 
 	const [createdTask] = await insert.execute();
