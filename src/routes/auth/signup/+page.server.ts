@@ -27,7 +27,9 @@ export const actions = {
 		try {
 			await storeMagicLink(email, token);
 			await sendMagicLinkEmail(email, token);
-		} catch {
+		} catch (e) {
+			console.error('Error during magic link process:', e);
+
 			return fail(500, { error: 'An unexpected error occurred. Please try again later.' });
 		}
 
