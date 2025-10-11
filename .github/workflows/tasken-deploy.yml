@@ -27,12 +27,6 @@ jobs:
           node-version: '22'
           cache: 'npm'
 
-      - name: Install dependencies
-        run: npm ci
-
-      - name: Build application
-        run: npm run build
-
       - name: Install SSH key
         uses: shimataro/ssh-key-action@v2
         with:
@@ -41,17 +35,10 @@ jobs:
 
       - name: Deploy to DigitalOcean
         env:
-          DEPLOY_PATH: /var/www/tasken
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
         run: |
-          rsync -avz --delete ./build/ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/build/
-
-          rsync -avz --delete \
-            --exclude 'node_modules' \
-            --exclude '.git' \
-            --exclude 'build' \
-            ./ $DEPLOY_USER@$DEPLOY_HOST:~/tasken
+          rsync -avz --delete ./ $DEPLOY_USER@$DEPLOY_HOST:~/tasken
 
           ssh $DEPLOY_USER@$DEPLOY_HOST "\
             export NVM_DIR=~/.nvm && \
@@ -59,9 +46,8 @@ jobs:
             nvm use 22 && \
             npm install -g pm2 tsx && \
             cd ~/tasken && \
-            npm ci && \
-            BASE_URL='https://tasken.app' RESEND_API_KEY='${{ secrets.RESEND_API_KEY }}' DATABASE_URL='${{ secrets.DATABASE_URL }}' PUBLIC_WS_URL='wss://tasken.app/ws/' PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false PUBLIC_WS_URL='wss://tasken.app/ws/' npm run db:migrate:run && \
-            cd $DEPLOY_PATH && \
             npm ci --production && \
+            npm run build && \
+            BASE_URL='https://tasken.app' RESEND_API_KEY='${{ secrets.RESEND_API_KEY }}' DATABASE_URL='${{ secrets.DATABASE_URL }}' PUBLIC_WS_URL='wss://tasken.app/ws/' PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false PUBLIC_WS_URL='wss://tasken.app/ws/' npm run db:migrate:run && \
             BASE_URL='https://tasken.app' RESEND_API_KEY='${{ secrets.RESEND_API_KEY }}' DATABASE_URL='${{ secrets.DATABASE_URL }}' PUBLIC_WS_URL='wss://tasken.app/ws/' PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false PUBLIC_WS_URL='wss://tasken.app/ws/' pm2 reload tasken --update-env || RESEND_API_KEY='${{ secrets.RESEND_API_KEY }}' BASE_URL='https://tasken.app' DATABASE_URL='${{ secrets.DATABASE_URL }}' PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} PUBLIC_DEV=false PUBLIC_CI=false pm2 start build/index.js --name tasken && \
             sudo systemctl reload nginx"
