@@ -35,6 +35,13 @@ jobs:
           rsync -avz --delete --exclude 'node_modules' --exclude '.git' ./ $DEPLOY_USER@$DEPLOY_HOST:~/tasken
 
           ssh $DEPLOY_USER@$DEPLOY_HOST "\
+            export DATABASE_URL="${{ secrets.DATABASE_URL }}" && \
+            export BASE_URL="https://tasken.app" && \
+            export RESEND_API_KEY="${{ secrets.RESEND_API_KEY }}" && \
+            export PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} && \
+            export PUBLIC_WS_URL='wss://tasken.app/ws/' && \
+            export PUBLIC_CI=false && \
+            export PUBLIC_DEV=false && \
             export NVM_DIR=~/.nvm && \
             source \$NVM_DIR/nvm.sh && \
             nvm use 22 && \
