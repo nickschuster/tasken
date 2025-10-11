@@ -32,7 +32,7 @@ jobs:
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
         run: |
-          rsync -avz --delete ./ $DEPLOY_USER@$DEPLOY_HOST:~/tasken
+          rsync -avz --delete --exclude 'node_modules' ./ $DEPLOY_USER@$DEPLOY_HOST:~/tasken
 
           ssh $DEPLOY_USER@$DEPLOY_HOST "\
             export NVM_DIR=~/.nvm && \
