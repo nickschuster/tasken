@@ -3,10 +3,9 @@ import tailwindcss from '@tailwindcss/vite';
 import { defineConfig } from 'vitest/config';
 import { sveltekit } from '@sveltejs/kit/vite';
 import { svelteTesting } from '@testing-library/svelte/vite';
-import { SvelteKitPWA } from '@vite-pwa/sveltekit';
 
 export default defineConfig({
-	plugins: [tailwindcss(), sveltekit(), devtoolsJson(), svelteTesting(), SvelteKitPWA()],
+	plugins: [tailwindcss(), sveltekit(), devtoolsJson(), svelteTesting()],
 	test: {
 		expect: { requireAssertions: true },
 		projects: [
