@@ -15,5 +15,5 @@ test('sales page loads copy and buttons', async ({ page }) => {
 
 	await page.waitForLoadState('networkidle');
 
-	await expect(page.getByText('My Day')).toBeVisible();
+	await expect(page.getByText('Continue with email')).toBeVisible();
 });
