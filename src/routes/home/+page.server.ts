@@ -9,7 +9,7 @@ export const load: PageServerLoad = async ({ locals }) => {
 	}
 
 	return {
-		tasks: await getUncompletedTasks(),
+		tasks: await getUncompletedTasks(locals.user.id),
 		user: locals.user
 	};
 };
