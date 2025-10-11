@@ -15,6 +15,20 @@
       "when": 1758916823395,
       "tag": "0001_same_blizzard",
       "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1759870860065,
+      "tag": "0002_legal_mentallo",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1759966428670,
+      "tag": "0003_woozy_may_parker",
+      "breakpoints": true
     }
   ]
 }

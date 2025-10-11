@@ -1,10 +1,14 @@
-import { eq } from 'drizzle-orm';
+import { and, eq } from 'drizzle-orm';
 import { db } from './db';
 import { task, type Task } from './db/schema';
 import { UUIDV4 } from './helper';
 
-export const getUncompletedTasks = async () => {
-	const query = db.select().from(task).where(eq(task.isCompleted, false)).orderBy(task.createdAt);
+export const getUncompletedTasks = async (userId: string) => {
+	const query = db
+		.select()
+		.from(task)
+		.where(and(eq(task.isCompleted, false), eq(task.userId, userId)))
+		.orderBy(task.createdAt);
 
 	return query.execute();
 };

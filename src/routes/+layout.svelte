@@ -26,3 +26,11 @@
 </svelte:head>
 
 {@render children?.()}
+
+<style>
+	@media (prefers-color-scheme: dark) {
+		:global(body) {
+			background-color: black;
+		}
+	}
+</style>

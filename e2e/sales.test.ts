@@ -11,9 +11,9 @@ test('sales page loads copy and buttons', async ({ page }) => {
 
 	await button.click();
 
-	await expect(page).toHaveURL('/home');
+	await expect(page).toHaveURL('/auth/signup');
 
 	await page.waitForLoadState('networkidle');
 
-	await expect(page.getByText('My Day')).toBeVisible();
+	await expect(page.getByText('Continue with email')).toBeVisible();
 });
