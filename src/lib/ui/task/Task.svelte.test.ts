@@ -68,9 +68,12 @@ describe('Task component vibration', () => {
 		const updateTask = vi.fn();
 		const task = {
 			id: 'task-1',
-			userId: null,
+			userId: '1',
 			content: 'Test task',
 			completedAt: null,
+			isImportant: false,
+			taskGroupId: null,
+			dueDate: null,
 			createdAt: new Date()
 		};
 
