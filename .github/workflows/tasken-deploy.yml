@@ -45,13 +45,10 @@ jobs:
           DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
           DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
         run: |
-          rsync -avz --delete ./build/ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/build/
-
           rsync -avz --delete \
             --exclude 'node_modules' \
-            --exclude '.git' \
-            --exclude 'build' \
-            ./ $DEPLOY_USER@$DEPLOY_HOST:~/tasken
+            --exclude '.git' \ 
+            ./ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH
 
           ssh $DEPLOY_USER@$DEPLOY_HOST "\
             export BASE_URL='https://tasken.app' && \
@@ -65,9 +62,8 @@ jobs:
             source \$NVM_DIR/nvm.sh && \
             nvm use 22 && \
             npm install -g pm2 tsx && \
-            cd ~/tasken && \
+            cd $DEPLOY_PATH && \
             npm install --omit-dev && \
             npm run db:migrate:run && \
-            cd $DEPLOY_PATH && \
             pm2 reload tasken --update-env || pm2 start build/index.js --name tasken && \
             sudo systemctl reload nginx"
