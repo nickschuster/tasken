@@ -17,10 +17,23 @@ export const session = pgTable('session', {
 
 export const task = pgTable('task', {
 	id: text('id').primaryKey(),
-	userId: text('user_id').references(() => user.id),
+	userId: text('user_id')
+		.notNull()
+		.references(() => user.id),
 	content: text('content'),
-	isCompleted: boolean('is_completed').notNull().default(false),
+	isImportant: boolean('is_important').notNull().default(false),
+	taskGroupId: text('task_group_id').references(() => taskGroup.id, { onDelete: 'set null' }),
+	dueDate: timestamp('due_date', { withTimezone: true, mode: 'date' }),
+	completedAt: timestamp('completed_at', { withTimezone: true, mode: 'date' }),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow()
+});
+
+export const taskGroup = pgTable('task_group', {
+	id: text('id').primaryKey(),
+	name: text('name').notNull(),
+	userId: text('user_id')
+		.notNull()
+		.references(() => user.id)
 });
 
 export const verification = pgTable('verification', {
@@ -41,3 +54,5 @@ export type User = typeof user.$inferSelect;
 export type Task = typeof task.$inferSelect;
 
 export type Verification = typeof verification.$inferSelect;
+
+export type TaskGroup = typeof taskGroup.$inferSelect;

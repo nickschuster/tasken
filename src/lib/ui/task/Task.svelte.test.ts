@@ -68,9 +68,12 @@ describe('Task component vibration', () => {
 		const updateTask = vi.fn();
 		const task = {
 			id: 'task-1',
-			userId: null,
+			userId: '1',
 			content: 'Test task',
-			isCompleted: false,
+			completedAt: null,
+			isImportant: false,
+			taskGroupId: null,
+			dueDate: null,
 			createdAt: new Date()
 		};
 
@@ -87,7 +90,9 @@ describe('Task component vibration', () => {
 		expect(vibrateMock).toHaveBeenCalledTimes(1);
 		expect(vibrateMock).toHaveBeenCalledWith(50);
 
-		// ensure updateTask was called with completed true
-		expect(updateTask).toHaveBeenCalledWith(task.id, { isCompleted: true });
+		// ensure updateTask was called with non-null value
+		expect(updateTask).toHaveBeenCalledWith(task.id, {
+			completedAt: expect.anything()
+		});
 	});
 });

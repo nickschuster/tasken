@@ -11,13 +11,13 @@
 			vibrate(50);
 		}
 
-		updateTask(task.id, { isCompleted: checked });
+		updateTask(task.id, { completedAt: checked ? new Date() : null });
 	}
 </script>
 
 <div class="flex items-center gap-2">
-	<TaskCheck checked={task.isCompleted} {toggleChecked} />
-	{#if task.isCompleted}
+	<TaskCheck checked={!!task.completedAt} {toggleChecked} />
+	{#if !!task.completedAt}
 		<span class="line-through">{task.content}</span>
 	{:else}
 		<input

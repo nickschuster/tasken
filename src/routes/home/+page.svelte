@@ -84,10 +84,10 @@
 	<div class="px-4">{today}</div>
 
 	<div class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2">
-		{#each tasks.filter((task) => !task.isCompleted) as task, i (task.id)}
+		{#each tasks.filter((task) => !task.completedAt) as task, i (task.id)}
 			<div
 				class="rounded-lg p-4 transition-all duration-200
-			{task.isCompleted ? '' : 'hover:bg-neutral-100'}"
+			{task.completedAt ? '' : 'hover:bg-neutral-100'}"
 			>
 				<TaskComponent {task} updateTask={updateTaskFetch} />
 			</div>
@@ -101,9 +101,9 @@
 			</div>
 		{/if}
 
-		{#if tasks.some((task) => task.isCompleted)}
+		{#if tasks.some((task) => task.completedAt)}
 			<Collapsible headerText="Completed">
-				{#each tasks.filter((task) => task.isCompleted) as task, i (task.id)}
+				{#each tasks.filter((task) => task.completedAt) as task, i (task.id)}
 					<div class="rounded-lg p-4">
 						<TaskComponent {task} updateTask={updateTaskFetch} />
 					</div>
