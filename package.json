@@ -74,6 +74,7 @@
     "@node-rs/argon2": "^2.0.2",
     "@testing-library/svelte": "^5.2.8",
     "@types/pg": "^8.15.5",
+    "bits-ui": "^2.11.5",
     "jsdom": "^27.0.0",
     "luxon": "^3.7.2",
     "pg": "^8.16.3",
