@@ -43,6 +43,13 @@
       "when": 1760244614510,
       "tag": "0005_smooth_microchip",
       "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1760301384427,
+      "tag": "0006_whole_mathemanic",
+      "breakpoints": true
     }
   ]
 }

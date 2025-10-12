@@ -21,10 +21,10 @@ export const task = pgTable('task', {
 		.notNull()
 		.references(() => user.id),
 	content: text('content'),
-	isCompleted: boolean('is_completed').notNull().default(false),
 	isImportant: boolean('is_important').notNull().default(false),
 	taskGroupId: text('task_group_id').references(() => taskGroup.id, { onDelete: 'set null' }),
 	dueDate: timestamp('due_date', { withTimezone: true, mode: 'date' }),
+	completedAt: timestamp('completed_at', { withTimezone: true, mode: 'date' }),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow()
 });
 
