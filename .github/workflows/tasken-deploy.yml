@@ -1,51 +1,71 @@
-steps:
-  - uses: actions/checkout@v4
+name: Deploy to Production
 
-  - name: Setup Node.js
-    uses: actions/setup-node@v4
-    with:
-      node-version: '22'
-      cache: 'npm'
+on:
+  push:
+    # branches: [master]
+  workflow_dispatch:
 
-  - name: Install dependencies
-    run: npm install --omit-dev
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
 
-  - name: Build application
-    run: npm run build
-
-  - name: Install SSH key
-    uses: shimataro/ssh-key-action@v2
-    with:
-
-  - name: Deploy to DigitalOcean
     env:
-      DEPLOY_PATH: /var/www/tasken
-      DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
-      DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
-    run: |
-      rsync -avz --delete ./build/ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/build/
+      DATABASE_URL: ${{ secrets.DATABASE_URL }}
+      BASE_URL: https://tasken.app
+      RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
+      PUBLIC_POSTHOG_KEY: ${{ secrets.PUBLIC_POSTHOG_KEY }}
+      PUBLIC_CI: false
+      PUBLIC_DEV: false
+      PUBLIC_WS_URL: wss://tasken.app/ws/
 
-      rsync -avz --delete \
-        --exclude 'node_modules' \
-        --exclude '.git' \
-        --exclude 'build' \
-        ./ $DEPLOY_USER@$DEPLOY_HOST:~/tasken
+    steps:
+      - uses: actions/checkout@v4
 
-      ssh $DEPLOY_USER@$DEPLOY_HOST "\
-        export BASE_URL='https://tasken.app' && \
-        export RESEND_API_KEY='${{ secrets.RESEND_API_KEY }}' && \
-        export DATABASE_URL='${{ secrets.DATABASE_URL }}' && \
-        export PUBLIC_WS_URL='wss://tasken.app/ws/' && \
-        export PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} && \
-        export PUBLIC_DEV=false && \
-        export PUBLIC_CI=false PUBLIC_WS_URL='wss://tasken.app/ws/' && \
-        export NVM_DIR=~/.nvm && \
-        source \$NVM_DIR/nvm.sh && \
-        nvm use 22 && \
-        npm install -g pm2 tsx && \
-        cd ~/tasken && \
-        npm install --omit-dev && \
-        npm run db:migrate:run && \
-        cd $DEPLOY_PATH && \
-        pm2 reload tasken --update-env || pm2 start build/index.js --name tasken && \
-        sudo systemctl reload nginx"
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm install --omit-dev
+
+      - name: Build application
+        run: npm run build
+
+      - name: Install SSH key
+        uses: shimataro/ssh-key-action@v2
+        with:
+
+      - name: Deploy to DigitalOcean
+        env:
+          DEPLOY_PATH: /var/www/tasken
+          DEPLOY_USER: ${{ secrets.DEPLOY_USER }}
+          DEPLOY_HOST: ${{ secrets.DEPLOY_HOST }}
+        run: |
+          rsync -avz --delete ./build/ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH/build/
+
+          rsync -avz --delete \
+            --exclude 'node_modules' \
+            --exclude '.git' \
+            --exclude 'build' \
+            ./ $DEPLOY_USER@$DEPLOY_HOST:~/tasken
+
+          ssh $DEPLOY_USER@$DEPLOY_HOST "\
+            export BASE_URL='https://tasken.app' && \
+            export RESEND_API_KEY='${{ secrets.RESEND_API_KEY }}' && \
+            export DATABASE_URL='${{ secrets.DATABASE_URL }}' && \
+            export PUBLIC_WS_URL='wss://tasken.app/ws/' && \
+            export PUBLIC_POSTHOG_KEY=${{ secrets.PUBLIC_POSTHOG_KEY }} && \
+            export PUBLIC_DEV=false && \
+            export PUBLIC_CI=false PUBLIC_WS_URL='wss://tasken.app/ws/' && \
+            export NVM_DIR=~/.nvm && \
+            source \$NVM_DIR/nvm.sh && \
+            nvm use 22 && \
+            npm install -g pm2 tsx && \
+            cd ~/tasken && \
+            npm install --omit-dev && \
+            npm run db:migrate:run && \
+            cd $DEPLOY_PATH && \
+            pm2 reload tasken --update-env || pm2 start build/index.js --name tasken && \
+            sudo systemctl reload nginx"
