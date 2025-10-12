@@ -5,10 +5,6 @@ import { sveltekit } from '@sveltejs/kit/vite';
 import { svelteTesting } from '@testing-library/svelte/vite';
 
 export default defineConfig({
-	esbuild: {
-		target: 'esnext',
-		platform: 'node'
-	},
 	plugins: [tailwindcss(), sveltekit(), devtoolsJson(), svelteTesting()],
 	test: {
 		expect: { requireAssertions: true },
