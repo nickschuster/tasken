@@ -3,7 +3,8 @@ import { pgTable, text, timestamp, boolean } from 'drizzle-orm/pg-core';
 export const user = pgTable('user', {
 	id: text('id').primaryKey(),
 	email: text('email').notNull().unique(),
-	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow()
+	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow(),
+	premiumExpiresAt: timestamp('premium_expires_at', { withTimezone: true, mode: 'date' })
 	// add oauth_id column later or separate identity table, or identity_id and identity_provider
 });
 
