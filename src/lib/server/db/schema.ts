@@ -17,7 +17,9 @@ export const session = pgTable('session', {
 
 export const task = pgTable('task', {
 	id: text('id').primaryKey(),
-	userId: text('user_id').references(() => user.id),
+	userId: text('user_id')
+		.notNull()
+		.references(() => user.id),
 	content: text('content'),
 	isCompleted: boolean('is_completed').notNull().default(false),
 	isImportant: boolean('is_important').notNull().default(false),
@@ -29,7 +31,9 @@ export const task = pgTable('task', {
 export const taskGroup = pgTable('task_group', {
 	id: text('id').primaryKey(),
 	name: text('name').notNull(),
-	userId: text('user_id').references(() => user.id)
+	userId: text('user_id')
+		.notNull()
+		.references(() => user.id)
 });
 
 export const verification = pgTable('verification', {
