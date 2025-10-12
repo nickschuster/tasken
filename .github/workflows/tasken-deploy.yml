@@ -48,7 +48,7 @@ jobs:
           rsync -avz --delete \
             --exclude 'node_modules' \
             --exclude '.git' \ 
-            ./ $DEPLOY_USER@$DEPLOY_HOST:$DEPLOY_PATH
+            ./ $DEPLOY_USER@$DEPLOY_HOST:/var/www/tasken
 
           ssh $DEPLOY_USER@$DEPLOY_HOST "\
             export BASE_URL='https://tasken.app' && \
