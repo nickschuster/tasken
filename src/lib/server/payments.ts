@@ -53,7 +53,7 @@ export class PaymentProcessor {
 			const created = DateTime.fromSeconds(session.created).startOf('day');
 			const today = DateTime.now().startOf('day');
 
-			if (created !== today) {
+			if (created.toSeconds() !== today.toSeconds()) {
 				return false;
 			}
 
