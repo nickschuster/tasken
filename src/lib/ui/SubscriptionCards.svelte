@@ -1,4 +1,5 @@
 <script lang="ts">
+	import { formatCurrency } from '$lib/utils/currency';
 	import { ChartColumn, Check, GitMerge, LayoutGrid, Users } from '@lucide/svelte';
 
 	export let basicPrice: number | null = null;
@@ -12,7 +13,7 @@
 	<h3 class="text-2xl font-semibold">Basic</h3>
 	<p class="mt-2 text-neutral-600 dark:text-neutral-400">For individuals and small projects.</p>
 	<div class="my-8">
-		<span class="text-5xl font-bold">{basicPrice ? basicPrice / 100 : 'TBA'}</span>
+		<span class="text-5xl font-bold">{basicPrice ? formatCurrency(basicPrice / 100) : 'TBA'}</span>
 		<span class="text-lg text-neutral-600 dark:text-neutral-400">/ month</span>
 	</div>
 	<ul class="flex-grow space-y-4">
@@ -50,7 +51,7 @@
 	<h3 class="text-2xl font-semibold">Pro</h3>
 	<p class="mt-2 text-neutral-500">For power users and professionals.</p>
 	<div class="my-8">
-		<span class="text-5xl font-bold">{proPrice ? proPrice / 100 : 'TBA'}</span>
+		<span class="text-5xl font-bold">{proPrice ? formatCurrency(proPrice / 100) : 'TBA'}</span>
 	</div>
 	<ul class="flex-grow space-y-4 text-neutral-600 dark:text-neutral-400">
 		<li class="flex items-center gap-3 font-semibold">
@@ -87,7 +88,7 @@
 	<h3 class="text-2xl font-semibold">Team</h3>
 	<p class="mt-2 text-neutral-500">For collaborative organizations.</p>
 	<div class="my-8">
-		<span class="text-5xl font-bold">{teamPrice ? teamPrice / 100 : 'TBA'}</span>
+		<span class="text-5xl font-bold">{teamPrice ? formatCurrency(teamPrice / 100) : 'TBA'}</span>
 	</div>
 	<ul class="flex-grow space-y-4 text-neutral-600 dark:text-neutral-400">
 		<li class="flex items-center gap-3 font-semibold">
