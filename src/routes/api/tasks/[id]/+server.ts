@@ -11,7 +11,7 @@ export async function PATCH({ request, params, locals }) {
 	const taskUpdate = await request.json();
 
 	const validUpdates = {
-		isCompleted: taskUpdate.isCompleted,
+		completedAt: taskUpdate.completedAt ? new Date(taskUpdate.completedAt) : null,
 		content: taskUpdate.content
 	};
 

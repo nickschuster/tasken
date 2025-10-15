@@ -1,6 +1,6 @@
 {
-  "id": "5588fd13-59cb-4f5a-96e4-3feae283e2b8",
-  "prevId": "b3c56fb7-aef6-4b1f-8803-f8101ae3653a",
+  "id": "37db7eb3-3460-4eb7-a89a-ba7d451a21ab",
+  "prevId": "271f76b3-bbed-4a3b-9323-ae3240245ec2",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -63,20 +63,13 @@
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         },
         "content": {
           "name": "content",
           "type": "text",
           "primaryKey": false,
           "notNull": false
-        },
-        "is_completed": {
-          "name": "is_completed",
-          "type": "boolean",
-          "primaryKey": false,
-          "notNull": true,
-          "default": false
         },
         "is_important": {
           "name": "is_important",
@@ -93,6 +86,12 @@
         },
         "due_date": {
           "name": "due_date",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "completed_at": {
+          "name": "completed_at",
           "type": "timestamp with time zone",
           "primaryKey": false,
           "notNull": false
@@ -160,7 +159,7 @@
           "name": "user_id",
           "type": "text",
           "primaryKey": false,
-          "notNull": false
+          "notNull": true
         }
       },
       "indexes": {},
@@ -207,6 +206,12 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "premium_expires_at": {
+          "name": "premium_expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},
