@@ -14,6 +14,9 @@ jobs:
       DATABASE_URL: 'postgres://postgres:local@localhost:5433/local'
       PUBLIC_POSTHOG_KEY: 'test'
       RESEND_API_KEY: 'test'
+      STRIPE_API_KEY: 'test'
+      STRIPE_WEBHOOK_SECRET: 'test'
+      PUBLIC_STRIPE_DASHBOARD: 'test'
       PORT: 4173
       CI: true
       PUBLIC_CI: true
