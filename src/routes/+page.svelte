@@ -170,7 +170,7 @@
 						</p>
 					</div>
 					<div class="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-3">
-						<SubscriptionCards />
+						<SubscriptionCards basicPrice={2000} />
 					</div>
 				</div>
 			</section>
