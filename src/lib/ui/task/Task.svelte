@@ -1,10 +1,13 @@
 <script lang="ts">
-	import type { Task } from '$lib/server/db/schema';
+	import type { Task, TaskGroup } from '$lib/server/db/schema';
 	import { vibrate } from '$lib/utils/vibrate';
 	import TaskCheck from './TaskCheck.svelte';
+	import DropdownMenu from '../DropdownMenu.svelte';
+	import { FlagIcon } from '@lucide/svelte';
 
 	export let task: Task;
 	export let updateTask: (taskId: string, updates: Partial<Task>) => void = () => {};
+	export let taskGroups: TaskGroup[];
 
 	function toggleChecked(checked: boolean) {
 		if (checked) {
@@ -29,4 +32,13 @@
 			onclick={(e) => e.stopPropagation()}
 		/>
 	{/if}
+	<FlagIcon
+		class={task.isImportant ? 'bg-red-700' : 'bg-white'}
+		onclick={() => updateTask(task.id, { isImportant: !task.isImportant })}
+	/>
+	<DropdownMenu
+		buttonText="Add to group"
+		items={taskGroups}
+		onSelect={(group) => updateTask(task.id, { taskGroupId: group.id })}
+	/>
 </div>
