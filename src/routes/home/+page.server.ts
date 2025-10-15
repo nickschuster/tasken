@@ -2,15 +2,33 @@ import { getUncompletedTasks } from '$lib/server/tasks';
 import type { Actions, PageServerLoad } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
 import { invalidateSession, deleteSessionTokenCookie } from '$lib/server/auth';
+import { PaymentProcessor } from '$lib/server/payments';
 
-export const load: PageServerLoad = async ({ locals }) => {
+export const load: PageServerLoad = async ({ url, locals }) => {
 	if (!locals.user) {
 		return redirect(302, '/auth/signup');
 	}
 
+	const paymentProcessor = PaymentProcessor.getInstance();
+
+	const sessionId = url.searchParams.get('sessionId');
+
+	if (sessionId) {
+		const success = await paymentProcessor.checkCheckoutStatus(sessionId);
+
+		if (success) {
+			locals.user = await paymentProcessor.grantPremium(locals.user.id);
+		}
+	}
+
+	const subscriptionDetails = await paymentProcessor.getSubscriptionDetails(
+		locals.user.premiumExpiresAt
+	);
+
 	return {
 		tasks: await getUncompletedTasks(locals.user.id),
-		user: locals.user
+		user: locals.user,
+		subscriptionDetails
 	};
 };
 

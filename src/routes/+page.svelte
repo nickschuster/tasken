@@ -1,4 +1,5 @@
 <script>
+	import SubscriptionCards from '$lib/ui/SubscriptionCards.svelte';
 	import {
 		ArrowRight,
 		Github,
@@ -169,100 +170,7 @@
 						</p>
 					</div>
 					<div class="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-3">
-						<div class="flex flex-col rounded-lg border-2 border-black p-8 dark:border-white">
-							<h3 class="text-2xl font-semibold">Basic</h3>
-							<p class="mt-2 text-neutral-600 dark:text-neutral-400">
-								For individuals and small projects.
-							</p>
-							<div class="my-8">
-								<span class="text-5xl font-bold">$4.99</span>
-								<span class="text-lg text-neutral-600 dark:text-neutral-400">/ month</span>
-							</div>
-							<ul class="flex-grow space-y-4">
-								<li class="flex items-center gap-3">
-									<Check class="h-5 w-5 flex-shrink-0 text-green-500" /><span
-										>Hosted Cloud Sync</span
-									>
-								</li>
-								<li class="flex items-center gap-3">
-									<Check class="h-5 w-5 flex-shrink-0 text-green-500" /><span
-										>Cross-Platform Apps</span
-									>
-								</li>
-								<li class="flex items-center gap-3">
-									<Check class="h-5 w-5 flex-shrink-0 text-green-500" /><span
-										>Unlimited Tasks & Projects</span
-									>
-								</li>
-								<li class="flex items-center gap-3">
-									<Check class="h-5 w-5 flex-shrink-0 text-green-500" /><span>Priority Support</span
-									>
-								</li>
-							</ul>
-							<a
-								href="/auth/signup"
-								class="mt-8 block w-full rounded-md bg-black py-3 text-center font-semibold text-white transition-transform hover:scale-105 dark:bg-white dark:text-black"
-								>Choose Basic</a
-							>
-						</div>
-
-						<div
-							class="flex flex-col rounded-lg border border-neutral-200 p-8 opacity-70 grayscale dark:border-neutral-800"
-						>
-							<h3 class="text-2xl font-semibold">Pro</h3>
-							<p class="mt-2 text-neutral-500">For power users and professionals.</p>
-							<div class="my-8">
-								<span class="text-5xl font-bold">TBA</span>
-							</div>
-							<ul class="flex-grow space-y-4 text-neutral-600 dark:text-neutral-400">
-								<li class="flex items-center gap-3 font-semibold">
-									<Check class="h-5 w-5 flex-shrink-0" /><span>Everything in Basic, plus:</span>
-								</li>
-								<li class="flex items-center gap-3">
-									<LayoutGrid class="h-5 w-5 flex-shrink-0" /><span>Project Boards</span>
-								</li>
-								<li class="flex items-center gap-3">
-									<ChartColumn class="h-5 w-5 flex-shrink-0" /><span>Advanced Analytics</span>
-								</li>
-								<li class="flex items-center gap-3">
-									<GitMerge class="h-5 w-5 flex-shrink-0" /><span>Git & API Integrations</span>
-								</li>
-							</ul>
-							<button
-								disabled
-								class="mt-8 block w-full cursor-not-allowed rounded-md bg-neutral-200 py-3 text-center font-semibold text-neutral-500 dark:bg-neutral-800 dark:text-neutral-500"
-								>Coming Soon</button
-							>
-						</div>
-
-						<div
-							class="flex flex-col rounded-lg border border-neutral-200 p-8 opacity-70 grayscale dark:border-neutral-800"
-						>
-							<h3 class="text-2xl font-semibold">Team</h3>
-							<p class="mt-2 text-neutral-500">For collaborative organizations.</p>
-							<div class="my-8">
-								<span class="text-5xl font-bold">TBA</span>
-							</div>
-							<ul class="flex-grow space-y-4 text-neutral-600 dark:text-neutral-400">
-								<li class="flex items-center gap-3 font-semibold">
-									<Check class="h-5 w-5 flex-shrink-0" /><span>Everything in Pro, plus:</span>
-								</li>
-								<li class="flex items-center gap-3">
-									<Users class="h-5 w-5 flex-shrink-0" /><span>Shared Workspaces</span>
-								</li>
-								<li class="flex items-center gap-3">
-									<Users class="h-5 w-5 flex-shrink-0" /><span>Collaborative Task Lists</span>
-								</li>
-								<li class="flex items-center gap-3">
-									<Users class="h-5 w-5 flex-shrink-0" /><span>Admin & User Roles</span>
-								</li>
-							</ul>
-							<button
-								disabled
-								class="mt-8 block w-full cursor-not-allowed rounded-md bg-neutral-200 py-3 text-center font-semibold text-neutral-500 dark:bg-neutral-800 dark:text-neutral-500"
-								>Coming Soon</button
-							>
-						</div>
+						<SubscriptionCards />
 					</div>
 				</div>
 			</section>

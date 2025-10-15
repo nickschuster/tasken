@@ -1,15 +1,13 @@
 <script lang="ts">
-	import { invalidate } from '$app/navigation';
 	import Input from '$lib/ui/Input.svelte';
 	import TaskComponent from '$lib/ui/task/Task.svelte';
 	import Collapsible from '$lib/ui/Collapsible.svelte';
-	import { CircleCheckBigIcon, UserIcon } from '@lucide/svelte';
+	import { CircleCheckBigIcon } from '@lucide/svelte';
 	import { DateTime } from 'luxon';
-	import { fly } from 'svelte/transition';
-	import { addTask, getTasks, setTasks, updateTask } from '$lib/states/task.state.svelte.js';
-	import { wsService } from '$lib/services/ws.service.js';
-	import { Event } from '$lib/models/event.js';
-	import type { Task } from '$lib/server/db/schema';
+	import { getTasks, setTasks } from '$lib/states/task.state.svelte.js';
+	import { createTaskFetch, updateTaskFetch } from '$lib/services/tasks.service.js';
+	import type { Task } from '$lib/server/db/schema.js';
+	import SubscriptionsDialog from '$lib/ui/SubscriptionsDialog.svelte';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
@@ -18,52 +16,25 @@
 
 	setTasks(data.tasks);
 
-	const createTaskFetch = async (content: string) => {
-		const result = await fetch('/api/tasks', {
-			method: 'POST',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify({ content })
-		});
+	const createTask = async () => {
+		const success = await createTaskFetch(newTaskContent);
 
-		if (result.ok) {
-			const newTask = await result.json();
-
-			addTask(newTask);
-
-			wsService.sendMessage(Event.TaskAdded, newTask);
-
+		if (success) {
 			newTaskContent = '';
 		}
-
-		await invalidate('/home');
 	};
 
-	const updateTaskFetch = async (taskId: string, updates: Partial<Task>) => {
-		const currentTask = tasks.find((task) => task.id === taskId);
-
-		updateTask(taskId, updates);
-
-		const result = await fetch(`/api/tasks/${taskId}`, {
-			method: 'PATCH',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(updates)
-		});
-
-		if (!result.ok && currentTask) {
-			updateTask(taskId, currentTask);
-		} else {
-			wsService.sendMessage(Event.TaskUpdated, { ...currentTask, ...updates });
-		}
-
-		await invalidate('/home');
+	const updateTask = async (taskId: string, updatedTask: Partial<Task>) => {
+		await updateTaskFetch(taskId, updatedTask);
 	};
 </script>
 
 <div class="flex h-screen flex-col dark:bg-black dark:text-white">
+	<SubscriptionsDialog
+		subscriptions={data.subscriptionDetails.subscriptions}
+		open={!data.subscriptionDetails.isPremium}
+	/>
+
 	<div class="flex w-full justify-between">
 		<div class="px-4 pt-4 text-5xl">My Day</div>
 		<div class="px-4 pt-4 text-2xl">
@@ -89,7 +60,7 @@
 				class="rounded-lg p-4 transition-all duration-200
 			{task.isCompleted ? '' : 'hover:bg-neutral-100'}"
 			>
-				<TaskComponent {task} updateTask={updateTaskFetch} />
+				<TaskComponent {task} {updateTask} />
 			</div>
 		{/each}
 
@@ -105,7 +76,7 @@
 			<Collapsible headerText="Completed">
 				{#each tasks.filter((task) => task.isCompleted) as task, i (task.id)}
 					<div class="rounded-lg p-4">
-						<TaskComponent {task} updateTask={updateTaskFetch} />
+						<TaskComponent {task} {updateTask} />
 					</div>
 				{/each}
 			</Collapsible>
@@ -113,6 +84,6 @@
 	</div>
 
 	<div class="p-4">
-		<Input onEnter={createTaskFetch} bind:newTaskContent />
+		<Input onEnter={createTask} bind:newTaskContent />
 	</div>
 </div>
