@@ -4,7 +4,7 @@
 	import TaskComponent from '$lib/ui/task/Task.svelte';
 	import Collapsible from '$lib/ui/Collapsible.svelte';
 	import Sidebar from '$lib/ui/sidebar/Sidebar.svelte';
-	import { CircleCheckBigIcon } from '@lucide/svelte';
+	import { CircleCheckBigIcon, MenuIcon } from '@lucide/svelte';
 	import { DateTime } from 'luxon';
 	import { addTask, getTasks, setTasks, updateTask } from '$lib/states/task.state.svelte.js';
 	import {
@@ -24,10 +24,41 @@
 	let tasks = $derived(getTasks());
 	let taskGroups = $derived(getTaskGroups());
 	let mobileSidebarOpen = $state(false);
-	let selectedGroup = $state('Today');
+	let selectedGroup = $state('All');
 
 	setTasks(data.tasks);
 	setTaskGroups(data.taskGroups);
+
+	const filterTasksByGroup = (group: string) => {
+		const today = new Date();
+		const tomorrow = new Date();
+		tomorrow.setDate(tomorrow.getDate() + 1);
+
+		switch (group) {
+			case 'All':
+				return tasks;
+			case 'Today':
+				return tasks.filter((t) => isSameDay(t.dueDate, today));
+			case 'Tomorrow':
+				return tasks.filter((t) => isSameDay(t.dueDate, tomorrow));
+			case 'Important':
+				return tasks.filter((t) => t.isImportant);
+			default:
+				return tasks.filter((t) => t.taskGroupId === group);
+		}
+	};
+
+	const isSameDay = (dateA: Date | null, dateB: Date) => {
+		if (!dateA) {
+			return false;
+		}
+
+		return (
+			dateA.getFullYear() === dateB.getFullYear() &&
+			dateA.getMonth() === dateB.getMonth() &&
+			dateA.getDate() === dateB.getDate()
+		);
+	};
 
 	const createTaskFetch = async (content: string) => {
 		const result = await fetch('/api/tasks', {
@@ -85,8 +116,6 @@
 
 			// sync
 		}
-
-		await invalidate('/home');
 	};
 
 	const updateTaskGroupFetch = async (taskGroupId: string, updates: Partial<TaskGroup>) => {
@@ -112,6 +141,8 @@
 	const deleteTaskGroupFetch = async (taskGroupId: string) => {
 		deleteTaskGroup(taskGroupId);
 
+		selectedGroup = 'All';
+
 		const result = await fetch(`/api/task-groups/${taskGroupId}`, {
 			method: 'DELETE'
 		});
@@ -134,13 +165,16 @@
 
 	<div class="flex flex-1 flex-col">
 		<div class="flex w-full justify-between">
-			<div class="px-4 pt-4 text-5xl">
+			<div class="flex flex-row px-2 pt-2 text-3xl">
 				<button
-					class="rounded bg-neutral-800 p-2 md:hidden"
+					class="rounded bg-neutral-100 p-2 md:hidden dark:bg-neutral-800 dark:text-white"
 					onclick={() => (mobileSidebarOpen = true)}
 				>
-					☰
+					<MenuIcon />
 				</button>
+				<h2 class="px-2 pt-2 text-3xl">
+					{taskGroups.find((g) => g.id === selectedGroup)?.name ?? selectedGroup}
+				</h2>
 			</div>
 			<div class="px-4 pt-4 text-2xl">
 				<form method="POST" action="?/logout">
@@ -157,15 +191,8 @@
 			</div>
 		</div>
 
-		<div class="px-4">{today}</div>
-
 		<div class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2">
-			{#each tasks.filter((task) => {
-				if (!task.completedAt) {
-					if (selectedGroup === 'important') return task.isImportant;
-					return task;
-				}
-			}) as task, i (task.id)}
+			{#each filterTasksByGroup(selectedGroup).filter((task) => !task.completedAt) as task, i (task.id)}
 				<div
 					class="rounded-lg p-4 transition-all duration-200
 			{task.completedAt ? '' : 'hover:bg-neutral-100'}"
@@ -182,9 +209,9 @@
 				</div>
 			{/if}
 
-			{#if tasks.some((task) => task.completedAt)}
+			{#if filterTasksByGroup(selectedGroup).some((task) => task.completedAt)}
 				<Collapsible headerText="Completed">
-					{#each tasks.filter((task) => task.completedAt) as task, i (task.id)}
+					{#each filterTasksByGroup(selectedGroup).filter((task) => task.completedAt) as task, i (task.id)}
 						<div class="rounded-lg p-4">
 							<TaskComponent {task} updateTask={updateTaskFetch} />
 						</div>

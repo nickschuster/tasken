@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { Snippet, SvelteComponent } from 'svelte';
 	import { DropdownMenu, type WithoutChild } from 'bits-ui';
 
 	type MenuItem = {
@@ -22,8 +21,7 @@
 	<DropdownMenu.Trigger
 		class="
 			focus:black dark:focus:white inline-flex
-			items-center justify-center rounded-md border
-			border-neutral-300 bg-white px-3 py-2 text-sm
+			items-center justify-center rounded-md bg-white px-3 py-2 text-sm
 			font-medium text-neutral-900 transition hover:bg-neutral-100
 			focus:ring-2 focus:outline-none dark:border-neutral-700 dark:bg-neutral-900
 			dark:text-neutral-100 dark:hover:bg-neutral-800
@@ -36,14 +34,14 @@
 		<DropdownMenu.Content
 			{...contentProps}
 			class="
-				min-w-[180px] rounded-lg border border-neutral-200
-				bg-white p-1.5 shadow-md
-				focus:outline-none dark:border-neutral-700
-				dark:bg-neutral-900
+				z-100 min-w-[180px] rounded-lg border
+				border-neutral-200 bg-white p-1.5
+				shadow-md focus:outline-none
+				dark:border-neutral-700 dark:bg-neutral-900
 			"
 		>
 			<DropdownMenu.Group aria-label={buttonText}>
-				{#each items as item}
+				{#each items as item (item.id)}
 					<DropdownMenu.Item
 						textValue={item.name}
 						class={[
@@ -56,7 +54,7 @@
 						<div class="flex flex-row items-center justify-between">
 							{item.name}
 							{#if item.icon}
-								<svelte:component this={item.icon} class="size-5" />
+								<item.icon class="size-5" />
 							{/if}
 						</div>
 					</DropdownMenu.Item>
