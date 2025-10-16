@@ -3,9 +3,8 @@
 	import Input from '$lib/ui/Input.svelte';
 	import TaskComponent from '$lib/ui/task/Task.svelte';
 	import Collapsible from '$lib/ui/Collapsible.svelte';
-	import { CircleCheckBigIcon, UserIcon } from '@lucide/svelte';
+	import { CircleCheckBigIcon } from '@lucide/svelte';
 	import { DateTime } from 'luxon';
-	import { fly } from 'svelte/transition';
 	import { addTask, getTasks, setTasks, updateTask } from '$lib/states/task.state.svelte.js';
 	import { wsService } from '$lib/services/ws.service.js';
 	import { Event } from '$lib/models/event.js';
@@ -15,6 +14,8 @@
 	let newTaskContent = $state('');
 	let today = DateTime.now().toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);
 	let tasks = $derived(getTasks());
+
+	wsService.connect();
 
 	setTasks(data.tasks);
 
