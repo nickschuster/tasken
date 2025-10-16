@@ -48,6 +48,7 @@
 		--border-color: #cccccc;
 		--border-hover-color: #999999;
 
+		aspect-ratio: 1;
 		display: inline-flex;
 		align-items: center;
 		justify-content: center;
