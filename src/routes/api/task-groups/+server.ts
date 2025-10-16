@@ -8,5 +8,5 @@ export async function POST({ locals }) {
 
 	const createdTaskGroup = await createTaskGroup(locals.user.id);
 
-	return json(createdTaskGroup);
+	return json(createdTaskGroup, { status: 201 });
 }

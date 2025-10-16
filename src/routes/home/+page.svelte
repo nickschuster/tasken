@@ -7,16 +7,15 @@
 	import { CircleCheckBigIcon, MenuIcon } from '@lucide/svelte';
 	import { DateTime } from 'luxon';
 	import { addTask, getTasks, setTasks, updateTask } from '$lib/states/task.state.svelte.js';
-	import {
-		addTaskGroup,
-		getTaskGroups,
-		setTaskGroups,
-		updateTaskGroup,
-		deleteTaskGroup
-	} from '$lib/states/taskGroup.state.svelte.js';
+	import { getTaskGroups, setTaskGroups } from '$lib/states/taskGroup.state.svelte.js';
 	import { wsService } from '$lib/services/ws.service.js';
 	import { Event } from '$lib/models/event.js';
 	import type { Task, TaskGroup } from '$lib/server/db/schema';
+	import {
+		createTaskGroupFetch,
+		deleteTaskGroupFetch,
+		updateTaskGroupFetch
+	} from '$lib/services/taskgroups.service.js';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
@@ -104,52 +103,20 @@
 		await invalidate('/home');
 	};
 
-	const createTaskGroupFetch = async () => {
-		const result = await fetch('/api/task-groups', {
-			method: 'POST'
-		});
-
-		if (result.ok) {
-			const newTaskGroup = await result.json();
-
-			addTaskGroup(newTaskGroup);
-
-			// sync
-		}
+	const createTaskGroup = async () => {
+		await createTaskGroupFetch();
 	};
 
-	const updateTaskGroupFetch = async (taskGroupId: string, updates: Partial<TaskGroup>) => {
-		const currentTaskGroup = taskGroups.find((taskGroup) => taskGroup.id === taskGroupId);
-
-		updateTaskGroup(taskGroupId, updates);
-
-		const result = await fetch(`/api/task-groups/${taskGroupId}`, {
-			method: 'PATCH',
-			headers: {
-				'Content-Type': 'application/json'
-			},
-			body: JSON.stringify(updates)
-		});
-
-		if (!result.ok && currentTaskGroup) {
-			updateTaskGroup(taskGroupId, currentTaskGroup);
-		} else {
-			// sync
-		}
+	const updateTaskGroup = async (taskGroupId: string, updatedTaskGroup: Partial<TaskGroup>) => {
+		await updateTaskGroupFetch(taskGroupId, updatedTaskGroup);
 	};
 
-	const deleteTaskGroupFetch = async (taskGroupId: string) => {
-		deleteTaskGroup(taskGroupId);
-
-		selectedGroup = 'All';
-
-		const result = await fetch(`/api/task-groups/${taskGroupId}`, {
-			method: 'DELETE'
-		});
-
-		if (!result.ok) {
-			await invalidate('/home');
+	const deleteTaskGroup = async (taskGroupId: string) => {
+		if (taskGroupId === selectedGroup) {
+			selectedGroup = 'All';
 		}
+
+		await deleteTaskGroupFetch(taskGroupId);
 	};
 </script>
 
@@ -158,9 +125,9 @@
 		bind:isOpen={mobileSidebarOpen}
 		bind:selectedGroup
 		{taskGroups}
-		createTaskGroup={createTaskGroupFetch}
-		updateTaskGroup={updateTaskGroupFetch}
-		deleteTaskGroup={deleteTaskGroupFetch}
+		{createTaskGroup}
+		{updateTaskGroup}
+		{deleteTaskGroup}
 	/>
 
 	<div class="flex flex-1 flex-col">
