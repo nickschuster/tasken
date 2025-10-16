@@ -1,22 +1,21 @@
 <script lang="ts">
-	import type { Snippet } from 'svelte';
+	import type { Snippet, SvelteComponent } from 'svelte';
 	import { DropdownMenu, type WithoutChild } from 'bits-ui';
+
+	type MenuItem = {
+		id: string;
+		name: string;
+		icon?: any;
+		action?: () => void;
+	};
 
 	type Props = DropdownMenu.RootProps & {
 		buttonText: string;
-		items: { id: string; name: string }[];
+		items: MenuItem[];
 		contentProps?: WithoutChild<DropdownMenu.ContentProps>;
-		onSelect?: (item: (typeof items)[number]) => void;
 	};
 
-	let {
-		open = $bindable(false),
-		buttonText,
-		items,
-		contentProps,
-		onSelect,
-		...restProps
-	}: Props = $props();
+	let { open = $bindable(false), buttonText, items, contentProps, ...restProps }: Props = $props();
 </script>
 
 <DropdownMenu.Root bind:open {...restProps}>
@@ -47,16 +46,19 @@
 				{#each items as item}
 					<DropdownMenu.Item
 						textValue={item.name}
-						class="
-							cursor-pointer rounded-md px-3 py-2 text-sm
-							text-neutral-900 transition
-							hover:bg-neutral-100 focus:bg-neutral-200
-							focus:outline-none dark:text-neutral-100 dark:hover:bg-neutral-800
-							dark:focus:bg-neutral-700
-						"
-						onclick={() => onSelect?.(item)}
+						class={[
+							'cursor-pointer rounded-md px-3 py-2 text-sm text-neutral-900 transition',
+							'hover:bg-neutral-100 focus:bg-neutral-200 focus:outline-none',
+							'dark:text-neutral-100  dark:focus:bg-neutral-700'
+						]}
+						onclick={() => item.action?.()}
 					>
-						{item.name}
+						<div class="flex flex-row items-center justify-between">
+							{item.name}
+							{#if item.icon}
+								<svelte:component this={item.icon} class="size-5" />
+							{/if}
+						</div>
 					</DropdownMenu.Item>
 				{/each}
 			</DropdownMenu.Group>

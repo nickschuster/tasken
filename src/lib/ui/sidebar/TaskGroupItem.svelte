@@ -1,47 +1,55 @@
 <script lang="ts">
-	import { Trash2Icon, FormInputIcon } from '@lucide/svelte';
-	import { enhance } from '$app/forms';
+	import { Trash2Icon, TextCursorInput } from '@lucide/svelte';
+	import type { TaskGroup } from '$lib/server/db/schema';
+	import DropdownMenu from '../DropdownMenu.svelte';
 
-	let { group, isCollapsed } = $props();
+	type TaskGroupItemProps = {
+		group: TaskGroup;
+		isCollapsed: boolean;
+		updateTaskGroup: (taskGroupId: string, updates: Partial<TaskGroup>) => Promise<void>;
+		deleteTaskGroup: (taskGroupId: string) => Promise<void>;
+	};
+
+	let { group, isCollapsed, updateTaskGroup, deleteTaskGroup }: TaskGroupItemProps = $props();
 
 	let isEditing = $state(false);
 	let newName = $state(group.name);
 
-	function startEditing(event: MouseEvent) {
-		event.preventDefault();
-		event.stopPropagation();
+	function startEditing() {
 		isEditing = true;
 	}
 
 	function stopEditing() {
 		isEditing = false;
 	}
+
+	$inspect(group);
 </script>
 
-<form
-	method="POST"
-	action="?/renameTaskGroup"
-	use:enhance
-	class="flex items-center gap-2 rounded p-4 hover:bg-amber-100"
->
+<div class="flex items-center gap-2 rounded p-4 hover:bg-neutral-500">
 	<input type="hidden" name="groupId" value={group.id} />
 
 	{#if !isCollapsed}
 		{#if !isEditing}
-			<span>{group.name}</span>
+			<div class="flex w-full flex-row items-center justify-between">
+				<div class="truncate">{group.name}</div>
+				<div class="flex flex-row items-center gap-2">
+					<div class="full size-3 rounded" style="background-color: {group.color}"></div>
 
-			<button type="button" title="Rename" onclick={startEditing} class="p-1 hover:text-amber-700">
-				<FormInputIcon size={16} />
-			</button>
-
-			<button
-				type="submit"
-				formaction="?/deleteTaskGroup"
-				title="Delete"
-				class="p-1 hover:text-red-600"
-			>
-				<Trash2Icon size={16} />
-			</button>
+					<DropdownMenu
+						buttonText="..."
+						items={[
+							{ name: 'Rename', id: '1', icon: TextCursorInput, action: () => startEditing() },
+							{
+								name: 'Delete',
+								id: '2',
+								icon: Trash2Icon,
+								action: () => deleteTaskGroup(group.id)
+							}
+						]}
+					/>
+				</div>
+			</div>
 		{:else}
 			<input
 				bind:value={newName}
@@ -50,7 +58,7 @@
 				class="flex-1 rounded bg-transparent outline-none"
 				onkeydown={(e) => {
 					if (e.key === 'Enter') {
-						e.currentTarget.form?.requestSubmit();
+						updateTaskGroup(group.id, { name: newName });
 						stopEditing();
 					} else if (e.key === 'Escape') {
 						stopEditing();
@@ -61,6 +69,6 @@
 			/>
 		{/if}
 	{:else}
-		<span>{group.name.charAt(0)}</span>
+		<div class="full size-3 rounded" style="background-color: {group.color}"></div>
 	{/if}
-</form>
+</div>

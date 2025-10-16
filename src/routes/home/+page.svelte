@@ -7,18 +7,27 @@
 	import { CircleCheckBigIcon } from '@lucide/svelte';
 	import { DateTime } from 'luxon';
 	import { addTask, getTasks, setTasks, updateTask } from '$lib/states/task.state.svelte.js';
+	import {
+		addTaskGroup,
+		getTaskGroups,
+		setTaskGroups,
+		updateTaskGroup,
+		deleteTaskGroup
+	} from '$lib/states/taskGroup.state.svelte.js';
 	import { wsService } from '$lib/services/ws.service.js';
 	import { Event } from '$lib/models/event.js';
-	import type { Task } from '$lib/server/db/schema';
+	import type { Task, TaskGroup } from '$lib/server/db/schema';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
 	let today = DateTime.now().toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);
 	let tasks = $derived(getTasks());
+	let taskGroups = $derived(getTaskGroups());
 	let mobileSidebarOpen = $state(false);
-	let selectedGroup = $state('');
+	let selectedGroup = $state('Today');
 
 	setTasks(data.tasks);
+	setTaskGroups(data.taskGroups);
 
 	const createTaskFetch = async (content: string) => {
 		const result = await fetch('/api/tasks', {
@@ -63,10 +72,65 @@
 
 		await invalidate('/home');
 	};
+
+	const createTaskGroupFetch = async () => {
+		const result = await fetch('/api/task-groups', {
+			method: 'POST'
+		});
+
+		if (result.ok) {
+			const newTaskGroup = await result.json();
+
+			addTaskGroup(newTaskGroup);
+
+			// sync
+		}
+
+		await invalidate('/home');
+	};
+
+	const updateTaskGroupFetch = async (taskGroupId: string, updates: Partial<TaskGroup>) => {
+		const currentTaskGroup = taskGroups.find((taskGroup) => taskGroup.id === taskGroupId);
+
+		updateTaskGroup(taskGroupId, updates);
+
+		const result = await fetch(`/api/task-groups/${taskGroupId}`, {
+			method: 'PATCH',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify(updates)
+		});
+
+		if (!result.ok && currentTaskGroup) {
+			updateTaskGroup(taskGroupId, currentTaskGroup);
+		} else {
+			// sync
+		}
+	};
+
+	const deleteTaskGroupFetch = async (taskGroupId: string) => {
+		deleteTaskGroup(taskGroupId);
+
+		const result = await fetch(`/api/task-groups/${taskGroupId}`, {
+			method: 'DELETE'
+		});
+
+		if (!result.ok) {
+			await invalidate('/home');
+		}
+	};
 </script>
 
 <div class="flex h-screen dark:bg-black dark:text-white">
-	<Sidebar bind:isOpen={mobileSidebarOpen} taskGroups={data.taskGroups} bind:selectedGroup />
+	<Sidebar
+		bind:isOpen={mobileSidebarOpen}
+		bind:selectedGroup
+		{taskGroups}
+		createTaskGroup={createTaskGroupFetch}
+		updateTaskGroup={updateTaskGroupFetch}
+		deleteTaskGroup={deleteTaskGroupFetch}
+	/>
 
 	<div class="flex flex-1 flex-col">
 		<div class="flex w-full justify-between">
@@ -106,7 +170,7 @@
 					class="rounded-lg p-4 transition-all duration-200
 			{task.completedAt ? '' : 'hover:bg-neutral-100'}"
 				>
-					<TaskComponent {task} updateTask={updateTaskFetch} taskGroups={data.taskGroups} />
+					<TaskComponent {task} updateTask={updateTaskFetch} />
 				</div>
 			{/each}
 
@@ -122,7 +186,7 @@
 				<Collapsible headerText="Completed">
 					{#each tasks.filter((task) => task.completedAt) as task, i (task.id)}
 						<div class="rounded-lg p-4">
-							<TaskComponent {task} updateTask={updateTaskFetch} taskGroups={data.taskGroups} />
+							<TaskComponent {task} updateTask={updateTaskFetch} />
 						</div>
 					{/each}
 				</Collapsible>

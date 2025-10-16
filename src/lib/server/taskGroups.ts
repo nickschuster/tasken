@@ -4,7 +4,11 @@ import { eq } from 'drizzle-orm';
 import { UUIDV4 } from './helper';
 
 export const getTaskGroups = async (userId: string) => {
-	const query = db.select().from(taskGroup).where(eq(taskGroup.userId, userId));
+	const query = db
+		.select()
+		.from(taskGroup)
+		.where(eq(taskGroup.userId, userId))
+		.orderBy(taskGroup.createdAt);
 
 	return query.execute();
 };
