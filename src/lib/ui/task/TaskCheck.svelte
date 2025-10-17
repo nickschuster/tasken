@@ -42,7 +42,7 @@
 	title={visuallyChecked ? 'Uncheck' : 'Check'}
 >
 	<div
-		class="check-div aspect-square h-[28] w-[28px] rounded-full {visuallyChecked || mouseDown
+		class="check-div aspect-square w-[28px] rounded-full {visuallyChecked || mouseDown
 			? 'bg-black'
 			: ''}"
 	>
