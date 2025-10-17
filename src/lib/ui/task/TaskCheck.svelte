@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Check, Circle, CircleCheckBigIcon } from '@lucide/svelte';
+	import { Check, Circle } from '@lucide/svelte';
 
 	export let checked = false;
 	export let toggleChecked: (checked: boolean) => void;
