@@ -6,13 +6,15 @@
 	import { DateTime } from 'luxon';
 	import { getTasks, setTasks } from '$lib/states/task.state.svelte.js';
 	import { createTaskFetch, updateTaskFetch } from '$lib/services/tasks.service.js';
-	import type { Task } from '$lib/server/db/schema.js';
 	import SubscriptionsDialog from '$lib/ui/SubscriptionsDialog.svelte';
+	import type { Task } from '$lib/server/db/schema';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
 	let today = DateTime.now().toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);
 	let tasks = $derived(getTasks());
+
+	wsService.connect();
 
 	setTasks(data.tasks);
 
