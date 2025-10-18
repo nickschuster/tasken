@@ -35,7 +35,7 @@ export const taskGroup = pgTable('task_group', {
 	userId: text('user_id')
 		.notNull()
 		.references(() => user.id),
-	color: text('color').default('#90EE90'),
+	color: text('color'),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow()
 });
 
