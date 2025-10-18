@@ -18,6 +18,7 @@ export async function POST({ request, locals }) {
 		customer_email: locals.user.email,
 		mode: 'subscription',
 		line_items: [{ price: priceId, quantity: 1 }],
+		allow_promotion_codes: true,
 		success_url: `${process.env.BASE_URL}/home?sessionId={CHECKOUT_SESSION_ID}`,
 		cancel_url: `${process.env.BASE_URL}/home`,
 		metadata: {
