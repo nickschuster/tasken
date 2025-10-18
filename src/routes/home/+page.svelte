@@ -6,9 +6,9 @@
 	import { DateTime } from 'luxon';
 	import { getTasks, setTasks } from '$lib/states/task.state.svelte.js';
 	import { createTaskFetch, updateTaskFetch } from '$lib/services/tasks.service.js';
-	import type { Task } from '$lib/server/db/schema.js';
 	import SubscriptionsDialog from '$lib/ui/SubscriptionsDialog.svelte';
 	import { wsService } from '$lib/services/ws.service.js';
+	import type { Task } from '$lib/server/db/schema';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
