@@ -67,7 +67,8 @@
     "vite": "^7.0.4",
     "vite-plugin-devtools-json": "^1.0.0",
     "vitest": "^3.2.3",
-    "vitest-browser-svelte": "^0.1.0"
+    "vitest-browser-svelte": "^0.1.0",
+    "@jridgewell/resolve-uri": "3.1.2"
   },
   "dependencies": {
     "@lucide/svelte": "^0.544.0",
@@ -80,6 +81,16 @@
     "pg": "^8.16.3",
     "postgres": "^3.4.5",
     "posthog-js": "^1.268.6",
-    "resend": "^6.1.2"
+    "resend": "^6.1.2",
+    "stripe": "^19.1.0"
+  },
+  "optionalDependencies": {
+    "@rollup/rollup-darwin-arm64": "^4.32.0",
+    "@rollup/rollup-darwin-x64": "^4.32.0",
+    "@rollup/rollup-linux-arm64-gnu": "^4.32.0",
+    "@rollup/rollup-linux-x64-gnu": "^4.32.0",
+    "@rollup/rollup-win32-arm64-msvc": "^4.32.0",
+    "@rollup/rollup-win32-x64-msvc": "^4.32.0",
+    "lightningcss-linux-x64-gnu": "^1.30.2"
   }
 }

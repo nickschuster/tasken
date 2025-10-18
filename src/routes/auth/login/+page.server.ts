@@ -2,10 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getEmailFromMagicLinkToken, isValidMagicLinkToken } from '$lib/server/magiclink';
 import * as auth from '$lib/server/auth';
-import { db } from '$lib/server/db';
-import * as table from '$lib/server/db/schema';
-import { eq } from 'drizzle-orm';
-import { UUIDV4 } from '$lib/server/helper';
+import { upsertUserByEmail } from '$lib/server/users';
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -33,16 +30,11 @@ export const load: PageServerLoad = async (event) => {
 			return redirect(302, '/auth/signup');
 		}
 
-		let [user] = await db.select().from(table.user).where(eq(table.user.email, email));
-
-		if (!user) {
-			const userId = UUIDV4();
-
-			[user] = await db.insert(table.user).values({ id: userId, email }).returning();
-		}
+		const user = await upsertUserByEmail(email);
 
 		const sessionToken = auth.generateSessionToken();
 		const session = await auth.createSession(sessionToken, user.id);
+
 		auth.setSessionTokenCookie(event, sessionToken, session.expiresAt);
 	} catch (e) {
 		console.error('Server error', e);

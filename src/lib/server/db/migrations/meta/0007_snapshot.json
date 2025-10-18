@@ -1,5 +1,5 @@
 {
-  "id": "5b7c3d37-a840-4154-a21c-e776943b17a5",
+  "id": "37db7eb3-3460-4eb7-a89a-ba7d451a21ab",
   "prevId": "271f76b3-bbed-4a3b-9323-ae3240245ec2",
   "version": "7",
   "dialect": "postgresql",
@@ -160,20 +160,6 @@
           "type": "text",
           "primaryKey": false,
           "notNull": true
-        },
-        "color": {
-          "name": "color",
-          "type": "text",
-          "primaryKey": false,
-          "notNull": false,
-          "default": "'#90EE90'"
-        },
-        "created_at": {
-          "name": "created_at",
-          "type": "timestamp with time zone",
-          "primaryKey": false,
-          "notNull": true,
-          "default": "now()"
         }
       },
       "indexes": {},
@@ -220,6 +206,12 @@
           "primaryKey": false,
           "notNull": true,
           "default": "now()"
+        },
+        "premium_expires_at": {
+          "name": "premium_expires_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
         }
       },
       "indexes": {},

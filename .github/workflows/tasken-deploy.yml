@@ -14,6 +14,9 @@ jobs:
       BASE_URL: https://tasken.app
       RESEND_API_KEY: ${{ secrets.RESEND_API_KEY }}
       PUBLIC_POSTHOG_KEY: ${{ secrets.PUBLIC_POSTHOG_KEY }}
+      STRIPE_API_KEY: ${{ secrets.STRIPE_API_KEY }}
+      STRIPE_WEBHOOK_SECRET: ${{ secrets.STRIPE_WEBHOOK_SECRET }}
+      PUBLIC_STRIPE_DASHBOARD: ${{ secrets.PUBLIC_STRIPE_DASHBOARD }}
       PUBLIC_CI: false
       PUBLIC_DEV: false
       PUBLIC_WS_URL: wss://tasken.app/ws/
@@ -49,6 +52,9 @@ jobs:
 
           ssh $DEPLOY_USER@$DEPLOY_HOST "\
             export BASE_URL='https://tasken.app' && \
+            export STRIPE_API_KEY='${{ secrets.STRIPE_API_KEY }}' && \
+            export STRIPE_WEBHOOK_SECRET='${{ secrets.STRIPE_WEBHOOK_SECRET }}' && \
+            export PUBLIC_STRIPE_DASHBOARD='${{ secrets.PUBLIC_STRIPE_DASHBOARD }}' && \
             export RESEND_API_KEY='${{ secrets.RESEND_API_KEY }}' && \
             export DATABASE_URL='${{ secrets.DATABASE_URL }}' && \
             export PUBLIC_WS_URL='wss://tasken.app/ws/' && \
