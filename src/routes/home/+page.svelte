@@ -8,11 +8,14 @@
 	import { createTaskFetch, updateTaskFetch } from '$lib/services/tasks.service.js';
 	import type { Task } from '$lib/server/db/schema.js';
 	import SubscriptionsDialog from '$lib/ui/SubscriptionsDialog.svelte';
+	import { wsService } from '$lib/services/ws.service.js';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
 	let today = DateTime.now().toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);
 	let tasks = $derived(getTasks());
+
+	wsService.connect();
 
 	setTasks(data.tasks);
 
@@ -58,7 +61,7 @@
 		{#each tasks.filter((task) => !task.completedAt) as task, i (task.id)}
 			<div
 				class="rounded-lg p-4 transition-all duration-200
-			{task.completedAt ? '' : 'hover:bg-neutral-100'}"
+			{task.completedAt ? '' : 'hover:bg-neutral-100 dark:hover:bg-neutral-900'}"
 			>
 				<TaskComponent {task} {updateTask} />
 			</div>

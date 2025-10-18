@@ -53,11 +53,7 @@ export class PaymentProcessor {
 			const created = DateTime.fromSeconds(session.created).startOf('day');
 			const today = DateTime.now().startOf('day');
 
-			if (created.toSeconds() !== today.toSeconds()) {
-				return false;
-			}
-
-			return true;
+			return created.equals(today);
 		}
 
 		return false;
@@ -77,7 +73,13 @@ export class PaymentProcessor {
 		};
 	}
 
-	async getSubscriptionDetails(premiumExpiresAt: Date | null) {
+	async getSubscriptionDetails(
+		premiumExpiresAt: Date | null
+	): Promise<{
+		isPremium: boolean;
+		isFirstTimeSubscriber?: boolean;
+		subscriptions?: DefaultSubscriptions;
+	}> {
 		const today = DateTime.now();
 		const premiumExpiry = premiumExpiresAt ? DateTime.fromJSDate(premiumExpiresAt) : null;
 
@@ -98,7 +100,7 @@ export class PaymentProcessor {
 		return {
 			isPremium: false,
 			isFirstTimeSubscriber: false,
-			products: await this.getDefaultSubscriptions()
+			subscriptions: await this.getDefaultSubscriptions()
 		};
 	}
 

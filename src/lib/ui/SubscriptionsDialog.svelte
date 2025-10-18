@@ -2,7 +2,6 @@
 	import { Dialog } from 'bits-ui';
 	import SubscriptionCards from './SubscriptionCards.svelte';
 	import type { DefaultSubscriptions } from '$lib/models/subscription';
-	import { redirect } from '@sveltejs/kit';
 
 	export let open = true;
 	export let subscriptions: DefaultSubscriptions | null = null;
