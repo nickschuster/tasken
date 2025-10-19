@@ -22,7 +22,7 @@
 	let today = DateTime.now().toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);
 	let tasks = $derived(getTasks());
 	let taskGroups = $derived(getTaskGroups());
-	let mobileSidebarOpen = $state(false);
+	let isSidebarOpen = $state(false);
 	let selectedGroup = $state('All');
 
 	setTasks(data.tasks);
@@ -122,7 +122,7 @@
 
 <div class="flex h-screen dark:bg-black dark:text-white">
 	<Sidebar
-		bind:isOpen={mobileSidebarOpen}
+		bind:isSidebarOpen
 		bind:selectedGroup
 		{taskGroups}
 		{createTaskGroup}
@@ -135,7 +135,7 @@
 			<div class="flex flex-row px-2 pt-2 text-3xl">
 				<button
 					class="rounded bg-neutral-100 p-2 md:hidden dark:bg-neutral-800 dark:text-white"
-					onclick={() => (mobileSidebarOpen = true)}
+					onclick={() => (isSidebarOpen = true)}
 				>
 					<MenuIcon />
 				</button>

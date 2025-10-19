@@ -72,9 +72,7 @@ export const deleteTaskGroupFetch = async (taskGroupId: string): Promise<boolean
 			method: 'DELETE'
 		});
 
-		if (!result.ok) {
-			await invalidate('/home');
-		}
+		await invalidate('/home');
 
 		return result.ok;
 	} catch (e) {
