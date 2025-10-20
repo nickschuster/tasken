@@ -134,7 +134,7 @@
 		<div class="flex w-full justify-between">
 			<div class="flex flex-row px-2 pt-2 text-3xl">
 				<button
-					class="rounded bg-neutral-100 p-2 md:hidden dark:bg-neutral-800 dark:text-white"
+					class="cursor-pointer rounded bg-white p-2 hover:text-neutral-300 md:hidden dark:bg-black dark:text-white hover:dark:text-neutral-500"
 					onclick={() => (isSidebarOpen = true)}
 				>
 					<MenuIcon />
