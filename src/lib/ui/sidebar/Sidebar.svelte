@@ -14,7 +14,7 @@
 
 	type SidebarProps = {
 		taskGroups: TaskGroup[];
-		isOpen: boolean;
+		isSidebarOpen: boolean;
 		selectedGroup: string;
 		createTaskGroup: () => Promise<void>;
 		updateTaskGroup: (taskGroupId: string, updates: Partial<TaskGroup>) => Promise<void>;
@@ -23,27 +23,27 @@
 
 	let {
 		taskGroups,
-		isOpen = $bindable(),
+		isSidebarOpen = $bindable(),
 		selectedGroup = $bindable(),
 		createTaskGroup,
 		updateTaskGroup,
 		deleteTaskGroup
 	}: SidebarProps = $props();
-	let isCollapsed = $state(false);
 	let innerWidth = $state(0);
 	let isMobile = $derived(innerWidth < 768);
+
 	let today = DateTime.now();
 	let formattedDate = today.toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);
 
-	$effect(() => {
-		if (isMobile) {
-			isCollapsed = !isOpen;
+	// $effect(() => {
+	// 	if (isMobile) {
+	// 		isCollapsed = !isOpen;
 
-			return;
-		}
+	// 		return;
+	// 	}
 
-		isCollapsed = isMobile;
-	});
+	// 	isCollapsed = isMobile;
+	// });
 
 	const defaultGroups = {
 		'My Day': ListIcon,
@@ -53,21 +53,17 @@
 	};
 
 	function toggleSidebar() {
-		if (isMobile) {
-			isOpen = !isOpen;
-		} else {
-			isCollapsed = !isCollapsed;
-		}
+		isSidebarOpen = !isSidebarOpen;
 	}
 
 	function closeMobileSidebar() {
-		if (isMobile) isOpen = false;
+		if (isMobile) isSidebarOpen = false;
 	}
 </script>
 
 <svelte:window bind:innerWidth />
 
-{#if isMobile && isOpen}
+{#if isMobile && isSidebarOpen}
 	<button
 		class="fixed inset-0 z-40 bg-black opacity-50"
 		onclick={closeMobileSidebar}
@@ -79,9 +75,9 @@
 	class={[
 		'flex h-screen flex-col bg-white text-neutral-800 transition-all duration-150 dark:bg-neutral-900 dark:text-neutral-200',
 		isMobile && 'fixed top-0 left-0 z-50 w-64 transform shadow-lg',
-		isMobile && (isOpen ? 'translate-x-0' : '-translate-x-full'),
+		isMobile && (isSidebarOpen ? 'translate-x-0' : '-translate-x-full'),
 		!isMobile && 'md:static md:flex md:h-screen',
-		!isMobile && (isCollapsed ? 'md:w-16' : 'md:w-64')
+		!isMobile && (isSidebarOpen ? 'md:w-64' : 'md:w-16')
 	]}
 >
 	<section
@@ -93,7 +89,7 @@
 	"
 	>
 		<div class="flex w-full items-center">
-			{#if !isCollapsed}
+			{#if isSidebarOpen}
 				<div
 					class="overflow-hidden px-4 py-3 font-bold text-nowrap text-ellipsis whitespace-nowrap"
 				>
@@ -103,12 +99,12 @@
 
 			{#if !isMobile}
 				<button
-					class="m-2 cursor-pointer rounded p-2 text-right text-neutral-800 dark:text-white {isCollapsed
-						? 'mx-auto'
-						: 'ml-auto'}"
+					class="m-2 cursor-pointer rounded p-2 text-right text-neutral-800 dark:text-white {isSidebarOpen
+						? 'ml-auto'
+						: 'mx-auto'}"
 					onclick={toggleSidebar}
 				>
-					<ChevronRightIcon class="transition-all {isCollapsed ? '' : 'rotate-180'}" />
+					<ChevronRightIcon class="transition-all {isSidebarOpen ? 'rotate-180' : ''}" />
 				</button>
 			{/if}
 		</div>
@@ -129,11 +125,11 @@
           {selectedGroup === group
 							? 'bg-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:text-white'
 							: 'text-neutral-700 dark:text-neutral-300'}
-          {isCollapsed ? 'h-10 w-10 justify-center p-0' : 'w-auto'}
+          {!isSidebarOpen ? 'h-10 w-10 justify-center p-0' : 'w-auto'}
           mx-2
         "
 					>
-						{#if !isCollapsed}
+						{#if isSidebarOpen}
 							<span class="truncate">{group}</span>
 						{:else}
 							<Icon class="size-4" />
@@ -147,11 +143,11 @@
 
 		<div
 			class="
-			flex items-center justify-between px-4 py-2
+			flex px-4 py-2 {isSidebarOpen ? 'justify-between' : 'justify-around'}
 			  text-neutral-800 dark:text-white
 		"
 		>
-			{#if !isCollapsed}
+			{#if isSidebarOpen}
 				<span>Your Lists</span>
 			{/if}
 
@@ -174,7 +170,7 @@
 					{#each taskGroups as group, i (group.id)}
 						<TaskGroupItem
 							{group}
-							{isCollapsed}
+							{isSidebarOpen}
 							{updateTaskGroup}
 							{deleteTaskGroup}
 							bind:selectedGroup

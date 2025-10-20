@@ -5,7 +5,7 @@
 
 	type TaskGroupItemProps = {
 		group: TaskGroup;
-		isCollapsed: boolean;
+		isSidebarOpen: boolean;
 		selectedGroup: string;
 		updateTaskGroup: (taskGroupId: string, updates: Partial<TaskGroup>) => Promise<void>;
 		deleteTaskGroup: (taskGroupId: string) => Promise<void>;
@@ -13,7 +13,7 @@
 
 	let {
 		group,
-		isCollapsed,
+		isSidebarOpen,
 		updateTaskGroup,
 		deleteTaskGroup,
 		selectedGroup = $bindable()
@@ -21,6 +21,13 @@
 
 	let isEditing = $state(false);
 	let newName = $state(group.name);
+	let renameInput = $state<HTMLInputElement | undefined>();
+
+	$effect(() => {
+		if (isEditing && renameInput) {
+			renameInput.focus();
+		}
+	});
 
 	function startEditing() {
 		isEditing = true;
@@ -38,13 +45,13 @@
 		'text-neutral-800 dark:text-neutral-200',
 		selectedGroup === group.id &&
 			'bg-neutral-300 font-medium text-neutral-900 dark:bg-neutral-700 dark:text-white',
-		isCollapsed && 'justify-center px-2 py-3'
+		!isSidebarOpen && 'justify-center px-2 py-3'
 	]}
 	onclick={() => (selectedGroup = group.id)}
 >
 	<input type="hidden" name="groupId" value={group.id} />
 
-	{#if !isCollapsed}
+	{#if isSidebarOpen}
 		{#if !isEditing}
 			<div class="flex w-full flex-row items-center justify-between">
 				<div class="truncate text-sm font-medium">{group.name}</div>
@@ -77,6 +84,7 @@
 		{:else}
 			<input
 				bind:value={newName}
+				bind:this={renameInput}
 				name="groupName"
 				type="text"
 				class="

@@ -21,10 +21,8 @@
 	let newTaskContent = $state('');
 	let tasks = $derived(getTasks());
 	let taskGroups = $derived(getTaskGroups());
-	let mobileSidebarOpen = $state(false);
+	let isSidebarOpen = $state(false);
 	let selectedGroup = $state('My Day');
-
-	wsService.connect();
 
 	setTasks(data.tasks);
 	setTaskGroups(data.taskGroups);
@@ -103,7 +101,7 @@
 	/>
 
 	<Sidebar
-		bind:isOpen={mobileSidebarOpen}
+		bind:isSidebarOpen
 		bind:selectedGroup
 		{taskGroups}
 		{createTaskGroup}
@@ -115,8 +113,8 @@
 		<div class="flex w-full items-center justify-between p-2">
 			<div class="flex flex-row gap-2 text-3xl">
 				<button
-					class="rounded bg-neutral-100 p-2 md:hidden dark:bg-neutral-800 dark:text-white"
-					onclick={() => (mobileSidebarOpen = true)}
+					class="cursor-pointer rounded bg-white p-2 hover:text-neutral-300 md:hidden dark:bg-black dark:text-white hover:dark:text-neutral-500"
+					onclick={() => (isSidebarOpen = true)}
 				>
 					<MenuIcon />
 				</button>

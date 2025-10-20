@@ -6,6 +6,8 @@ import {
 } from '$lib/states/taskGroup.state.svelte.js';
 import type { TaskGroup } from '$lib/server/db/schema';
 import { invalidate } from '$app/navigation';
+import { wsService } from './ws.service';
+import { Event } from '$lib/models/event';
 
 export const createTaskGroupFetch = async (): Promise<boolean> => {
 	try {
@@ -18,7 +20,7 @@ export const createTaskGroupFetch = async (): Promise<boolean> => {
 
 			addTaskGroup(newTaskGroup);
 
-			// sync
+			wsService.sendMessage(Event.TaskGroupAdded, newTaskGroup);
 		}
 
 		await invalidate('/home');
@@ -51,7 +53,7 @@ export const updateTaskGroupFetch = async (
 		if (!result.ok && currentTaskGroup) {
 			updateTaskGroup(taskGroupId, currentTaskGroup);
 		} else {
-			// sync
+			wsService.sendMessage(Event.TaskGroupUpdated, { ...currentTaskGroup, ...updates });
 		}
 
 		await invalidate('/home');
@@ -72,9 +74,11 @@ export const deleteTaskGroupFetch = async (taskGroupId: string): Promise<boolean
 			method: 'DELETE'
 		});
 
-		if (!result.ok) {
-			await invalidate('/home');
+		if (result.ok) {
+			wsService.sendMessage(Event.TaskGroupDeleted, taskGroupId);
 		}
+
+		await invalidate('/home');
 
 		return result.ok;
 	} catch (e) {
