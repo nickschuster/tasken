@@ -1,6 +1,5 @@
 <script lang="ts">
 	import {
-		ChevronLeftIcon,
 		ChevronRightIcon,
 		PlusIcon,
 		Calendar1Icon,
@@ -9,7 +8,6 @@
 		ListIcon
 	} from '@lucide/svelte';
 	import { DateTime } from 'luxon';
-	import { enhance } from '$app/forms';
 	import { Button, ScrollArea } from 'bits-ui';
 	import type { TaskGroup } from '$lib/server/db/schema';
 	import TaskGroupItem from './TaskGroupItem.svelte';
@@ -38,11 +36,17 @@
 	let formattedDate = today.toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);
 
 	$effect(() => {
-		isCollapsed = !isMobile;
+		if (isMobile) {
+			isCollapsed = !isOpen;
+
+			return;
+		}
+
+		isCollapsed = isMobile;
 	});
 
 	const defaultGroups = {
-		All: ListIcon,
+		'My Day': ListIcon,
 		Today: Calendar1Icon,
 		Tomorrow: CalendarPlusIcon,
 		Important: StarIcon
@@ -73,24 +77,13 @@
 
 <div
 	class={[
-		'flex h-screen flex-col bg-white text-neutral-800 transition-all duration-300 dark:bg-neutral-900 dark:text-neutral-200',
+		'flex h-screen flex-col bg-white text-neutral-800 transition-all duration-150 dark:bg-neutral-900 dark:text-neutral-200',
 		isMobile && 'fixed top-0 left-0 z-50 w-64 transform shadow-lg',
 		isMobile && (isOpen ? 'translate-x-0' : '-translate-x-full'),
 		!isMobile && 'md:static md:flex md:h-screen',
 		!isMobile && (isCollapsed ? 'md:w-16' : 'md:w-64')
 	]}
 >
-	<button
-		class="m-2 rounded bg-white p-2 text-neutral-800 shadow-sm dark:bg-neutral-800 dark:text-white"
-		onclick={toggleSidebar}
-	>
-		{#if isCollapsed}
-			<ChevronRightIcon />
-		{:else}
-			<ChevronLeftIcon />
-		{/if}
-	</button>
-
 	<section
 		class="
 		flex h-full w-full flex-col
@@ -99,24 +92,28 @@
 		dark:bg-neutral-900 dark:text-neutral-100
 	"
 	>
-		<h2
-			class="
-			flex items-center
-			{isCollapsed ? 'justify-center' : 'justify-between'} 
-			border-b border-neutral-200
-			px-4 py-3 text-lg
-			font-semibold tracking-tight
-			text-neutral-800 dark:border-neutral-800 dark:text-neutral-200
-		"
-		>
+		<div class="flex w-full items-center">
 			{#if !isCollapsed}
-				<span>{formattedDate}</span>
-			{:else}
-				<span>{today.day}</span>
+				<div
+					class="overflow-hidden px-4 py-3 font-bold text-nowrap text-ellipsis whitespace-nowrap"
+				>
+					{formattedDate}
+				</div>
 			{/if}
-		</h2>
 
-		<ul class="flex flex-col gap-1 py-2">
+			{#if !isMobile}
+				<button
+					class="m-2 cursor-pointer rounded p-2 text-right text-neutral-800 dark:text-white {isCollapsed
+						? 'mx-auto'
+						: 'ml-auto'}"
+					onclick={toggleSidebar}
+				>
+					<ChevronRightIcon class="transition-all {isCollapsed ? '' : 'rotate-180'}" />
+				</button>
+			{/if}
+		</div>
+
+		<ul class="flex flex-col gap-1">
 			{#each Object.entries(defaultGroups) as [group, Icon]}
 				<li class="mr-4">
 					<button
@@ -151,29 +148,20 @@
 		<div
 			class="
 			flex items-center justify-between px-4 py-2
-			text-sm font-semibold text-neutral-700 dark:text-neutral-300
+			  text-neutral-800 dark:text-white
 		"
 		>
 			{#if !isCollapsed}
-				<span>Your Categories</span>
+				<span>Your Lists</span>
 			{/if}
 
-			<Button.Root
+			<button
 				type="submit"
 				onclick={createTaskGroup}
-				class="
-				inline-flex items-center justify-center gap-2 rounded-lg
-				bg-neutral-900 p-2 text-sm font-medium
-				text-white shadow-sm transition-all duration-200
-				hover:bg-neutral-800 active:scale-95
-				dark:bg-neutral-100 dark:text-neutral-900
-				dark:hover:bg-neutral-200
-				{isCollapsed ? 'mx-auto' : ''}
-			"
+				class="cursor-pointer text-neutral-800 dark:text-white"
 			>
-				<PlusIcon class="size-4" />
-				{#if !isCollapsed}<span>Create</span>{/if}
-			</Button.Root>
+				<PlusIcon />
+			</button>
 		</div>
 		<ScrollArea.Root
 			class="

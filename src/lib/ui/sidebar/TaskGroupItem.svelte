@@ -94,7 +94,6 @@
 					}
 				}}
 				onblur={stopEditing}
-				autofocus
 			/>
 		{/if}
 	{:else}

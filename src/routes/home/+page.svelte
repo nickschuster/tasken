@@ -19,11 +19,10 @@
 
 	let { data } = $props();
 	let newTaskContent = $state('');
-	let today = DateTime.now().toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);
 	let tasks = $derived(getTasks());
 	let taskGroups = $derived(getTaskGroups());
 	let mobileSidebarOpen = $state(false);
-	let selectedGroup = $state('All');
+	let selectedGroup = $state('My Day');
 
 	wsService.connect();
 
@@ -36,7 +35,7 @@
 		tomorrow.setDate(tomorrow.getDate() + 1);
 
 		switch (group) {
-			case 'All':
+			case 'My Day':
 				return tasks;
 			case 'Today':
 				return tasks.filter((t) => isSameDay(t.dueDate, today));
@@ -83,11 +82,18 @@
 
 	const deleteTaskGroup = async (taskGroupId: string) => {
 		if (taskGroupId === selectedGroup) {
-			selectedGroup = 'All';
+			selectedGroup = 'My Day';
 		}
 
 		await deleteTaskGroupFetch(taskGroupId);
 	};
+
+	const uncompletedTasks = $derived(
+		filterTasksByGroup(selectedGroup).filter((task) => !task.completedAt)
+	);
+	const completedTasks = $derived(
+		filterTasksByGroup(selectedGroup).filter((task) => task.completedAt)
+	);
 </script>
 
 <div class="flex h-screen dark:bg-black dark:text-white">
@@ -106,69 +112,64 @@
 	/>
 
 	<div class="flex flex-1 flex-col">
-		<div class="flex w-full justify-between">
-			<div class="flex flex-row px-2 pt-2 text-3xl">
-				<div class="px-4 pt-4 text-5xl">My Day</div>
-				<div class="px-4 pt-4 text-2xl">
-					<form method="POST" action="?/logout">
-						<button
-							class="rounded bg-neutral-100 p-2 md:hidden dark:bg-neutral-800 dark:text-white"
-							onclick={() => (mobileSidebarOpen = true)}
-						>
-							<MenuIcon />
-						</button>
-						<h2 class="px-2 pt-2 text-3xl">
-							{taskGroups.find((g) => g.id === selectedGroup)?.name ?? selectedGroup}
-						</h2>
-					</form>
-				</div>
-				<div class="px-4 pt-4 text-2xl">
-					<form method="POST" action="?/logout">
-						<button
-							type="submit"
-							title="logout"
-							class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-neutral-300 text-center dark:bg-neutral-900"
-						>
-							{#if data.user}
-								{data.user.email.charAt(0)}
-							{/if}
-						</button>
-					</form>
-				</div>
+		<div class="flex w-full items-center justify-between p-2">
+			<div class="flex flex-row gap-2 text-3xl">
+				<button
+					class="rounded bg-neutral-100 p-2 md:hidden dark:bg-neutral-800 dark:text-white"
+					onclick={() => (mobileSidebarOpen = true)}
+				>
+					<MenuIcon />
+				</button>
+				<h2 class="text-3xl">
+					{taskGroups.find((g) => g.id === selectedGroup)?.name ?? selectedGroup}
+				</h2>
 			</div>
+			<div class="text-2xl">
+				<form method="POST" action="?/logout">
+					<button
+						type="submit"
+						title="logout"
+						class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-neutral-300 text-center dark:bg-neutral-900"
+					>
+						{#if data.user}
+							{data.user.email.charAt(0)}
+						{/if}
+					</button>
+				</form>
+			</div>
+		</div>
 
-			<div class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2">
-				{#each filterTasksByGroup(selectedGroup).filter((task) => !task.completedAt) as task, i (task.id)}
-					<div
-						class="rounded-lg p-4 transition-all duration-200
+		<div class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2">
+			{#each uncompletedTasks as task, i (task.id)}
+				<div
+					class="rounded-lg p-4 transition-all duration-200
 			{task.completedAt ? '' : 'hover:bg-neutral-100'}"
-					>
-						<TaskComponent {task} {updateTask} />
-					</div>
-				{/each}
+				>
+					<TaskComponent {task} {updateTask} />
+				</div>
+			{/each}
 
-				{#if tasks.length === 0}
-					<div
-						class="flex grow flex-col items-center justify-center text-gray-200 dark:text-neutral-950"
-					>
-						<CircleCheckBigIcon size="300" />
-					</div>
-				{/if}
+			{#if uncompletedTasks.length === 0 && completedTasks.length === 0}
+				<div
+					class="flex grow flex-col items-center justify-center text-gray-200 dark:text-neutral-950"
+				>
+					<CircleCheckBigIcon size="300" />
+				</div>
+			{/if}
 
-				{#if filterTasksByGroup(selectedGroup).some((task) => task.completedAt)}
-					<Collapsible headerText="Completed">
-						{#each filterTasksByGroup(selectedGroup).filter((task) => task.completedAt) as task, i (task.id)}
-							<div class="rounded-lg p-4">
-								<TaskComponent {task} {updateTask} />
-							</div>
-						{/each}
-					</Collapsible>
-				{/if}
-			</div>
+			{#if completedTasks.length > 0}
+				<Collapsible headerText="Completed">
+					{#each completedTasks as task, i (task.id)}
+						<div class="rounded-lg p-4">
+							<TaskComponent {task} {updateTask} />
+						</div>
+					{/each}
+				</Collapsible>
+			{/if}
+		</div>
 
-			<div class="p-4">
-				<Input onEnter={createTask} bind:newTaskContent />
-			</div>
+		<div class="p-4">
+			<Input onEnter={createTask} bind:newTaskContent />
 		</div>
 	</div>
 </div>
