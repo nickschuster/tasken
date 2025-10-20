@@ -1,4 +1,5 @@
 export const enum Event {
+	Ping = 'socket:ping',
 	TaskAdded = 'task:added',
 	TaskUpdated = 'task:updated'
 }

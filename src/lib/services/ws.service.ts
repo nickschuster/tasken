@@ -8,6 +8,11 @@ class WebSocketService {
 	private socket: WebSocket | null = null;
 	private emitter = eventEmitter;
 
+	private readonly reconnectDelay = 5000;
+	private readonly heartbeatDelay = 30000;
+	private heartbeatInterval: NodeJS.Timeout | null = null;
+	private reconnectInterval: NodeJS.Timeout | null = null;
+
 	private constructor() {}
 
 	public static getInstance(): WebSocketService {
@@ -25,6 +30,15 @@ class WebSocketService {
 		try {
 			this.socket = new WebSocket(PUBLIC_WS_URL);
 
+			this.socket.onopen = () => {
+				if (this.reconnectInterval) {
+					clearInterval(this.reconnectInterval);
+					this.reconnectInterval = null;
+				}
+
+				this.startHeartbeat();
+			};
+
 			this.socket.onmessage = (event) => {
 				try {
 					const message = JSON.parse(event.data);
@@ -36,9 +50,44 @@ class WebSocketService {
 					console.error('WebSocket message parse error:', e);
 				}
 			};
+
+			this.socket.onclose = () => {
+				console.warn('Websocket closed');
+				// Need a way to close on purpose (logout) w/o reconnecting ?
+				this.stopHeartbeat();
+				this.scheduleReconnect();
+			};
+
+			this.socket.onerror = (e) => {
+				console.error('Websocket error: ', e);
+				this.socket?.close();
+			};
 		} catch (error) {
 			console.error('WebSocket connection error:', error);
 		}
+	}
+
+	private startHeartbeat() {
+		this.stopHeartbeat();
+		this.heartbeatInterval = setInterval(() => {
+			this.sendMessage(Event.Ping, {});
+		}, this.heartbeatDelay);
+	}
+
+	private stopHeartbeat() {
+		if (this.heartbeatInterval) {
+			clearInterval(this.heartbeatInterval);
+			this.heartbeatInterval = null;
+		}
+	}
+
+	private scheduleReconnect() {
+		if (this.reconnectInterval) return;
+
+		this.reconnectInterval = setInterval(() => {
+			console.log('Attempting to reconnect...');
+			this.connect();
+		}, this.reconnectDelay);
 	}
 
 	public on(event: string, callback: Function) {
