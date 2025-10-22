@@ -14,12 +14,10 @@ export const getTaskGroups = async (userId: string) => {
 };
 
 export const createTaskGroup = async (userId: string) => {
-	const taskGroupName = 'New Group';
+	const name = 'New Group';
+	const color = '#000000';
 
-	const insert = db
-		.insert(taskGroup)
-		.values({ id: UUIDV4(), name: taskGroupName, userId })
-		.returning();
+	const insert = db.insert(taskGroup).values({ id: UUIDV4(), name, userId, color }).returning();
 
 	const [createdTaskGroup] = await insert.execute();
 

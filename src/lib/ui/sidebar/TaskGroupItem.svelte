@@ -62,9 +62,7 @@
 						class="size-3 cursor-pointer rounded-full"
 						style="background-color: {group.color}"
 						onchange={(e) => {
-							if (e.currentTarget.value !== group.color) {
-								updateTaskGroup(group.id, { color: e.currentTarget.value });
-							}
+							updateTaskGroup(group.id, { color: e.currentTarget.value });
 						}}
 						bind:value={group.color}
 					/>

@@ -89,6 +89,7 @@
 
 			{#if !isMobile}
 				<button
+					aria-label="Toggle Sidebar"
 					class="m-2 cursor-pointer rounded p-2 text-right text-neutral-800 dark:text-white {isSidebarOpen
 						? 'ml-auto'
 						: 'mx-auto'}"
@@ -142,6 +143,7 @@
 			{/if}
 
 			<button
+				aria-label="Add List"
 				type="submit"
 				onclick={createTaskGroup}
 				class="cursor-pointer text-neutral-800 dark:text-white"
