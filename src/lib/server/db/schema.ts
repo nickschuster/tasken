@@ -34,7 +34,9 @@ export const taskGroup = pgTable('task_group', {
 	name: text('name').notNull(),
 	userId: text('user_id')
 		.notNull()
-		.references(() => user.id)
+		.references(() => user.id),
+	color: text('color'),
+	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow()
 });
 
 export const verification = pgTable('verification', {

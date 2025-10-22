@@ -57,6 +57,13 @@
       "when": 1760552081754,
       "tag": "0007_melodic_nomad",
       "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1760812211000,
+      "tag": "0008_huge_miracleman",
+      "breakpoints": true
     }
   ]
 }
