@@ -12,7 +12,7 @@
 	};
 
 	let {
-		group,
+		group = $bindable(),
 		isSidebarOpen,
 		updateTaskGroup,
 		deleteTaskGroup,
@@ -40,7 +40,7 @@
 
 <button
 	class={[
-		'flex cursor-pointer items-center gap-2 rounded-md px-4 py-1 transition-colors duration-150',
+		'flex cursor-pointer items-center gap-2 rounded-md px-4 py-0.5 transition-colors duration-150',
 		'hover:bg-neutral-200 dark:hover:bg-neutral-800',
 		'text-neutral-800 dark:text-neutral-200',
 		selectedGroup === group.id &&
@@ -57,10 +57,17 @@
 				<div class="truncate text-sm font-medium">{group.name}</div>
 
 				<div class="flex flex-row items-center gap-3">
-					<div
-						class="size-3 rounded-full ring-1 ring-neutral-400 dark:ring-neutral-600"
+					<input
+						type="color"
+						class="size-3 cursor-pointer rounded-full"
 						style="background-color: {group.color}"
-					></div>
+						onchange={(e) => {
+							if (e.currentTarget.value !== group.color) {
+								updateTaskGroup(group.id, { color: e.currentTarget.value });
+							}
+						}}
+						bind:value={group.color}
+					/>
 
 					<DropdownMenu
 						buttonText="⋯"
@@ -89,8 +96,9 @@
 				type="text"
 				class="
 					flex-1 rounded border-neutral-300
-					bg-transparent text-sm font-medium text-neutral-800
-					outline-none focus:border-neutral-500 dark:border-neutral-700
+					bg-transparent py-2 text-sm
+					font-medium text-neutral-800 outline-none
+					focus:border-neutral-500 dark:border-neutral-700
 					dark:text-neutral-100 dark:focus:border-neutral-400
 				"
 				onkeydown={(e) => {
@@ -105,9 +113,6 @@
 			/>
 		{/if}
 	{:else}
-		<div
-			class="size-3 rounded-full ring-1 ring-neutral-400 dark:ring-neutral-600"
-			style="background-color: {group.color}"
-		></div>
+		<div class="size-3 rounded-full" style="background-color: {group.color}"></div>
 	{/if}
 </button>

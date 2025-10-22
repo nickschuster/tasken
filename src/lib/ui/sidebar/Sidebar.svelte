@@ -22,7 +22,7 @@
 	};
 
 	let {
-		taskGroups,
+		taskGroups = $bindable(),
 		isSidebarOpen = $bindable(),
 		selectedGroup = $bindable(),
 		createTaskGroup,
@@ -34,16 +34,6 @@
 
 	let today = DateTime.now();
 	let formattedDate = today.toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);
-
-	// $effect(() => {
-	// 	if (isMobile) {
-	// 		isCollapsed = !isOpen;
-
-	// 		return;
-	// 	}
-
-	// 	isCollapsed = isMobile;
-	// });
 
 	const defaultGroups = {
 		'My Day': ListIcon,
@@ -161,7 +151,7 @@
 		</div>
 		<ScrollArea.Root
 			class="
-		relative max-h-[calc(100vh-390px)] overflow-hidden rounded-xl
+		relative max-h-[calc(100vh-100px)] overflow-hidden rounded-xl
 		bg-neutral-50 duration-200 dark:bg-neutral-900
 	"
 		>
@@ -169,11 +159,11 @@
 				<ul class="flex flex-col gap-1 p-2">
 					{#each taskGroups as group, i (group.id)}
 						<TaskGroupItem
-							{group}
 							{isSidebarOpen}
 							{updateTaskGroup}
 							{deleteTaskGroup}
 							bind:selectedGroup
+							bind:group={taskGroups[i]}
 						/>
 					{/each}
 				</ul>

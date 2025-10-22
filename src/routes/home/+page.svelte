@@ -103,7 +103,7 @@
 	<Sidebar
 		bind:isSidebarOpen
 		bind:selectedGroup
-		{taskGroups}
+		bind:taskGroups
 		{createTaskGroup}
 		{updateTaskGroup}
 		{deleteTaskGroup}
