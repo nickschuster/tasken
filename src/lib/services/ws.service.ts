@@ -8,8 +8,9 @@ class WebSocketService {
 	private socket: WebSocket | null = null;
 	private emitter = eventEmitter;
 
-	private readonly reconnectDelay = 5000;
-	private readonly heartbeatDelay = 30000;
+	private readonly reconnectDelay = 1000;
+	private readonly heartbeatDelay = 10000;
+	private shouldReconnect = true;
 	private heartbeatInterval: NodeJS.Timeout | null = null;
 	private reconnectInterval: NodeJS.Timeout | null = null;
 
@@ -53,9 +54,11 @@ class WebSocketService {
 
 			this.socket.onclose = () => {
 				console.warn('Websocket closed');
-				// Need a way to close on purpose (logout) w/o reconnecting ?
 				this.stopHeartbeat();
-				this.scheduleReconnect();
+
+				if (this.shouldReconnect) {
+					this.scheduleReconnect();
+				}
 			};
 
 			this.socket.onerror = (e) => {
@@ -88,6 +91,10 @@ class WebSocketService {
 			console.log('Attempting to reconnect...');
 			this.connect();
 		}, this.reconnectDelay);
+	}
+
+	public setShouldReconnect(shouldReconnect: boolean) {
+		this.shouldReconnect = shouldReconnect;
 	}
 
 	public on(event: string, callback: Function) {

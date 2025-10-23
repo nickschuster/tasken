@@ -15,9 +15,14 @@
 	let today = DateTime.now().toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);
 	let tasks = $derived(getTasks());
 
+	wsService.setShouldReconnect(true);
 	wsService.connect();
 
 	setTasks(data.tasks);
+
+	const handleLogout = (_event: SubmitEvent) => {
+		wsService.setShouldReconnect(false);
+	};
 
 	const createTask = async () => {
 		const success = await createTaskFetch(newTaskContent);
@@ -41,7 +46,7 @@
 	<div class="flex w-full justify-between">
 		<div class="px-4 pt-4 text-5xl">My Day</div>
 		<div class="px-4 pt-4 text-2xl">
-			<form method="POST" action="?/logout">
+			<form method="POST" action="?/logout" onsubmit={handleLogout}>
 				<button
 					type="submit"
 					title="logout"
