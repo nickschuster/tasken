@@ -1,7 +1,10 @@
 export const enum Event {
 	Ping = 'socket:ping',
 	TaskAdded = 'task:added',
-	TaskUpdated = 'task:updated'
+	TaskUpdated = 'task:updated',
+	TaskGroupAdded = 'taskgroup:added',
+	TaskGroupUpdated = 'taskgroup:updated',
+	TaskGroupDeleted = 'taskgroup:deleted'
 }
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any

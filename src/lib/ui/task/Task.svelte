@@ -1,5 +1,5 @@
 <script lang="ts">
-	import type { Task } from '$lib/server/db/schema';
+	import type { Task, TaskGroup } from '$lib/server/db/schema';
 	import { vibrate } from '$lib/utils/vibrate';
 	import TaskCheck from './TaskCheck.svelte';
 
