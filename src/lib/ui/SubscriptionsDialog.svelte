@@ -36,7 +36,9 @@
 			class="fixed top-[50%] left-[50%] z-50 max-h-[calc(100%)] w-full max-w-[calc(100%)] translate-x-[-50%] translate-y-[-50%] overflow-auto rounded-lg bg-white p-5 shadow-md outline-hidden sm:max-w-[900px] md:w-full dark:bg-black"
 		>
 			<Dialog.Title class="text-center">
-				<h2 class="pb-4 text-4xl font-bold tracking-tighter sm:text-5xl">Choose Your Plan</h2>
+				<h2 class="pb-4 text-4xl font-bold tracking-tighter sm:text-5xl dark:text-white">
+					Choose Your Plan
+				</h2>
 			</Dialog.Title>
 			<Dialog.Description>
 				<div class="flex flex-col gap-4 md:flex-row">
