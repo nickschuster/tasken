@@ -24,6 +24,9 @@
 	let isSidebarOpen = $state(false);
 	let selectedGroup = $state('My Day');
 
+	wsService.setShouldReconnect(true);
+	wsService.connect();
+
 	setTasks(data.tasks);
 	setTaskGroups(data.taskGroups);
 
@@ -56,6 +59,10 @@
 			dateA.getMonth() === dateB.getMonth() &&
 			dateA.getDate() === dateB.getDate()
 		);
+	};
+
+	const handleLogout = (_event: SubmitEvent) => {
+		wsService.setShouldReconnect(false);
 	};
 
 	const createTask = async () => {
@@ -123,7 +130,7 @@
 				</h2>
 			</div>
 			<div class="text-2xl">
-				<form method="POST" action="?/logout">
+				<form method="POST" action="?/logout" onsubmit={handleLogout}>
 					<button
 						type="submit"
 						title="logout"
