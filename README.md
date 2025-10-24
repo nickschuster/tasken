@@ -8,7 +8,6 @@ TODO: create contributing.md
 - if you fix a bug, add a test for it
 - make sure you have prettier extension installed and configured as default
 - PR names should follow [convential commits](https://www.conventionalcommits.org/en/v1.0.0/#summary)
-- **All Svelte components must use Svelte 5 runes syntax** (see [Svelte 5 Runes Guide](.github/SVELTE_RUNES_GUIDE.md))
 
 ## Svelte 5 Runes
 
