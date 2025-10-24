@@ -2,11 +2,15 @@
 	import { formatCurrency } from '$lib/utils/currency';
 	import { ChartColumn, Check, GitMerge, LayoutGrid, Users } from '@lucide/svelte';
 
-	export let basicPrice: number | null = null;
-	export let proPrice: number | null = null;
-	export let teamPrice: number | null = null;
+	type Props = {
+		basicPrice?: number | null;
+		proPrice?: number | null;
+		teamPrice?: number | null;
+		choosePlan?: (plan: 'basic' | 'pro' | 'team') => void;
+	};
 
-	export let choosePlan = (plan: 'basic' | 'pro' | 'team') => {};
+	let { basicPrice = null, proPrice = null, teamPrice = null, choosePlan = () => {} }: Props =
+		$props();
 </script>
 
 <div class="flex flex-col rounded-lg border-2 border-black p-8 dark:border-white">

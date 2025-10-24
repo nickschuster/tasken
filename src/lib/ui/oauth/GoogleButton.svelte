@@ -1,5 +1,9 @@
 <script lang="ts">
-	export let text: string = 'Continue with Google';
+	type Props = {
+		text?: string;
+	};
+
+	let { text = 'Continue with Google' }: Props = $props();
 </script>
 
 <button

@@ -1,11 +1,15 @@
 <script lang="ts">
 	import { Check, Circle } from '@lucide/svelte';
 
-	export let checked = false;
-	export let toggleChecked: (checked: boolean) => void;
+	type Props = {
+		checked?: boolean;
+		toggleChecked: (checked: boolean) => void;
+	};
 
-	let mouseDown = false;
-	let visuallyChecked = checked;
+	let { checked = false, toggleChecked }: Props = $props();
+
+	let mouseDown = $state(false);
+	let visuallyChecked = $state(checked);
 	const ANIMATION_DURATION_MS = 200;
 
 	function handleToggle(event: Event) {
@@ -34,11 +38,11 @@
 	aria-label="checkbox"
 	aria-checked={visuallyChecked}
 	class:checked={visuallyChecked}
-	on:mousedown={() => (mouseDown = true)}
-	on:mouseup={() => (mouseDown = false)}
-	on:mouseleave={() => (mouseDown = false)}
-	on:click={handleToggle}
-	on:keydown={handleKeydown}
+	onmousedown={() => (mouseDown = true)}
+	onmouseup={() => (mouseDown = false)}
+	onmouseleave={() => (mouseDown = false)}
+	onclick={handleToggle}
+	onkeydown={handleKeydown}
 	title={visuallyChecked ? 'Uncheck' : 'Check'}
 >
 	<div

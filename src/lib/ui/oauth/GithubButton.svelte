@@ -2,7 +2,11 @@
 	import githubLight from '$lib/assets/githubLight.svg';
 	import githubDark from '$lib/assets/githubDark.svg';
 
-	export let text: string = 'Continue with Github';
+	type Props = {
+		text?: string;
+	};
+
+	let { text = 'Continue with Github' }: Props = $props();
 </script>
 
 <button

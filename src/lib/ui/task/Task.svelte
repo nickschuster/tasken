@@ -3,8 +3,12 @@
 	import { vibrate } from '$lib/utils/vibrate';
 	import TaskCheck from './TaskCheck.svelte';
 
-	export let task: Task;
-	export let updateTask: (taskId: string, updates: Partial<Task>) => void = () => {};
+	type Props = {
+		task: Task;
+		updateTask?: (taskId: string, updates: Partial<Task>) => void;
+	};
+
+	let { task, updateTask = () => {} }: Props = $props();
 
 	function toggleChecked(checked: boolean) {
 		if (checked) {
