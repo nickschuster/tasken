@@ -23,8 +23,8 @@
 	let taskGroups = $derived(getTaskGroups());
 	let isSidebarOpen = $state(false);
 	let selectedGroup = $state('My Day');
-  
-  wsService.setShouldReconnect(true);
+
+	wsService.setShouldReconnect(true);
 	wsService.connect();
 
 	setTasks(data.tasks);
