@@ -4,9 +4,10 @@
 
 	type Props = {
 		headerText?: string;
+		children?: import('svelte').Snippet;
 	};
 
-	let { headerText = '' }: Props = $props();
+	let { headerText = '', children }: Props = $props();
 
 	let isOpen = $state(false);
 </script>
@@ -23,7 +24,7 @@
 	</h2>
 	{#if isOpen}
 		<div class="content" transition:slide={{ duration: 100 }}>
-			<slot></slot>
+			{@render children?.()}
 		</div>
 	{/if}
 </div>
