@@ -59,7 +59,8 @@
 				<div class="flex flex-row items-center gap-3">
 					<input
 						type="color"
-						class="size-3 cursor-pointer rounded-full"
+						id="color-picker"
+						class="size-3 cursor-pointer rounded-full border-none"
 						style="background-color: {group.color}"
 						onchange={(e) => {
 							updateTaskGroup(group.id, { color: e.currentTarget.value });
