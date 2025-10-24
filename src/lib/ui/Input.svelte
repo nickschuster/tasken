@@ -1,6 +1,10 @@
 <script lang="ts">
-	export let newTaskContent: string = '';
-	export let onEnter: (value: string) => void = () => {};
+	type Props = {
+		newTaskContent?: string;
+		onEnter?: (value: string) => void;
+	};
+
+	let { newTaskContent = $bindable(''), onEnter = () => {} }: Props = $props();
 </script>
 
 <input
@@ -12,7 +16,7 @@
       dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-200
       dark:placeholder:text-neutral-500 dark:focus:ring-white"
 	bind:value={newTaskContent}
-	on:keydown={(event) => {
+	onkeydown={(event) => {
 		if (event.code === 'Enter') {
 			onEnter(newTaskContent);
 		}
