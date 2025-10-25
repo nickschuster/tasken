@@ -40,12 +40,13 @@
 
 <button
 	class={[
-		'flex cursor-pointer items-center gap-2 rounded-md px-4 py-0.5 transition-colors duration-150',
+		'flex cursor-pointer items-center gap-2 rounded-md  transition-colors duration-150',
 		'hover:bg-neutral-200 dark:hover:bg-neutral-800',
 		'text-neutral-800 dark:text-neutral-200',
 		selectedGroup === group.id &&
 			'bg-neutral-300 font-medium text-neutral-900 dark:bg-neutral-700 dark:text-white',
-		!isSidebarOpen && 'justify-center px-2 py-3'
+		!isSidebarOpen && 'justify-center py-3',
+		isSidebarOpen && 'pl-2'
 	]}
 	onclick={() => (selectedGroup = group.id)}
 >
@@ -59,7 +60,7 @@
 				<div class="flex flex-row items-center gap-3">
 					<input
 						type="color"
-						class="size-3 cursor-pointer rounded-full"
+						class="size-3 cursor-pointer rounded-full border-none"
 						style="background-color: {group.color}"
 						onchange={(e) => {
 							updateTaskGroup(group.id, { color: e.currentTarget.value });

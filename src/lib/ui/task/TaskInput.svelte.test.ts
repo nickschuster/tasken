@@ -1,16 +1,16 @@
 import { render, fireEvent } from '@testing-library/svelte';
 import { describe, it, expect, vi } from 'vitest';
-import Input from './Input.svelte';
+import TaskInput from './TaskInput.svelte';
 
-describe('Input.svelte', () => {
+describe('TaskInput.svelte', () => {
 	it('renders input with initial value', () => {
-		const { getByRole } = render(Input, { newTaskContent: 'test value' });
+		const { getByRole } = render(TaskInput, { newTaskContent: 'test value' });
 		const input = getByRole('textbox') as HTMLInputElement;
 		expect(input.value).toBe('test value');
 	});
 
 	it('updates value when typing', async () => {
-		const { getByRole } = render(Input, { newTaskContent: '' });
+		const { getByRole } = render(TaskInput, { newTaskContent: '' });
 		const input = getByRole('textbox') as HTMLInputElement;
 
 		await fireEvent.input(input, { target: { value: 'hello' } });
@@ -20,7 +20,7 @@ describe('Input.svelte', () => {
 
 	it('calls onEnter when Enter is pressed', async () => {
 		const onEnter = vi.fn();
-		const { getByRole } = render(Input, { newTaskContent: 'abc', onEnter });
+		const { getByRole } = render(TaskInput, { newTaskContent: 'abc', onEnter });
 		const input = getByRole('textbox') as HTMLInputElement;
 
 		await fireEvent.keyDown(input, { code: 'Enter', key: 'Enter' });
@@ -29,7 +29,7 @@ describe('Input.svelte', () => {
 
 	it('does not call onEnter on other keys', async () => {
 		const onEnter = vi.fn();
-		const { getByRole } = render(Input, { newTaskContent: 'abc', onEnter });
+		const { getByRole } = render(TaskInput, { newTaskContent: 'abc', onEnter });
 		const input = getByRole('textbox') as HTMLInputElement;
 
 		await fireEvent.keyDown(input, { code: 'Space', key: ' ' });
@@ -37,7 +37,7 @@ describe('Input.svelte', () => {
 	});
 
 	it('applies correct classes', () => {
-		const { getByRole } = render(Input, { newTaskContent: '' });
+		const { getByRole } = render(TaskInput, { newTaskContent: '' });
 		const input = getByRole('textbox') as HTMLInputElement;
 		expect(input.className).toContain('rounded-lg');
 		expect(input.className).toContain('border');
