@@ -14,6 +14,7 @@
 		updateTaskGroupFetch
 	} from '$lib/services/taskgroups.service.js';
 	import { createTaskFetch, updateTaskFetch } from '$lib/services/tasks.service.js';
+	import { wsService } from '$lib/services/ws.service.js';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
@@ -21,6 +22,9 @@
 	let taskGroups = $derived(getTaskGroups());
 	let isSidebarOpen = $state(false);
 	let selectedGroup = $state('Tasks');
+
+	wsService.setShouldReconnect(true);
+	wsService.connect();
 
 	setTasks(data.tasks);
 	setTaskGroups(data.taskGroups);
@@ -38,6 +42,10 @@
 			default:
 				return tasks.filter((t) => t.taskGroupId === group);
 		}
+	};
+
+	const handleLogout = (_event: SubmitEvent) => {
+		wsService.setShouldReconnect(false);
 	};
 
 	const createTask = async () => {
@@ -109,7 +117,7 @@
 				</h2>
 			</div>
 			<div class="text-2xl">
-				<form method="POST" action="?/logout">
+				<form method="POST" action="?/logout" onsubmit={handleLogout}>
 					<button
 						type="submit"
 						title="logout"

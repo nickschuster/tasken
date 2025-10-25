@@ -1,1 +1,9 @@
 @import 'tailwindcss';
+
+#color-picker::-webkit-color-swatch {
+	border: transparent;
+}
+
+#color-picker::-moz-color-swatch {
+	border: transparent;
+}

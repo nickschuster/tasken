@@ -60,6 +60,7 @@
 				<div class="flex flex-row items-center gap-3">
 					<input
 						type="color"
+						id="color-picker"
 						class="size-3 cursor-pointer rounded-full border-none"
 						style="background-color: {group.color}"
 						onchange={(e) => {
