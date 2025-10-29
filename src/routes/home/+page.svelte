@@ -148,19 +148,29 @@
 		</div>
 
 		<div class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2">
-			{#each uncompletedTasks as task, i (task.id)}
-				<button
+			{#snippet taskSnippet(task: Task)}
+				<div
 					tabindex="0"
+					role="button"
 					onclick={(e) => {
 						e.stopPropagation();
 						selectedTaskId = task.id;
+					}}
+					onkeydown={(e) => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							e.preventDefault();
+							selectedTaskId = task.id;
+						}
 					}}
 					onfocus={() => (selectedTaskId = task.id)}
 					class="rounded-lg p-4 transition-all duration-200
 			{task.completedAt ? '' : 'hover:bg-neutral-100 dark:hover:bg-neutral-900'}"
 				>
 					<TaskComponent {task} {updateTask} />
-				</button>
+				</div>
+			{/snippet}
+			{#each uncompletedTasks as task, i (task.id)}
+				{@render taskSnippet(task)}
 			{/each}
 
 			{#if uncompletedTasks.length === 0 && completedTasks.length === 0}
@@ -174,16 +184,7 @@
 			{#if completedTasks.length > 0}
 				<Collapsible headerText="Completed">
 					{#each completedTasks as task, i (task.id)}
-						<button
-							class="w-full rounded-lg p-4"
-							onclick={(e) => {
-								e.stopPropagation();
-								selectedTaskId = task.id;
-							}}
-							onfocus={() => (selectedTaskId = task.id)}
-						>
-							<TaskComponent {task} {updateTask} />
-						</button>
+						{@render taskSnippet(task)}
 					{/each}
 				</Collapsible>
 			{/if}

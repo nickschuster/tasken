@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Check, Palette, ChevronDown, StarIcon } from '@lucide/svelte';
+	import { Check, ChevronDown, StarIcon, BookMarkedIcon } from '@lucide/svelte';
 	import { DateTime } from 'luxon';
 	import { Select } from 'bits-ui';
 	import { type TaskGroup, type Task } from '$lib/server/db/schema';
@@ -22,6 +22,8 @@
 	let innerWidth = $state(0);
 	let isMobile = $derived(innerWidth < 768);
 	let isTaskViewOpen = $derived(selectedTask !== null);
+	let taskViewElement: HTMLElement | null = $state(null);
+
 	let dueDate: CalendarDate | undefined = $derived(
 		selectedTask?.dueDate
 			? new CalendarDate(
@@ -31,57 +33,61 @@
 				)
 			: undefined
 	);
-	let taskViewElement: HTMLElement | null = $state(null);
 
-	const groups = taskGroups.map((group) => ({
-		label: group.name,
-		value: group.id,
-		color: group.color
-	}));
-
-	const selectedLabel = $derived(
-		selectedTask?.taskGroupId
-			? groups.find((group) => group.value === selectedTask.taskGroupId)?.label
-			: 'Assign to Group'
+	let groups = $derived(
+		taskGroups.map((group) => ({
+			label: group.name,
+			value: group.id,
+			color: group.color
+		}))
 	);
 
-	function handleDocumentClick(e: MouseEvent) {
+	let selectedLabel = $derived(
+		selectedTask?.taskGroupId
+			? groups.find((group) => group.value === selectedTask.taskGroupId)?.label
+			: 'No Group'
+	);
+
+	const handleDocumentClick = (e: MouseEvent) => {
+		const calendar = (e.target as HTMLElement)?.closest('[data-calendar-grid]');
+		if (calendar) return;
+
+		if (taskViewElement?.contains(e.target as Node)) return;
+
 		if (isTaskViewOpen && taskViewElement && !taskViewElement.contains(e.target as Node)) {
 			selectedTaskId = '';
 		}
-	}
+	};
 
-	function handleDueDateChange() {
+	const handleDueDateChange = () => {
 		if (dueDate && selectedTask) {
 			const newDueDate = dueDate.toDate(getLocalTimeZone());
 			updateTask(selectedTask.id, { dueDate: newDueDate });
 		}
-	}
+	};
 
-	function toggleTaskView() {
-		isTaskViewOpen = !isTaskViewOpen;
-	}
+	const handleGroupSelection = (newGroup: string) => {
+		if (selectedTask) {
+			selectedTask.taskGroupId = newGroup.length > 0 ? newGroup : null;
+			updateTask(selectedTask.id, { taskGroupId: newGroup });
+		}
+	};
 
-	function closeMobileTaskView() {
-		if (isMobile) isTaskViewOpen = false;
-	}
+	const handleIsImportantToggle = () => {
+		if (selectedTask) {
+			selectedTask.isImportant = !selectedTask.isImportant;
+			updateTask(selectedTask.id, { isImportant: selectedTask.isImportant });
+		}
+	};
 </script>
 
 <svelte:window bind:innerWidth onclick={handleDocumentClick} />
 
-{#if isMobile && isTaskViewOpen}
-	<button
-		class="fixed inset-0 z-40 bg-black opacity-50"
-		onclick={closeMobileTaskView}
-		aria-label="close"
-	></button>
-{/if}
-
 <div
 	class={[
 		'flex h-screen flex-col bg-white text-neutral-800 transition-all duration-150 dark:bg-neutral-950 dark:text-neutral-200',
-		isMobile && 'fixed top-0 left-0 z-50 w-96 transform shadow-lg',
-		isMobile && (isTaskViewOpen ? 'translate-x-0' : '-translate-x-full'),
+		isMobile && 'fixed top-0 right-0 z-50 w-96 transform shadow-lg',
+		isMobile && (isTaskViewOpen ? 'translate-x-0' : 'translate-x-full'),
 		!isMobile && 'md:static md:flex md:h-screen',
 		!isMobile && (isTaskViewOpen ? 'md:w-96' : 'md:w-0')
 	]}
@@ -108,7 +114,11 @@
 				</p>
 			</div>
 			<p class="pb-8 text-sm font-light text-neutral-600">
-				{DateTime.fromJSDate(selectedTask.createdAt).toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY)}
+				{DateTime.fromJSDate(
+					typeof selectedTask.createdAt === 'string'
+						? new Date(selectedTask.createdAt)
+						: selectedTask.createdAt
+				).toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY)}
 			</p>
 			<div class="flex flex-col gap-6">
 				<div
@@ -137,7 +147,7 @@
 						<button
 							type="button"
 							tabindex="0"
-							onclick={() => (selectedTask.isImportant = !selectedTask.isImportant)}
+							onclick={handleIsImportantToggle}
 							class="flex items-center justify-center rounded-md p-2 transition-colors hover:bg-yellow-700/70 {selectedTask.isImportant
 								? 'bg-yellow-700/60'
 								: 'bg-yellow-700/30'}"
@@ -162,7 +172,7 @@
 
 							<Select.Root
 								type="single"
-								onValueChange={(v) => (selectedTask.taskGroupId = v)}
+								onValueChange={handleGroupSelection}
 								items={groups}
 								allowDeselect={true}
 							>
@@ -176,8 +186,10 @@
 									aria-label="Select a theme"
 								>
 									<div class="flex items-center gap-2">
-										<Palette class="size-5 text-neutral-700 dark:text-neutral-300" />
-										<span>{selectedLabel}</span>
+										<BookMarkedIcon class="size-5 text-neutral-700 dark:text-neutral-300" />
+										<span class={selectedLabel === 'No Group' ? 'text-neutral-500' : ''}
+											>{selectedLabel}</span
+										>
 									</div>
 									<ChevronDown class="size-4 text-neutral-700 dark:text-neutral-300" />
 								</Select.Trigger>
@@ -199,18 +211,14 @@
 													value={group.value}
 													label={group.label}
 												>
-													{#snippet children({ selected })}
-														<div
-															class="mr-2 size-3 rounded-full"
-															style="background-color: {group.color}"
-														></div>
-														{group.label}
-														{#if selected}
-															<Check
-																class="ml-auto size-4 text-neutral-600 dark:text-neutral-300"
-															/>
-														{/if}
-													{/snippet}
+													<div
+														class="mr-2 size-3 rounded-full"
+														style="background-color: {group.color}"
+													></div>
+													{group.label}
+													{#if selectedTask.taskGroupId === group.value}
+														<Check class="ml-auto size-4 text-neutral-600 dark:text-neutral-300" />
+													{/if}
 												</Select.Item>
 											{/each}
 										</Select.Viewport>

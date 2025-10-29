@@ -8,7 +8,7 @@
 		task: Task;
 	};
 
-	let { checked = false, toggleChecked, task }: Props = $props();
+	let { checked = false, toggleChecked }: Props = $props();
 
 	let mouseDown = $state(false);
 	let visuallyChecked = $state(checked);
