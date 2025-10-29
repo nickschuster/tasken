@@ -33,9 +33,20 @@
 	);
 	let taskViewElement: HTMLElement | null = $state(null);
 
+	const groups = taskGroups.map((group) => ({
+		label: group.name,
+		value: group.id,
+		color: group.color
+	}));
+
+	const selectedLabel = $derived(
+		selectedTask?.taskGroupId
+			? groups.find((group) => group.value === selectedTask.taskGroupId)?.label
+			: 'Assign to Group'
+	);
+
 	function handleDocumentClick(e: MouseEvent) {
 		if (isTaskViewOpen && taskViewElement && !taskViewElement.contains(e.target as Node)) {
-			isTaskViewOpen = false;
 			selectedTaskId = '';
 		}
 	}
@@ -47,25 +58,13 @@
 		}
 	}
 
-	function toggleSidebar() {
+	function toggleTaskView() {
 		isTaskViewOpen = !isTaskViewOpen;
 	}
 
-	function closeMobileSidebar() {
+	function closeMobileTaskView() {
 		if (isMobile) isTaskViewOpen = false;
 	}
-
-	const groups = taskGroups.map((g) => ({
-		label: g.name,
-		value: g.id,
-		color: g.color
-	}));
-
-	const selectedLabel = $derived(
-		selectedTask?.taskGroupId
-			? groups.find((group) => group.value === selectedTask.taskGroupId)?.label
-			: 'Assign to Group'
-	);
 </script>
 
 <svelte:window bind:innerWidth onclick={handleDocumentClick} />
@@ -73,7 +72,7 @@
 {#if isMobile && isTaskViewOpen}
 	<button
 		class="fixed inset-0 z-40 bg-black opacity-50"
-		onclick={closeMobileSidebar}
+		onclick={closeMobileTaskView}
 		aria-label="close"
 	></button>
 {/if}
