@@ -16,6 +16,7 @@
 		updateTaskGroupFetch
 	} from '$lib/services/taskgroups.service.js';
 	import { createTaskFetch, updateTaskFetch } from '$lib/services/tasks.service.js';
+	import DetailedTaskView from '$lib/ui/DetailedTaskView.svelte';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
@@ -23,6 +24,8 @@
 	let taskGroups = $derived(getTaskGroups());
 	let isSidebarOpen = $state(false);
 	let selectedGroup = $state('My Day');
+	let selectedTaskId = $state('');
+	let selectedTask = $derived(tasks.find((t) => t.id === selectedTaskId) ?? null);
 
 	wsService.setShouldReconnect(true);
 	wsService.connect();
@@ -146,12 +149,18 @@
 
 		<div class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2">
 			{#each uncompletedTasks as task, i (task.id)}
-				<div
+				<button
+					tabindex="0"
+					onclick={(e) => {
+						e.stopPropagation();
+						selectedTaskId = task.id;
+					}}
+					onfocus={() => (selectedTaskId = task.id)}
 					class="rounded-lg p-4 transition-all duration-200
 			{task.completedAt ? '' : 'hover:bg-neutral-100 dark:hover:bg-neutral-900'}"
 				>
 					<TaskComponent {task} {updateTask} />
-				</div>
+				</button>
 			{/each}
 
 			{#if uncompletedTasks.length === 0 && completedTasks.length === 0}
@@ -165,9 +174,16 @@
 			{#if completedTasks.length > 0}
 				<Collapsible headerText="Completed">
 					{#each completedTasks as task, i (task.id)}
-						<div class="rounded-lg p-4">
+						<button
+							class="w-full rounded-lg p-4"
+							onclick={(e) => {
+								e.stopPropagation();
+								selectedTaskId = task.id;
+							}}
+							onfocus={() => (selectedTaskId = task.id)}
+						>
 							<TaskComponent {task} {updateTask} />
-						</div>
+						</button>
 					{/each}
 				</Collapsible>
 			{/if}
@@ -177,4 +193,6 @@
 			<Input onEnter={createTask} bind:newTaskContent />
 		</div>
 	</div>
+
+	<DetailedTaskView bind:selectedTask bind:selectedTaskId {taskGroups} {updateTask} />
 </div>
