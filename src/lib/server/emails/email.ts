@@ -15,8 +15,12 @@ export const sendEmail = async (
 
 	const subject = EmailSubjects[template];
 
+	const from = process.env.RESEND_FROM_EMAIL || 'no-reply@example.com';
+
+	const fromWithName = `Tasken <${from}>`;
+
 	return await resend.emails.send({
-		from: 'onboarding@resend.dev',
+		from: fromWithName,
 		to,
 		subject,
 		html

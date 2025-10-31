@@ -22,9 +22,9 @@
 		class="
 			inline-flex cursor-pointer items-center
 			justify-center rounded-md px-3 py-2 text-sm font-medium
-			text-neutral-900 transition focus:ring-2
-			focus:ring-black focus:outline-none
-		 dark:text-neutral-100 dark:focus:ring-white
+			text-neutral-900 transition focus-visible:ring-2
+			focus-visible:ring-black focus-visible:outline-none
+		 dark:text-neutral-100 dark:focus-visible:ring-white
 		"
 	>
 		{buttonText}
