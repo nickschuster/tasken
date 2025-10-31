@@ -159,6 +159,7 @@
 						<button
 							type="button"
 							tabindex="0"
+							aria-label="Is Important Toggle"
 							onclick={handleIsImportantToggle}
 							class="flex items-center justify-center rounded-md p-2 transition-colors hover:bg-yellow-400/70 dark:hover:bg-yellow-700/70 {selectedTask.isImportant
 								? 'bg-yellow-400/60 dark:bg-yellow-700/60'
