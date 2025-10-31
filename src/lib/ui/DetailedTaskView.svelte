@@ -8,7 +8,7 @@
 
 	type Props = {
 		selectedTask: Task | null;
-		selectedTaskId: string;
+		selectedTaskId: string | null;
 		taskGroups: TaskGroup[];
 		updateTask: (taskId: string, updatedTask: Partial<Task>) => void;
 	};
@@ -21,10 +21,10 @@
 	}: Props = $props();
 	let innerWidth = $state(0);
 	let isMobile = $derived(innerWidth < 768);
-	let isTaskViewOpen = $derived(selectedTask !== null);
-	let taskViewElement: HTMLElement | null = $state(null);
+	let isTaskViewOpen = $derived(!!selectedTask);
+	let taskViewElement = $state<HTMLElement | null>(null);
 
-	let dueDate: CalendarDate | undefined = $derived(
+	let dueDate = $derived(
 		selectedTask?.dueDate
 			? new CalendarDate(
 					selectedTask.dueDate.getFullYear(),
@@ -43,41 +43,53 @@
 	);
 
 	let selectedLabel = $derived(
-		selectedTask?.taskGroupId
-			? groups.find((group) => group.value === selectedTask.taskGroupId)?.label
+		selectedTask
+			? (groups.find((group) => group.value === selectedTask?.taskGroupId)?.label ?? 'No Group')
 			: 'No Group'
 	);
 
 	const handleDocumentClick = (e: MouseEvent) => {
 		const calendar = (e.target as HTMLElement)?.closest('[data-calendar-grid]');
-		if (calendar) return;
+		const selectMenu = (e.target as HTMLElement)?.closest('[data-bits-select-group]');
+		const detailedTaskView = taskViewElement?.contains(e.target as Node);
 
-		if (taskViewElement?.contains(e.target as Node)) return;
+		if (calendar || selectMenu || detailedTaskView) return;
 
-		if (isTaskViewOpen && taskViewElement && !taskViewElement.contains(e.target as Node)) {
-			selectedTaskId = '';
+		if (isTaskViewOpen && taskViewElement) {
+			selectedTaskId = null;
 		}
 	};
 
 	const handleDueDateChange = () => {
 		if (dueDate && selectedTask) {
 			const newDueDate = dueDate.toDate(getLocalTimeZone());
+
+			selectedTask = { ...selectedTask, dueDate: newDueDate };
+
 			updateTask(selectedTask.id, { dueDate: newDueDate });
 		}
 	};
 
 	const handleGroupSelection = (newGroup: string) => {
-		if (selectedTask) {
-			selectedTask.taskGroupId = newGroup.length > 0 ? newGroup : null;
-			updateTask(selectedTask.id, { taskGroupId: newGroup });
-		}
+		if (!selectedTask) return;
+
+		const isDeselecting = newGroup === selectedTask.taskGroupId;
+
+		const updatedGroupId = newGroup.length === 0 || isDeselecting ? null : newGroup;
+
+		selectedTask = { ...selectedTask, taskGroupId: updatedGroupId };
+
+		updateTask(selectedTask.id, { taskGroupId: updatedGroupId });
 	};
 
 	const handleIsImportantToggle = () => {
-		if (selectedTask) {
-			selectedTask.isImportant = !selectedTask.isImportant;
-			updateTask(selectedTask.id, { isImportant: selectedTask.isImportant });
-		}
+		if (!selectedTask) return;
+
+		const prev = { ...selectedTask };
+
+		selectedTask = { ...prev, isImportant: !prev.isImportant };
+
+		updateTask(selectedTask.id, { isImportant: selectedTask.isImportant });
 	};
 </script>
 
@@ -102,7 +114,7 @@
     dark:text-neutral-100
 	"
 	>
-		{#if selectedTask}
+		{#if selectedTaskId && selectedTask}
 			<div class="flex flex-row justify-between">
 				<h1>Task Details</h1>
 				<p
@@ -139,7 +151,7 @@
       dark:placeholder:text-neutral-500 dark:focus:ring-white"
 							bind:value={selectedTask.content}
 							onkeydown={(e) => {
-								if (e.code === 'Enter') {
+								if (e.code === 'Enter' && selectedTask) {
 									updateTask(selectedTask.id, { content: selectedTask.content });
 								}
 							}}
@@ -148,18 +160,19 @@
 							type="button"
 							tabindex="0"
 							onclick={handleIsImportantToggle}
-							class="flex items-center justify-center rounded-md p-2 transition-colors hover:bg-yellow-700/70 {selectedTask.isImportant
-								? 'bg-yellow-700/60'
-								: 'bg-yellow-700/30'}"
+							class="flex items-center justify-center rounded-md p-2 transition-colors hover:bg-yellow-400/70 dark:hover:bg-yellow-700/70 {selectedTask.isImportant
+								? 'bg-yellow-400/60 dark:bg-yellow-700/60'
+								: 'bg-yellow-400/30 dark:bg-yellow-700/30'}"
 						>
 							<StarIcon
 								fill={selectedTask.isImportant ? 'yellow' : 'transparent'}
-								class={selectedTask.isImportant ? 'text-yellow-300' : 'text-gray-400'}
+								class={selectedTask.isImportant ? 'text-yellow-300' : 'text-neutral-500'}
 								size="16"
 							/>
 						</button>
 					</div>
 				</div>
+
 				<div
 					class="rounded-md border-2 border-neutral-100 bg-neutral-50 p-3 dark:border-neutral-900 dark:bg-neutral-950"
 				>
@@ -200,6 +213,7 @@
 			       overflow-y-auto rounded-lg border border-neutral-300 bg-white shadow-lg
 			       dark:border-neutral-700 dark:bg-neutral-900"
 										sideOffset={4}
+										data-bits-select-group
 									>
 										<Select.Viewport class="p-1">
 											{#each groups as group, i (group.value)}
@@ -228,6 +242,7 @@
 						</div>
 					</div>
 				</div>
+
 				<div
 					class="rounded-md border-2 border-neutral-100 bg-neutral-50 p-3 dark:border-neutral-900 dark:bg-neutral-950"
 				>
@@ -236,6 +251,7 @@
 						<DatePicker label="DUE DATE" bind:value={dueDate} onChange={handleDueDateChange} />
 					</div>
 				</div>
+
 				<hr class="my-3 border-t border-neutral-200 dark:border-neutral-800" />
 				{#if !!selectedTask.completedAt}
 					<div

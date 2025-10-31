@@ -5,7 +5,6 @@
 	type Props = {
 		checked: boolean;
 		toggleChecked: (checked: boolean) => void;
-		task: Task;
 	};
 
 	let { checked = false, toggleChecked }: Props = $props();

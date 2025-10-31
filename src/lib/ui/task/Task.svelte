@@ -20,7 +20,7 @@
 </script>
 
 <div class="flex items-center gap-2">
-	<TaskCheck checked={!!task.completedAt} {toggleChecked} {task} />
+	<TaskCheck checked={!!task.completedAt} {toggleChecked} />
 	{#if !!task.completedAt}
 		<span class="line-through">{task.content}</span>
 	{:else}

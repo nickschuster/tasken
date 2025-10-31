@@ -24,7 +24,7 @@
 	let taskGroups = $derived(getTaskGroups());
 	let isSidebarOpen = $state(false);
 	let selectedGroup = $state('My Day');
-	let selectedTaskId = $state('');
+	let selectedTaskId = $state<string | null>(null);
 	let selectedTask = $derived(tasks.find((t) => t.id === selectedTaskId) ?? null);
 
 	wsService.setShouldReconnect(true);
