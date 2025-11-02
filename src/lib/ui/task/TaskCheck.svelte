@@ -55,10 +55,11 @@
 		/>
 		<Check
 			strokeWidth="3"
-			size="20"
-			class="circle-check absolute translate-1 rounded-full   {visuallyChecked || mouseDown
+			size="18"
+			class="circle-check absolute translate-x-[5px] translate-y-[6px] rounded-full   {visuallyChecked ||
+			mouseDown
 				? 'text-white opacity-100'
-				: 'text-black opacity-0'}"
+				: 'text-black opacity-0 dark:text-neutral-800'}"
 		/>
 	</div>
 </button>

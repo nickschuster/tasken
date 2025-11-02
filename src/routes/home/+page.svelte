@@ -1,13 +1,11 @@
 <script lang="ts">
-	import Input from '$lib/ui/Input.svelte';
+	import TaskInput from '$lib/ui/task/TaskInput.svelte';
 	import TaskComponent from '$lib/ui/task/Task.svelte';
 	import Collapsible from '$lib/ui/Collapsible.svelte';
 	import Sidebar from '$lib/ui/sidebar/Sidebar.svelte';
 	import { CircleCheckBigIcon, MenuIcon } from '@lucide/svelte';
-	import { DateTime } from 'luxon';
 	import { getTasks, setTasks } from '$lib/states/task.state.svelte.js';
 	import { getTaskGroups, setTaskGroups } from '$lib/states/taskGroup.state.svelte.js';
-	import { wsService } from '$lib/services/ws.service.js';
 	import type { Task, TaskGroup } from '$lib/server/db/schema';
 	import SubscriptionsDialog from '$lib/ui/SubscriptionsDialog.svelte';
 	import {
@@ -16,13 +14,14 @@
 		updateTaskGroupFetch
 	} from '$lib/services/taskgroups.service.js';
 	import { createTaskFetch, updateTaskFetch } from '$lib/services/tasks.service.js';
+	import { wsService } from '$lib/services/ws.service.js';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
 	let tasks = $derived(getTasks());
 	let taskGroups = $derived(getTaskGroups());
 	let isSidebarOpen = $state(false);
-	let selectedGroup = $state('My Day');
+	let selectedGroup = $state('Tasks');
 
 	wsService.setShouldReconnect(true);
 	wsService.connect();
@@ -32,16 +31,12 @@
 
 	const filterTasksByGroup = (group: string) => {
 		const today = new Date();
-		const tomorrow = new Date();
-		tomorrow.setDate(tomorrow.getDate() + 1);
 
 		switch (group) {
-			case 'My Day':
+			case 'Tasks':
 				return tasks;
-			case 'Today':
-				return tasks.filter((t) => isSameDay(t.dueDate, today));
-			case 'Tomorrow':
-				return tasks.filter((t) => isSameDay(t.dueDate, tomorrow));
+			case 'Planned':
+				return tasks.filter((t) => t.dueDate !== null);
 			case 'Important':
 				return tasks.filter((t) => t.isImportant);
 			default:
@@ -49,23 +44,15 @@
 		}
 	};
 
-	const isSameDay = (dateA: Date | null, dateB: Date) => {
-		if (!dateA) {
-			return false;
-		}
-
-		return (
-			dateA.getFullYear() === dateB.getFullYear() &&
-			dateA.getMonth() === dateB.getMonth() &&
-			dateA.getDate() === dateB.getDate()
-		);
-	};
-
 	const handleLogout = (_event: SubmitEvent) => {
 		wsService.setShouldReconnect(false);
 	};
 
 	const createTask = async () => {
+		if (newTaskContent.trim() === '') {
+			return;
+		}
+
 		const success = await createTaskFetch(newTaskContent);
 
 		if (success) {
@@ -87,7 +74,7 @@
 
 	const deleteTaskGroup = async (taskGroupId: string) => {
 		if (taskGroupId === selectedGroup) {
-			selectedGroup = 'My Day';
+			selectedGroup = 'Tasks';
 		}
 
 		await deleteTaskGroupFetch(taskGroupId);
@@ -144,11 +131,11 @@
 			</div>
 		</div>
 
-		<div class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2">
+		<div class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto px-2">
 			{#each uncompletedTasks as task, i (task.id)}
 				<div
-					class="rounded-lg p-4 transition-all duration-200
-			{task.completedAt ? '' : 'hover:bg-neutral-100 dark:hover:bg-neutral-900'}"
+					class="rounded-lg p-2 px-4 transition-all duration-200
+			{task.completedAt ? '' : 'hover:bg-neutral-100 dark:hover:bg-neutral-950'}"
 				>
 					<TaskComponent {task} {updateTask} />
 				</div>
@@ -165,7 +152,7 @@
 			{#if completedTasks.length > 0}
 				<Collapsible headerText="Completed">
 					{#each completedTasks as task, i (task.id)}
-						<div class="rounded-lg p-4">
+						<div class="rounded-lg p-2 px-4">
 							<TaskComponent {task} {updateTask} />
 						</div>
 					{/each}
@@ -174,7 +161,7 @@
 		</div>
 
 		<div class="p-4">
-			<Input onEnter={createTask} bind:newTaskContent />
+			<TaskInput onEnter={createTask} bind:newTaskContent {taskGroups} />
 		</div>
 	</div>
 </div>

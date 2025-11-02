@@ -15,7 +15,7 @@ describe('Sidebar.svelte', () => {
 	it('renders with default groups', () => {
 		const props = {
 			isSidebarOpen: true,
-			selectedGroup: 'My Day',
+			selectedGroup: 'Tasks',
 			taskGroups: [],
 			createTaskGroup: vi.fn(),
 			updateTaskGroup: vi.fn(),
@@ -24,9 +24,8 @@ describe('Sidebar.svelte', () => {
 
 		const { getByText } = render(Sidebar, props);
 
-		expect(getByText('My Day')).toBeTruthy();
-		expect(getByText('Today')).toBeTruthy();
-		expect(getByText('Tomorrow')).toBeTruthy();
+		expect(getByText('Tasks')).toBeTruthy();
+		expect(getByText('Planned')).toBeTruthy();
 		expect(getByText('Important')).toBeTruthy();
 
 		expect(getByText('Your Lists')).toBeTruthy();
@@ -35,7 +34,7 @@ describe('Sidebar.svelte', () => {
 	it('closes when chevron is clicked', () => {
 		const props = {
 			isSidebarOpen: true,
-			selectedGroup: 'My Day',
+			selectedGroup: 'Tasks',
 			taskGroups: [],
 			createTaskGroup: vi.fn(),
 			updateTaskGroup: vi.fn(),
@@ -48,9 +47,8 @@ describe('Sidebar.svelte', () => {
 
 		fireEvent.click(button);
 
-		expect(queryByText('My Day')).toBeFalsy();
+		expect(queryByText('Tasks')).toBeFalsy();
 		expect(queryByText('Today')).toBeFalsy();
-		expect(queryByText('Tomorrow')).toBeFalsy();
 		expect(queryByText('Important')).toBeFalsy();
 
 		expect(queryByText('Your Lists')).toBeFalsy();
@@ -61,7 +59,7 @@ describe('Sidebar.svelte', () => {
 
 		const props = {
 			isSidebarOpen: true,
-			selectedGroup: 'My Day',
+			selectedGroup: 'Tasks',
 			taskGroups: [],
 			createTaskGroup,
 			updateTaskGroup: vi.fn(),
