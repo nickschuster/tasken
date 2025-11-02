@@ -161,7 +161,7 @@
 		</div>
 
 		<div class="p-4">
-			<TaskInput onEnter={createTask} bind:newTaskContent />
+			<TaskInput onEnter={createTask} bind:newTaskContent {taskGroups} />
 		</div>
 	</div>
 </div>
