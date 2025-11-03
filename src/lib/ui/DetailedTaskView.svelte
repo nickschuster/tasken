@@ -23,6 +23,7 @@
 	let isMobile = $derived(innerWidth < 768);
 	let isTaskViewOpen = $derived(!!selectedTask);
 	let taskViewElement = $state<HTMLElement | null>(null);
+	let newContent = $state(selectedTask?.content ?? '');
 
 	let dueDate = $derived(
 		selectedTask?.dueDate
@@ -47,6 +48,15 @@
 			? (groups.find((group) => group.value === selectedTask?.taskGroupId)?.label ?? 'No Group')
 			: 'No Group'
 	);
+
+	const handleContentChange = () => {
+		if (selectedTask && newContent.trim().length > 0) {
+			selectedTask = { ...selectedTask, content: newContent };
+			updateTask(selectedTask.id, { content: newContent });
+		} else {
+			newContent = selectedTask?.content ?? '';
+		}
+	};
 
 	const handleDocumentClick = (e: MouseEvent) => {
 		const calendar = (e.target as HTMLElement)?.closest('[data-calendar-grid]');
@@ -149,10 +159,13 @@
       placeholder:text-neutral-400 focus:border-transparent focus:ring-2 focus:ring-black
       focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300
       dark:placeholder:text-neutral-500 dark:focus:ring-white"
-							bind:value={selectedTask.content}
+							bind:value={newContent}
+							placeholder="Task Name"
+							onblur={handleContentChange}
 							onkeydown={(e) => {
-								if (e.code === 'Enter' && selectedTask) {
-									updateTask(selectedTask.id, { content: selectedTask.content });
+								if (e.key === 'Enter') {
+									e.preventDefault();
+									handleContentChange();
 								}
 							}}
 						/>
