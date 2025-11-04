@@ -1,4 +1,5 @@
-## Conventions 
+## Conventions
+
 TODO: create contributing.md
 
 - need global tsx
@@ -12,14 +13,6 @@ TODO: create contributing.md
 ## Svelte 5 Runes
 
 This project uses **Svelte 5 runes exclusively**. All components must use the modern runes syntax (`$props()`, `$state()`, `$derived()`, `$effect()`, etc.) instead of the old `export let` and reactive statements.
-
-To validate that your components follow this requirement, run:
-
-```sh
-npm run check:runes
-```
-
-For detailed information on Svelte 5 runes and migration examples, see the [Svelte 5 Runes Guide](.github/SVELTE_RUNES_GUIDE.md).
 
 ## Setup
 

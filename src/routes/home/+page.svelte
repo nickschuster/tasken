@@ -157,11 +157,13 @@
 
 			{#if completedTasks.length > 0}
 				<Collapsible headerText="Completed">
-					{#each completedTasks as task, i (task.id)}
-						<div class="rounded-lg p-4">
-							<TaskComponent {task} {updateTask} />
-						</div>
-					{/each}
+					{#snippet children()}
+						{#each completedTasks as task, i (task.id)}
+							<div class="rounded-lg p-4">
+								<TaskComponent {task} {updateTask} />
+							</div>
+						{/each}
+					{/snippet}
 				</Collapsible>
 			{/if}
 		</div>

@@ -1,10 +1,11 @@
 <script lang="ts">
 	import { ChevronDown } from '@lucide/svelte';
+	import type { Snippet } from 'svelte';
 	import { slide } from 'svelte/transition';
 
 	type Props = {
 		headerText?: string;
-		children?: import('svelte').Snippet;
+		children?: Snippet;
 	};
 
 	let { headerText = '', children }: Props = $props();
