@@ -14,24 +14,34 @@
 </script>
 
 <div class="flex flex-col rounded-lg border-2 border-black p-8 dark:border-white">
-	<h3 class="text-2xl font-semibold">Basic</h3>
+	<h3 class="text-2xl font-semibold dark:text-white">Basic</h3>
 	<p class="mt-2 text-neutral-600 dark:text-neutral-400">For individuals and small projects.</p>
 	<div class="my-8">
-		<span class="text-5xl font-bold">{basicPrice ? formatCurrency(basicPrice / 100) : 'TBA'}</span>
+		<span class="text-5xl font-bold dark:text-white"
+			>{basicPrice ? formatCurrency(basicPrice / 100) : 'TBA'}</span
+		>
 		<span class="text-lg text-neutral-600 dark:text-neutral-400">/ month</span>
 	</div>
 	<ul class="flex-grow space-y-4">
 		<li class="flex items-center gap-3">
-			<Check class="h-5 w-5 flex-shrink-0 text-green-500" /><span>Hosted Cloud Sync</span>
+			<Check class="h-5 w-5 flex-shrink-0 text-green-500" /><span class="dark:text-white"
+				>Hosted Cloud Sync</span
+			>
 		</li>
 		<li class="flex items-center gap-3">
-			<Check class="h-5 w-5 flex-shrink-0 text-green-500" /><span>Unlimited Tasks & Lists</span>
+			<Check class="h-5 w-5 flex-shrink-0 text-green-500" /><span class="dark:text-white"
+				>Unlimited Tasks & Lists</span
+			>
 		</li>
 		<li class="flex items-center gap-3">
-			<Check class="h-5 w-5 flex-shrink-0 text-green-500" /><span>Advanced Reminders</span>
+			<Check class="h-5 w-5 flex-shrink-0 text-green-500" /><span class="dark:text-white"
+				>Advanced Reminders</span
+			>
 		</li>
 		<li class="flex items-center gap-3">
-			<Check class="h-5 w-5 flex-shrink-0 text-green-500" /><span>Priority Support</span>
+			<Check class="h-5 w-5 flex-shrink-0 text-green-500" /><span class="dark:text-white"
+				>Priority Support</span
+			>
 		</li>
 	</ul>
 	{#if basicPrice}
@@ -52,10 +62,12 @@
 <div
 	class="flex flex-col rounded-lg border border-neutral-200 p-8 opacity-70 grayscale dark:border-neutral-800"
 >
-	<h3 class="text-2xl font-semibold">Pro</h3>
+	<h3 class="text-2xl font-semibold dark:text-white">Pro</h3>
 	<p class="mt-2 text-neutral-500">For power users and professionals.</p>
 	<div class="my-8">
-		<span class="text-5xl font-bold">{proPrice ? formatCurrency(proPrice / 100) : 'TBA'}</span>
+		<span class="text-5xl font-bold dark:text-white"
+			>{proPrice ? formatCurrency(proPrice / 100) : 'TBA'}</span
+		>
 	</div>
 	<ul class="flex-grow space-y-4 text-neutral-600 dark:text-neutral-400">
 		<li class="flex items-center gap-3 font-semibold">
@@ -89,10 +101,12 @@
 <div
 	class="flex flex-col rounded-lg border border-neutral-200 p-8 opacity-70 grayscale dark:border-neutral-800"
 >
-	<h3 class="text-2xl font-semibold">Team</h3>
+	<h3 class="text-2xl font-semibold dark:text-white">Team</h3>
 	<p class="mt-2 text-neutral-500">For collaborative organizations.</p>
 	<div class="my-8">
-		<span class="text-5xl font-bold">{teamPrice ? formatCurrency(teamPrice / 100) : 'TBA'}</span>
+		<span class="text-5xl font-bold dark:text-white"
+			>{teamPrice ? formatCurrency(teamPrice / 100) : 'TBA'}</span
+		>
 	</div>
 	<ul class="flex-grow space-y-4 text-neutral-600 dark:text-neutral-400">
 		<li class="flex items-center gap-3 font-semibold">
