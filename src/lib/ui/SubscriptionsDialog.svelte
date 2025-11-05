@@ -3,8 +3,12 @@
 	import SubscriptionCards from './SubscriptionCards.svelte';
 	import type { DefaultSubscriptions } from '$lib/models/subscription';
 
-	export let open = true;
-	export let subscriptions: DefaultSubscriptions | null = null;
+	type Props = {
+		open?: boolean;
+		subscriptions?: DefaultSubscriptions | null;
+	};
+
+	let { open = $bindable(true), subscriptions = null }: Props = $props();
 
 	const choosePlan = async (plan: 'basic' | 'pro' | 'team') => {
 		if (!subscriptions) return;

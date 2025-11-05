@@ -3,7 +3,7 @@
 	import { Check, Circle } from '@lucide/svelte';
 
 	type Props = {
-		checked: boolean;
+		checked?: boolean;
 		toggleChecked: (checked: boolean) => void;
 	};
 

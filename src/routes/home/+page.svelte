@@ -183,9 +183,11 @@
 
 			{#if completedTasks.length > 0}
 				<Collapsible headerText="Completed">
-					{#each completedTasks as task, i (task.id)}
-						{@render taskSnippet(task)}
-					{/each}
+					{#snippet children()}
+						{#each completedTasks as task, i (task.id)}
+						  {@render taskSnippet(task)}
+					  {/each}
+					{/snippet}
 				</Collapsible>
 			{/if}
 		</div>

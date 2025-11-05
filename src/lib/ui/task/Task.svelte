@@ -5,10 +5,10 @@
 
 	type Props = {
 		task: Task;
-		updateTask: (taskId: string, updates: Partial<Task>) => void;
+		updateTask?: (taskId: string, updates: Partial<Task>) => void;
 	};
 
-	let { task, updateTask }: Props = $props();
+	let { task, updateTask = () => {} }: Props = $props();
 
 	function toggleChecked(checked: boolean) {
 		if (checked) {
