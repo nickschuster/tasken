@@ -1,4 +1,5 @@
-## Conventions 
+## Conventions
+
 TODO: create contributing.md
 
 - need global tsx
@@ -7,7 +8,11 @@ TODO: create contributing.md
 - every branch needs an e2e test if its new functionanlity and unit tests and component tests
 - if you fix a bug, add a test for it
 - make sure you have prettier extension installed and configured as default
-- PR names should follow [convential commits](https://www.conventionalcommits.org/en/v1.0.0/#summary)
+- PR names should follow [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/#summary)
+
+## Svelte 5 Runes
+
+This project uses **Svelte 5 runes exclusively**. All components must use the modern runes syntax (`$props()`, `$state()`, `$derived()`, `$effect()`, etc.) instead of the old `export let` and reactive statements.
 
 ## Setup
 
