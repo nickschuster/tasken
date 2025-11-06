@@ -13,6 +13,7 @@ jobs:
     env:
       DATABASE_URL: 'postgres://postgres:local@localhost:5433/local'
       PUBLIC_POSTHOG_KEY: 'test'
+      RESEND_FROM_EMAIL: 'no-reply@updates.tasken.app'
       RESEND_API_KEY: 'test'
       STRIPE_API_KEY: 'test'
       STRIPE_WEBHOOK_SECRET: 'test'

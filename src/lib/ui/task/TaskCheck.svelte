@@ -1,4 +1,5 @@
 <script lang="ts">
+	import type { Task } from '$lib/server/db/schema';
 	import { Check, Circle } from '@lucide/svelte';
 
 	type Props = {
@@ -38,6 +39,7 @@
 	aria-label="checkbox"
 	aria-checked={visuallyChecked}
 	class:checked={visuallyChecked}
+	tabindex="0"
 	onmousedown={() => (mouseDown = true)}
 	onmouseup={() => (mouseDown = false)}
 	onmouseleave={() => (mouseDown = false)}
