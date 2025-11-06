@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Check, ChevronDown, StarIcon, BookMarkedIcon } from '@lucide/svelte';
+	import { Check, ChevronDown, StarIcon, AlbumIcon } from '@lucide/svelte';
 	import { DateTime } from 'luxon';
 	import { Select } from 'bits-ui';
 	import { type TaskGroup, type Task } from '$lib/server/db/schema';
@@ -23,17 +23,19 @@
 	let isMobile = $derived(innerWidth < 768);
 	let isTaskViewOpen = $derived(!!selectedTask);
 	let taskViewElement = $state<HTMLElement | null>(null);
-	let newContent = $state(selectedTask?.content ?? '');
 
-	let dueDate = $derived(
-		selectedTask?.dueDate
-			? new CalendarDate(
-					selectedTask.dueDate.getFullYear(),
-					selectedTask.dueDate.getMonth() + 1,
-					selectedTask.dueDate.getDate()
-				)
-			: undefined
-	);
+	let content = $derived(selectedTask?.content ?? '');
+	let taskGroupId = $derived(selectedTask?.taskGroupId ?? '');
+	let dueDate = $derived.by(() => {
+		const date =
+			typeof selectedTask?.dueDate === 'string'
+				? new Date(selectedTask.dueDate)
+				: selectedTask?.dueDate;
+
+		return date
+			? new CalendarDate(date.getFullYear(), date.getMonth() + 1, date.getDate())
+			: undefined;
+	});
 
 	let groups = $derived(
 		taskGroups.map((group) => ({
@@ -50,11 +52,11 @@
 	);
 
 	const handleContentChange = () => {
-		if (selectedTask && newContent.trim().length > 0) {
-			selectedTask = { ...selectedTask, content: newContent };
-			updateTask(selectedTask.id, { content: newContent });
+		if (selectedTask && content.trim().length > 0) {
+			selectedTask = { ...selectedTask, content: content };
+			updateTask(selectedTask.id, { content: content });
 		} else {
-			newContent = selectedTask?.content ?? '';
+			content = selectedTask?.content ?? '';
 		}
 	};
 
@@ -83,13 +85,11 @@
 	const handleGroupSelection = (newGroup: string) => {
 		if (!selectedTask) return;
 
-		const isDeselecting = newGroup === selectedTask.taskGroupId;
+		const updatedTaskGroup = taskGroupId.length === 0 ? null : taskGroupId;
 
-		const updatedGroupId = newGroup.length === 0 || isDeselecting ? null : newGroup;
+		selectedTask = { ...selectedTask, taskGroupId: updatedTaskGroup };
 
-		selectedTask = { ...selectedTask, taskGroupId: updatedGroupId };
-
-		updateTask(selectedTask.id, { taskGroupId: updatedGroupId });
+		updateTask(selectedTask.id, { taskGroupId: updatedTaskGroup });
 	};
 
 	const handleIsImportantToggle = () => {
@@ -126,7 +126,7 @@
 	>
 		{#if selectedTaskId && selectedTask}
 			<div class="flex flex-row justify-between">
-				<h1>Task Details</h1>
+				<h1 class="font-bold">Task Details</h1>
 				<p
 					class="rounded-4xl border-1 px-2 py-1 text-xs {!!selectedTask.completedAt
 						? 'border-green-600 bg-green-700 text-green-300'
@@ -135,7 +135,7 @@
 					{!!selectedTask.completedAt ? 'Completed' : 'Active'}
 				</p>
 			</div>
-			<p class="pb-8 text-sm font-light text-neutral-600">
+			<p class="pb-8 text-sm font-medium text-neutral-500">
 				{DateTime.fromJSDate(
 					typeof selectedTask.createdAt === 'string'
 						? new Date(selectedTask.createdAt)
@@ -144,28 +144,29 @@
 			</p>
 			<div class="flex flex-col gap-6">
 				<div
-					class="rounded-md border-2 border-neutral-100 bg-neutral-50 p-3 dark:border-neutral-900 dark:bg-neutral-950"
+					class="rounded-md border-2 border-neutral-200/50 bg-neutral-50 p-3 dark:border-neutral-900 dark:bg-neutral-950"
 				>
 					<h2 class="pb-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
 						Primary Information
 					</h2>
-					<p class="py-1 text-xs font-bold tracking-tighter text-neutral-500">TASK NAME</p>
+					<p class="py-1 text-xs font-medium text-neutral-500">TASK NAME</p>
 					<div class="flex flex-row items-center gap-1">
 						<input
 							type="text"
-							class="text-md w-full rounded-lg border border-neutral-300 bg-white
-      px-4 py-1 text-neutral-700
-      transition-all duration-200 ease-in-out
-      placeholder:text-neutral-400 focus:border-transparent focus:ring-2 focus:ring-black
+							class="text-md w-full rounded-lg border border-neutral-300 bg-white px-4
+      py-1 text-neutral-700 transition-all
+      duration-200 ease-in-out placeholder:text-neutral-400
+      hover:border-neutral-400 focus:border-transparent focus:ring-2 focus:ring-black
       focus:outline-none dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-300
       dark:placeholder:text-neutral-500 dark:focus:ring-white"
-							bind:value={newContent}
+							bind:value={content}
 							placeholder="Task Name"
 							onblur={handleContentChange}
 							onkeydown={(e) => {
 								if (e.key === 'Enter') {
 									e.preventDefault();
 									handleContentChange();
+									(e.target as HTMLInputElement).blur();
 								}
 							}}
 						/>
@@ -188,69 +189,75 @@
 				</div>
 
 				<div
-					class="rounded-md border-2 border-neutral-100 bg-neutral-50 p-3 dark:border-neutral-900 dark:bg-neutral-950"
+					class="rounded-md border-2 border-neutral-200/50 bg-neutral-50 p-3 dark:border-neutral-900 dark:bg-neutral-950"
 				>
 					<h2 class="pb-2 text-sm font-medium text-neutral-700 dark:text-neutral-300">
 						Organization
 					</h2>
 					<div class="flex flex-col gap-1">
 						<div>
-							<p class="py-1 text-xs font-bold tracking-tighter text-neutral-500">GROUP</p>
+							<p class="py-1 text-xs font-medium text-neutral-500">GROUP</p>
 
 							<Select.Root
 								type="single"
 								onValueChange={handleGroupSelection}
 								items={groups}
 								allowDeselect={true}
+								bind:value={taskGroupId}
 							>
 								<Select.Trigger
-									class="text-md inline-flex w-full items-center justify-between rounded-lg border border-neutral-300
-		       bg-white px-4 py-1 text-neutral-800 transition-all
-		       duration-200 ease-in-out select-none placeholder:text-neutral-400
+									class="text-md inline-flex w-full items-center justify-between rounded-lg border border-neutral-300 bg-white
+		       px-4 py-1 text-neutral-700 transition-all duration-200
+		       ease-in-out select-none placeholder:text-neutral-400 hover:border-neutral-400
 		       focus:border-transparent focus:ring-2 focus:ring-black
 		       focus:outline-none dark:border-neutral-700
-		       dark:bg-neutral-900 dark:text-neutral-200 dark:placeholder:text-neutral-500 dark:focus:ring-white"
+		       dark:bg-neutral-900 dark:text-neutral-300 dark:placeholder:text-neutral-500 dark:focus:ring-white"
 									aria-label="Select a theme"
 								>
 									<div class="flex items-center gap-2">
-										<BookMarkedIcon class="size-5 text-neutral-700 dark:text-neutral-300" />
-										<span class={selectedLabel === 'No Group' ? 'text-neutral-500' : ''}
-											>{selectedLabel}</span
+										<span
+											class={selectedLabel === 'No Group'
+												? 'text-neutral-500 dark:text-neutral-400'
+												: ''}>{selectedLabel}</span
 										>
 									</div>
 									<ChevronDown class="size-4 text-neutral-700 dark:text-neutral-300" />
 								</Select.Trigger>
 
 								<Select.Portal>
-									<Select.Content
-										class="z-50 mt-2 max-h-64 w-[var(--bits-select-anchor-width)]
+									{#if groups.length !== 0}
+										<Select.Content
+											class="z-50 mt-2 max-h-64 w-[var(--bits-select-anchor-width)]
 			       overflow-y-auto rounded-lg border border-neutral-300 bg-white shadow-lg
 			       dark:border-neutral-700 dark:bg-neutral-900"
-										sideOffset={4}
-										data-bits-select-group
-									>
-										<Select.Viewport class="p-1">
-											{#each groups as group, i (group.value)}
-												<Select.Item
-													class="flex w-full cursor-pointer items-center rounded-md px-4 py-2 text-sm text-neutral-800
+											sideOffset={4}
+											data-bits-select-group
+										>
+											<Select.Viewport class="p-1">
+												{#each groups as group, i (group.value)}
+													<Select.Item
+														class="flex w-full cursor-pointer items-center rounded-md px-4 py-2 text-sm text-neutral-800
 						       capitalize outline-none hover:bg-neutral-100 focus:bg-neutral-100
 						        dark:text-neutral-200
 						       dark:hover:bg-neutral-800 dark:focus:bg-neutral-800 "
-													value={group.value}
-													label={group.label}
-												>
-													<div
-														class="mr-2 size-3 rounded-full"
-														style="background-color: {group.color}"
-													></div>
-													{group.label}
-													{#if selectedTask.taskGroupId === group.value}
-														<Check class="ml-auto size-4 text-neutral-600 dark:text-neutral-300" />
-													{/if}
-												</Select.Item>
-											{/each}
-										</Select.Viewport>
-									</Select.Content>
+														value={group.value}
+														label={group.label}
+													>
+														<div
+															class="mr-2 size-3 rounded-full"
+															style="background-color: {group.color}"
+														></div>
+														{group.label}
+														{#if selectedTask.taskGroupId === group.value}
+															<Check
+																class="ml-auto size-4 text-neutral-600 dark:text-neutral-300"
+															/>
+														{/if}
+													</Select.Item>
+												{/each}
+											</Select.Viewport>
+										</Select.Content>
+									{/if}
 								</Select.Portal>
 							</Select.Root>
 						</div>
@@ -258,7 +265,7 @@
 				</div>
 
 				<div
-					class="rounded-md border-2 border-neutral-100 bg-neutral-50 p-3 dark:border-neutral-900 dark:bg-neutral-950"
+					class="rounded-md border-2 border-neutral-200/50 bg-neutral-50 p-3 dark:border-neutral-900 dark:bg-neutral-950"
 				>
 					<h2 class="pb-3 text-sm font-medium text-neutral-700 dark:text-neutral-300">Schedule</h2>
 					<div class="flex flex-col gap-1">
@@ -269,7 +276,7 @@
 				<hr class="my-3 border-t border-neutral-200 dark:border-neutral-800" />
 				{#if !!selectedTask.completedAt}
 					<div
-						class="rounded-lg border-1 border-green-400 bg-green-100 p-4 text-sm font-semibold text-green-600 dark:border-green-800 dark:bg-green-950 dark:text-green-300"
+						class="rounded-lg border-1 border-green-400 bg-green-100 p-4 text-sm font-medium text-green-600 dark:border-green-800 dark:bg-green-950 dark:text-green-300"
 					>
 						Completed
 						{DateTime.fromJSDate(selectedTask.completedAt).toLocaleString(
