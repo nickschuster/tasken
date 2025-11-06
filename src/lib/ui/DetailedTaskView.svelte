@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Check, ChevronDown, StarIcon, AlbumIcon } from '@lucide/svelte';
+	import { Check, ChevronDown, StarIcon } from '@lucide/svelte';
 	import { DateTime } from 'luxon';
 	import { Select } from 'bits-ui';
 	import { type TaskGroup, type Task } from '$lib/server/db/schema';
@@ -82,7 +82,7 @@
 		}
 	};
 
-	const handleGroupSelection = (newGroup: string) => {
+	const handleGroupSelection = () => {
 		if (!selectedTask) return;
 
 		const updatedTaskGroup = taskGroupId.length === 0 ? null : taskGroupId;
