@@ -15,13 +15,16 @@
 	} from '$lib/services/taskgroups.service.js';
 	import { createTaskFetch, updateTaskFetch } from '$lib/services/tasks.service.js';
 	import { wsService } from '$lib/services/ws.service.js';
+	import DetailedTaskView from '$lib/ui/DetailedTaskView.svelte';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
 	let tasks = $derived(getTasks());
 	let taskGroups = $derived(getTaskGroups());
 	let isSidebarOpen = $state(false);
-	let selectedGroup = $state('Tasks');
+	let selectedGroup = $state('My Day');
+	let selectedTaskId = $state<string | null>(null);
+	let selectedTask = $derived(tasks.find((t) => t.id === selectedTaskId) ?? null);
 
 	wsService.setShouldReconnect(true);
 	wsService.connect();
@@ -131,14 +134,30 @@
 			</div>
 		</div>
 
-		<div class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto px-2">
-			{#each uncompletedTasks as task, i (task.id)}
+		<div class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2">
+			{#snippet taskSnippet(task: Task)}
 				<div
-					class="rounded-lg p-2 px-4 transition-all duration-200
-			{task.completedAt ? '' : 'hover:bg-neutral-100 dark:hover:bg-neutral-950'}"
+					tabindex="0"
+					role="button"
+					onclick={(e) => {
+						e.stopPropagation();
+						selectedTaskId = task.id;
+					}}
+					onkeydown={(e) => {
+						if (e.key === 'Enter' || e.key === ' ') {
+							e.preventDefault();
+							selectedTaskId = task.id;
+						}
+					}}
+					onfocus={() => (selectedTaskId = task.id)}
+					class="rounded-lg p-4 transition-all duration-200
+			{task.completedAt ? '' : 'hover:bg-neutral-100 dark:hover:bg-neutral-900'}"
 				>
 					<TaskComponent {task} {updateTask} />
 				</div>
+			{/snippet}
+			{#each uncompletedTasks as task, i (task.id)}
+				{@render taskSnippet(task)}
 			{/each}
 
 			{#if uncompletedTasks.length === 0 && completedTasks.length === 0}
@@ -151,11 +170,11 @@
 
 			{#if completedTasks.length > 0}
 				<Collapsible headerText="Completed">
-					{#each completedTasks as task, i (task.id)}
-						<div class="rounded-lg p-2 px-4">
-							<TaskComponent {task} {updateTask} />
-						</div>
-					{/each}
+					{#snippet children()}
+						{#each completedTasks as task, i (task.id)}
+							{@render taskSnippet(task)}
+						{/each}
+					{/snippet}
 				</Collapsible>
 			{/if}
 		</div>
@@ -164,4 +183,6 @@
 			<TaskInput onEnter={createTask} bind:newTaskContent {taskGroups} />
 		</div>
 	</div>
+
+	<DetailedTaskView bind:selectedTask bind:selectedTaskId {taskGroups} {updateTask} />
 </div>

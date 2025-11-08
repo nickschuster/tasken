@@ -10,14 +10,16 @@ export async function PATCH({ request, params, locals }) {
 
 	const taskUpdate = await request.json();
 
-	const completedAtUpdate =
-		taskUpdate.completedAt !== undefined
-			? { completedAt: taskUpdate.completedAt ? new Date(taskUpdate.completedAt) : null }
+	const parseDate = (key: string) => {
+		return taskUpdate[key] !== undefined
+			? { [key]: taskUpdate[key] ? new Date(taskUpdate[key]) : null }
 			: {};
+	};
 
 	const validUpdates = {
 		...taskUpdate,
-		...completedAtUpdate
+		...parseDate('completedAt'),
+		...parseDate('dueDate')
 	};
 
 	const updateResult = await updateTask(taskId, validUpdates);

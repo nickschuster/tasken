@@ -61,7 +61,7 @@
 
 <div
 	class={[
-		'flex h-screen flex-col bg-white text-neutral-800 transition-all duration-150 dark:bg-neutral-900 dark:text-neutral-200',
+		'flex h-screen flex-col bg-white text-neutral-800 transition-all duration-150 dark:bg-neutral-950 dark:text-neutral-200',
 		isMobile && 'fixed top-0 left-0 z-50 w-64 transform shadow-lg',
 		isMobile && (isSidebarOpen ? 'translate-x-0' : '-translate-x-full'),
 		!isMobile && 'md:static md:flex md:h-screen',
@@ -73,7 +73,7 @@
 		flex h-full w-full flex-col
 		bg-neutral-50 text-neutral-900
 		transition-colors duration-300
-		dark:bg-neutral-900 dark:text-neutral-100
+		dark:bg-neutral-950 dark:text-neutral-100
 	"
 	>
 		<div class="flex w-full items-center">
@@ -151,7 +151,7 @@
 		<ScrollArea.Root
 			class="
 		relative max-h-[calc(100vh-100px)] overflow-hidden rounded-xl
-		bg-neutral-50 duration-200 dark:bg-neutral-900
+		bg-neutral-50 duration-200 dark:bg-neutral-950
 	"
 		>
 			<ScrollArea.Viewport class="h-full w-full">

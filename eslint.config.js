@@ -36,6 +36,17 @@ export default defineConfig(
 				parser: ts.parser,
 				svelteConfig
 			}
+		},
+		rules: {
+			// Enforce Svelte 5 runes usage
+			'svelte/no-reactive-functions': 'error',
+			'svelte/no-reactive-literals': 'error',
+			'svelte/no-reactive-reassign': 'warn',
+			'svelte/prefer-svelte-reactivity': 'error',
+			
+			// Disallow legacy event handlers (on:click, etc.)
+			// These should be replaced with onclick, onkeydown, etc.
+			'svelte/experimental-require-strict-events': 'off', // This is for event typing, not syntax
 		}
 	}
 );
