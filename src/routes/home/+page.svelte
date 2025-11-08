@@ -185,8 +185,8 @@
 				<Collapsible headerText="Completed">
 					{#snippet children()}
 						{#each completedTasks as task, i (task.id)}
-						  {@render taskSnippet(task)}
-					  {/each}
+							{@render taskSnippet(task)}
+						{/each}
 					{/snippet}
 				</Collapsible>
 			{/if}

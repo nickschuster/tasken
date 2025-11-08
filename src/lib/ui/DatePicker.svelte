@@ -14,18 +14,21 @@
 
 <DatePicker.Root weekdayFormat="short" fixedWeeks bind:value onValueChange={onChange}>
 	<div class="flex w-full flex-col gap-1.5">
-		<DatePicker.Label class="block text-xs font-bold tracking-tighter text-neutral-500">
+		<DatePicker.Label class="block text-xs font-medium text-neutral-500">
 			{label}
 		</DatePicker.Label>
 
 		<DatePicker.Input
-			class="flex w-full items-center rounded-lg border border-neutral-300 bg-white px-3 text-sm text-neutral-900 transition focus-within:border-neutral-400 focus-within:ring-2 focus-within:ring-neutral-300 hover:border-neutral-400 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:focus-within:border-neutral-500 dark:focus-within:ring-neutral-600"
+			class="dark:focus-within:white flex w-full items-center rounded-lg border border-neutral-300 bg-white 
+			px-3 text-sm text-neutral-700 transition focus-within:ring-2 focus-within:ring-black
+			 hover:border-neutral-400 focus:border-transparent focus:outline-none dark:border-neutral-700
+			  dark:bg-neutral-900 dark:text-neutral-300 dark:focus-within:ring-white"
 		>
 			{#snippet children({ segments })}
 				{#each segments as { part, value }, i (part + i)}
 					<div class="inline-block select-none">
 						{#if part === 'literal'}
-							<DatePicker.Segment {part} class="p-1 text-neutral-500 dark:text-neutral-400">
+							<DatePicker.Segment {part} class="p-1 text-neutral-700 dark:text-neutral-300">
 								{value}
 							</DatePicker.Segment>
 						{:else}
