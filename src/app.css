@@ -1,5 +1,9 @@
 @import 'tailwindcss';
 
+html {
+	scroll-behavior: smooth;
+}
+
 #color-picker::-webkit-color-swatch {
 	border: transparent;
 }
