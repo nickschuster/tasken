@@ -1,6 +1,5 @@
 <script lang="ts">
 	import { enhance } from '$app/forms';
-	import { CircleCheckBigIcon } from '@lucide/svelte';
 	import GoogleButton from '$lib/ui/oauth/GoogleButton.svelte';
 	import GithubButton from '$lib/ui/oauth/GithubButton.svelte';
 
@@ -17,10 +16,43 @@
 
 <div class="grid h-screen lg:grid-cols-2 dark:bg-black dark:text-white">
 	<div
-		class="col-span-1 hidden h-screen bg-gradient-to-tl from-neutral-950 via-neutral-800 to-neutral-950 lg:grid lg:place-items-center"
+		class="animate-gradient relative col-span-1 hidden h-screen overflow-hidden bg-gradient-to-tl from-black to-neutral-300 lg:grid lg:place-items-center"
 	>
-		<CircleCheckBigIcon size="400" color="grey" />
+		<div
+			class="hub absolute top-1/2 left-1/2 flex h-35 w-35 -translate-x-1/2 -translate-y-1/2 items-center justify-center rounded-full bg-white shadow-2xl"
+		>
+			<span class="text-center text-xl font-bold text-black">Tasken</span>
+		</div>
+
+		<div class="relative h-[500px] w-[500px]">
+			<div
+				class="absolute top-[125px] left-[125px] h-[250px] w-[250px] animate-[spin_22s_linear_infinite] rounded-full border-[2px] border-dashed border-neutral-600"
+			>
+				<div class="absolute top-[120px] left-[-7px] h-[20px] w-[20px] rounded-full bg-black"></div>
+			</div>
+
+			<div
+				class="absolute top-[75px] left-[75px] h-[350px] w-[350px] animate-[spin_30s_linear_infinite] rounded-full border-[2px] border-dashed border-neutral-600"
+			>
+				<div
+					class="absolute top-[160px] left-[-12px] h-[30px] w-[30px] rounded-full bg-neutral-500"
+				></div>
+			</div>
+
+			<div
+				class="absolute top-0 left-0 h-[500px] w-[500px] animate-[spin_38s_linear_infinite] rounded-full border-[2px] border-dashed border-neutral-600"
+			>
+				<div
+					class="absolute top-[-25px] left-[230px] h-[40px] w-[40px] rounded-full bg-neutral-400"
+				></div>
+			</div>
+		</div>
+
+		<div class="absolute bottom-16 text-center">
+			<h2 class="text-2xl font-semibold text-white">Set yourself in sync</h2>
+		</div>
 	</div>
+
 	<div class="col-span-1 h-screen">
 		<div class="flex h-full w-full flex-col items-center justify-between">
 			{#if !sent}
@@ -88,3 +120,22 @@
 		</div>
 	</div>
 </div>
+
+<style>
+	@keyframes gradient-shift {
+		0% {
+			background-position: 0% 50%;
+		}
+		50% {
+			background-position: 100% 50%;
+		}
+		100% {
+			background-position: 0% 50%;
+		}
+	}
+
+	.animate-gradient {
+		background-size: 300% 300%;
+		animation: gradient-shift 15s ease infinite;
+	}
+</style>

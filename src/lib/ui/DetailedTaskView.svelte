@@ -111,7 +111,7 @@
 		isMobile && 'fixed top-0 right-0 z-50 w-96 transform shadow-lg',
 		isMobile && (isTaskViewOpen ? 'translate-x-0' : 'translate-x-full'),
 		!isMobile && 'md:static md:flex md:h-screen',
-		!isMobile && (isTaskViewOpen ? 'md:w-96' : 'md:w-0')
+		!isMobile && (isTaskViewOpen ? 'md:w-96' : 'md:w-0 md:overflow-hidden')
 	]}
 	bind:this={taskViewElement}
 >
