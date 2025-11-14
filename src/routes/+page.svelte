@@ -76,7 +76,7 @@
 		>
 			<h1 class="text-5xl font-bold tracking-tighter sm:text-6xl md:text-7xl">
 				Your Tasks, at the Speed of
-				<span class="tracking-[-6px] sm:tracking-[-8px] md:tracking-[-9px]">
+				<span class="tracking-[-6px] sm:tracking-[-8px] md:tracking-[-9px] lg:tracking-[-12px]">
 					<span class="text-blur">T</span>
 					<span class="text-blur">h</span>
 					<span class="text-blur">o</span>
@@ -250,7 +250,7 @@
 				<h2 class="text-center text-4xl font-bold tracking-tighter sm:text-5xl">
 					Frequently Asked Questions
 				</h2>
-				<Accordion.Root class="w-full sm:max-w-[70%]" type="multiple">
+				<Accordion.Root class="w-full max-w-[90%] md:max-w-6xl" type="multiple">
 					{#each frequentlyAskedQuestions as item (item.value)}
 						<Accordion.Item value={item.value} class="border-b border-neutral-900 px-1.5">
 							<Accordion.Header>
