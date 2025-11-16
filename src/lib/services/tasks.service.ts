@@ -61,3 +61,25 @@ export const updateTaskFetch = async (taskId: string, updates: Partial<Task>): P
 		return false;
 	}
 };
+
+export const getTasksFetch = async (
+	limit: number
+): Promise<{ tasks: Task[]; hasMoreTasks: boolean } | null> => {
+	try {
+		const result = await fetch(`/api/tasks?limit=${limit}`);
+
+		if (result.ok) {
+			const response = await result.json();
+
+			// sync
+
+			return { tasks: response.tasks, hasMoreTasks: response.hasMoreTasks };
+		}
+
+		return null;
+	} catch (e) {
+		console.error('Error fetching tasks:', e);
+
+		return null;
+	}
+};

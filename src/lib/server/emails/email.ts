@@ -1,5 +1,5 @@
 import { Resend } from 'resend';
-import { RESEND_API_KEY } from '$env/static/private';
+import { RESEND_API_KEY, RESEND_FROM_EMAIL } from '$env/static/private';
 import { EmailSubjects, EmailType } from '$lib/models/email';
 import fs from 'fs';
 import path from 'path';
@@ -15,7 +15,7 @@ export const sendEmail = async (
 
 	const subject = EmailSubjects[template];
 
-	const from = process.env.RESEND_FROM_EMAIL || 'no-reply@example.com';
+	const from = RESEND_FROM_EMAIL || 'no-reply@example.com';
 
 	const fromWithName = `Tasken <${from}>`;
 

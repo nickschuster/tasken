@@ -13,7 +13,7 @@ export function setTasks(newTasks: Task[]) {
 }
 
 export function addTask(task: Task) {
-	tasks.push(task);
+	tasks = [task, ...tasks];
 }
 
 export function updateTask(id: string, updatedTask: Partial<Task>) {
