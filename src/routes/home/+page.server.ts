@@ -1,4 +1,4 @@
-import { getTasks, getCompletedTasksCount } from '$lib/server/tasks';
+import { getUncompletedTasks, getCompletedTasksCount } from '$lib/server/tasks';
 import { getTaskGroups } from '$lib/server/taskGroups';
 import type { Actions, PageServerLoad } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
@@ -26,13 +26,8 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 		locals.user.premiumExpiresAt
 	);
 
-	const tasks = await getTasks(locals.user.id);
-
-	const hasMoreTasks = tasks.length > 100;
-
 	return {
-		tasks: tasks.slice(0, 100),
-		hasMoreTasks,
+		tasks: await getUncompletedTasks(locals.user.id),
 		completedTasksCount: await getCompletedTasksCount(locals.user.id),
 		taskGroups: await getTaskGroups(locals.user.id),
 		user: locals.user,

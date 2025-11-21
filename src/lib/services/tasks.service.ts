@@ -64,7 +64,7 @@ export const updateTaskFetch = async (taskId: string, updates: Partial<Task>): P
 
 export const getTasksFetch = async (
 	limit: number
-): Promise<{ tasks: Task[]; hasMoreTasks: boolean } | null> => {
+): Promise<{ tasks: Task[]; hasMoreCompletedTasks: boolean } | null> => {
 	try {
 		const result = await fetch(`/api/tasks?limit=${limit}`);
 
@@ -73,7 +73,7 @@ export const getTasksFetch = async (
 
 			// sync
 
-			return { tasks: response.tasks, hasMoreTasks: response.hasMoreTasks };
+			return { tasks: response.tasks, hasMoreCompletedTasks: response.hasMoreCompletedTasks };
 		}
 
 		return null;

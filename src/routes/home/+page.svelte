@@ -17,18 +17,21 @@
 	} from '$lib/services/taskgroups.service.js';
 	import { createTaskFetch, updateTaskFetch, getTasksFetch } from '$lib/services/tasks.service.js';
 	import DetailedTaskView from '$lib/ui/DetailedTaskView.svelte';
+	import { date } from 'drizzle-orm/mysql-core';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
-	let tasks = $derived(getTasks());
+	let tasks = $derived(orderTasks(getTasks()));
+
 	let taskGroups = $derived(getTaskGroups());
 	let isSidebarOpen = $state(false);
 	let selectedGroup = $state('My Day');
 	let selectedTaskId = $state<string | null>(null);
 	let selectedTask = $derived(tasks.find((t) => t.id === selectedTaskId) ?? null);
-	let limit = $derived(tasks.length);
-	let hasMoreTasks = $state(data.hasMoreTasks);
-	let completedTasksCount = $state(data.completedTasksCount[0].count ?? 0);
+
+	let completedTasksLimit = $derived(50);
+	let hasMoreCompletedTasks = $state(data.completedTasksCount[0].count !== 0);
+	let totalCompletedTasksCount = $state(data.completedTasksCount[0].count);
 
 	wsService.setShouldReconnect(true);
 	wsService.connect();
@@ -36,7 +39,20 @@
 	setTasks(data.tasks);
 	setTaskGroups(data.taskGroups);
 
-	const filterTasksByGroup = (group: string) => {
+	function orderTasks(tasks: Task[]) {
+		return tasks.toSorted((a, b) => {
+			if (a.completedAt && !b.completedAt) return 1;
+			if (!a.completedAt && b.completedAt) return -1;
+
+			if (!a.completedAt && !b.completedAt) {
+				return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+			}
+
+			return new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime();
+		});
+	}
+
+	const filterTasksByGroup = (tasks: Task[], group: string) => {
 		const today = new Date();
 		const tomorrow = new Date();
 		tomorrow.setDate(tomorrow.getDate() + 1);
@@ -45,13 +61,13 @@
 			case 'My Day':
 				return tasks;
 			case 'Today':
-				return tasks.filter((t) => isSameDay(t.dueDate, today));
+				return tasks.filter((t) => isSameDay(t.dueDate, today) && !t.completedAt);
 			case 'Tomorrow':
-				return tasks.filter((t) => isSameDay(t.dueDate, tomorrow));
+				return tasks.filter((t) => isSameDay(t.dueDate, tomorrow) && !t.completedAt);
 			case 'Important':
-				return tasks.filter((t) => t.isImportant);
+				return tasks.filter((t) => t.isImportant && !t.completedAt);
 			default:
-				return tasks.filter((t) => t.taskGroupId === group);
+				return tasks.filter((t) => t.taskGroupId === group && !t.completedAt);
 		}
 	};
 
@@ -71,30 +87,21 @@
 		);
 	};
 
-	const orderTasks = (tasks: Task[]) => {
-		return tasks.sort((a, b) => {
-			return (
-				(b.completedAt ? new Date(b.completedAt).getTime() : Date.now()) -
-				(a.completedAt ? new Date(a.completedAt).getTime() : Date.now())
-			);
-		});
-	};
-
 	const handleLogout = (_event: SubmitEvent) => {
 		wsService.setShouldReconnect(false);
 	};
 
 	const loadMoreTasks = async () => {
-		if (!hasMoreTasks) return;
+		if (!hasMoreCompletedTasks) return;
 
-		limit += 50;
+		completedTasksLimit += 50;
 
-		const response = await getTasksFetch(limit);
+		const response = await getTasksFetch(completedTasksLimit);
 
 		if (response && response.tasks.length > 0) {
-			setTasks(orderTasks(response.tasks));
-			hasMoreTasks = response.hasMoreTasks;
-			limit = response.tasks.length;
+			setTasks(response.tasks);
+			hasMoreCompletedTasks = response.hasMoreCompletedTasks;
+			completedTasksLimit = response.tasks.filter((t) => t.completedAt).length;
 		}
 	};
 
@@ -109,11 +116,9 @@
 	const updateTask = async (taskId: string, updatedTask: Partial<Task>) => {
 		await updateTaskFetch(taskId, updatedTask);
 
-		if (updatedTask.completedAt !== undefined) {
-			orderTasks(tasks);
+		if (updatedTask.completedAt === undefined) return;
 
-			updatedTask.completedAt ? completedTasksCount++ : completedTasksCount--;
-		}
+		updatedTask.completedAt ? totalCompletedTasksCount++ : totalCompletedTasksCount--;
 	};
 
 	const createTaskGroup = async () => {
@@ -161,27 +166,29 @@
 					{taskGroups.find((g) => g.id === selectedGroup)?.name ?? selectedGroup}
 				</h2>
 			</div>
-			<h1
-				class="
-		flex items-center gap-2 rounded-md bg-neutral-300
-		px-3 py-1.5
-		text-sm font-medium text-black
-		dark:bg-neutral-900 dark:text-white
-	"
-			>
-				{completedTasksCount} Completed
-				<CircleCheckBigIcon size="16" class="text-black dark:text-white" />
-			</h1>
 
-			<div class="text-2xl">
+			<div class="flex items-center gap-3">
+				<span
+					class="flex h-10 items-center gap-2 rounded-md border-2 border-neutral-200/50
+		bg-neutral-50 px-4 text-sm font-semibold
+		text-neutral-800 dark:border-neutral-900 dark:bg-neutral-950 dark:text-neutral-100
+		"
+				>
+					<CircleCheckBigIcon size="16" class="text-neutral-700 dark:text-neutral-300" />
+					{totalCompletedTasksCount}
+				</span>
+
 				<form method="POST" action="?/logout" onsubmit={handleLogout}>
 					<button
 						type="submit"
 						title="logout"
-						class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-neutral-300 text-center dark:bg-neutral-900"
+						class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border-2 border-neutral-200/50 bg-neutral-50
+			 text-xl font-semibold text-neutral-800 transition
+			hover:bg-neutral-300 dark:border-neutral-900
+			dark:bg-neutral-950 dark:text-neutral-100 dark:hover:bg-neutral-800"
 					>
 						{#if data.user}
-							{data.user.email.charAt(0)}
+							{data.user.email.charAt(0).toUpperCase()}
 						{/if}
 					</button>
 				</form>
@@ -210,7 +217,7 @@
 					<TaskComponent {task} {updateTask} />
 				</div>
 			{/snippet}
-			{#each filterTasksByGroup(selectedGroup) as task, i (task.id)}
+			{#each filterTasksByGroup(tasks, selectedGroup) as task, i (task.id)}
 				{@render taskSnippet(task)}
 			{/each}
 
@@ -222,7 +229,7 @@
 				</div>
 			{/if}
 
-			{#if hasMoreTasks}
+			{#if hasMoreCompletedTasks && selectedGroup === 'My Day'}
 				<button
 					class="
 		mt-4 flex w-full
@@ -235,7 +242,7 @@
 	"
 					onclick={loadMoreTasks}
 				>
-					<ChevronDown class="opacity-50" />
+					<ChevronDown class="text-white/60" />
 				</button>
 			{/if}
 		</div>

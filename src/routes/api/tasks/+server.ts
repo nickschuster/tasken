@@ -1,4 +1,4 @@
-import { createTask, getTasks } from '$lib/server/tasks';
+import { createTask, getCompletedTasks, getUncompletedTasks } from '$lib/server/tasks';
 import { json } from '@sveltejs/kit';
 
 export async function POST({ request, locals }) {
@@ -24,9 +24,10 @@ export async function GET({ locals, url }) {
 		return json({ error: 'Invalid limit parameter' }, { status: 400 });
 	}
 
-	const tasks = await getTasks(locals.user.id, limit);
+	const tasks = await getUncompletedTasks(locals.user.id);
+	const completedTasks = await getCompletedTasks(locals.user.id, limit);
 
-	const hasMoreTasks = tasks.length > limit;
+	const hasMoreCompletedTasks = completedTasks.length > limit;
 
-	return json({ tasks: tasks.slice(0, limit), hasMoreTasks });
+	return json({ tasks: [...tasks, ...completedTasks.slice(0, limit)], hasMoreCompletedTasks });
 }
