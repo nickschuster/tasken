@@ -1,5 +1,7 @@
 <script lang="ts">
 	import { DropdownMenu, type WithoutChild } from 'bits-ui';
+	import DropdownMenuItem from './dropdown/DropdownMenuItem.svelte';
+	import DropdownMenuContent from './dropdown/DropdownMenuContent.svelte';
 
 	type MenuItem = {
 		id: string;
@@ -31,35 +33,19 @@
 	</DropdownMenu.Trigger>
 
 	<DropdownMenu.Portal>
-		<DropdownMenu.Content
-			{...contentProps}
-			class="
-				z-100 min-w-[180px] rounded-lg border
-				border-neutral-200 bg-white p-1.5
-				shadow-md focus:outline-none
-				dark:border-neutral-700 dark:bg-neutral-900
-			"
-		>
+		<DropdownMenuContent {contentProps}>
 			<DropdownMenu.Group aria-label={buttonText}>
 				{#each items as item (item.id)}
-					<DropdownMenu.Item
-						textValue={item.name}
-						class={[
-							'cursor-pointer rounded-md px-3 py-2 text-sm text-neutral-900 transition',
-							'hover:bg-neutral-100 focus:bg-neutral-200 focus:outline-none',
-							'dark:text-neutral-100  dark:focus:bg-neutral-700'
-						]}
-						onclick={() => item.action?.()}
-					>
+					<DropdownMenuItem callback={item.action}>
 						<div class="flex flex-row items-center justify-between">
 							{item.name}
 							{#if item.icon}
 								<item.icon class="size-5" />
 							{/if}
 						</div>
-					</DropdownMenu.Item>
+					</DropdownMenuItem>
 				{/each}
 			</DropdownMenu.Group>
-		</DropdownMenu.Content>
+		</DropdownMenuContent>
 	</DropdownMenu.Portal>
 </DropdownMenu.Root>

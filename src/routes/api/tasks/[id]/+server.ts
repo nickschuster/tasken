@@ -1,3 +1,4 @@
+import { parseDate } from '$lib/server/helper';
 import { updateTask } from '$lib/server/tasks';
 import { json } from '@sveltejs/kit';
 
@@ -10,16 +11,10 @@ export async function PATCH({ request, params, locals }) {
 
 	const taskUpdate = await request.json();
 
-	const parseDate = (key: string) => {
-		return taskUpdate[key] !== undefined
-			? { [key]: taskUpdate[key] ? new Date(taskUpdate[key]) : null }
-			: {};
-	};
-
 	const validUpdates = {
 		...taskUpdate,
-		...parseDate('completedAt'),
-		...parseDate('dueDate')
+		...parseDate(taskUpdate, 'completedAt'),
+		...parseDate(taskUpdate, 'dueDate')
 	};
 
 	const updateResult = await updateTask(taskId, validUpdates);

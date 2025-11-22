@@ -1,13 +1,11 @@
 <script lang="ts">
-	import Input from '$lib/ui/Input.svelte';
+	import TaskInput from '$lib/ui/task/task-input/TaskInput.svelte';
 	import TaskComponent from '$lib/ui/task/Task.svelte';
 	import Collapsible from '$lib/ui/Collapsible.svelte';
 	import Sidebar from '$lib/ui/sidebar/Sidebar.svelte';
 	import { CircleCheckBigIcon, MenuIcon } from '@lucide/svelte';
-	import { DateTime } from 'luxon';
 	import { getTasks, setTasks } from '$lib/states/task.state.svelte.js';
 	import { getTaskGroups, setTaskGroups } from '$lib/states/taskGroup.state.svelte.js';
-	import { wsService } from '$lib/services/ws.service.js';
 	import type { Task, TaskGroup } from '$lib/server/db/schema';
 	import SubscriptionsDialog from '$lib/ui/SubscriptionsDialog.svelte';
 	import {
@@ -16,6 +14,7 @@
 		updateTaskGroupFetch
 	} from '$lib/services/taskgroups.service.js';
 	import { createTaskFetch, updateTaskFetch } from '$lib/services/tasks.service.js';
+	import { wsService } from '$lib/services/ws.service.js';
 	import DetailedTaskView from '$lib/ui/DetailedTaskView.svelte';
 
 	let { data } = $props();
@@ -23,7 +22,7 @@
 	let tasks = $derived(getTasks());
 	let taskGroups = $derived(getTaskGroups());
 	let isSidebarOpen = $state(false);
-	let selectedGroup = $state('My Day');
+	let selectedGroup = $state('Tasks');
 	let selectedTaskId = $state<string | null>(null);
 	let selectedTask = $derived(tasks.find((t) => t.id === selectedTaskId) ?? null);
 
@@ -34,17 +33,11 @@
 	setTaskGroups(data.taskGroups);
 
 	const filterTasksByGroup = (group: string) => {
-		const today = new Date();
-		const tomorrow = new Date();
-		tomorrow.setDate(tomorrow.getDate() + 1);
-
 		switch (group) {
-			case 'My Day':
+			case 'Tasks':
 				return tasks;
-			case 'Today':
-				return tasks.filter((t) => isSameDay(t.dueDate, today));
-			case 'Tomorrow':
-				return tasks.filter((t) => isSameDay(t.dueDate, tomorrow));
+			case 'Planned':
+				return tasks.filter((t) => t.dueDate !== null);
 			case 'Important':
 				return tasks.filter((t) => t.isImportant);
 			default:
@@ -52,24 +45,16 @@
 		}
 	};
 
-	const isSameDay = (dateA: Date | null, dateB: Date) => {
-		if (!dateA) {
-			return false;
-		}
-
-		return (
-			dateA.getFullYear() === dateB.getFullYear() &&
-			dateA.getMonth() === dateB.getMonth() &&
-			dateA.getDate() === dateB.getDate()
-		);
-	};
-
 	const handleLogout = (_event: SubmitEvent) => {
 		wsService.setShouldReconnect(false);
 	};
 
-	const createTask = async () => {
-		const success = await createTaskFetch(newTaskContent);
+	const createTask = async (task: Partial<Task>) => {
+		if (newTaskContent.trim() === '') {
+			return;
+		}
+
+		const success = await createTaskFetch(task);
 
 		if (success) {
 			newTaskContent = '';
@@ -90,7 +75,7 @@
 
 	const deleteTaskGroup = async (taskGroupId: string) => {
 		if (taskGroupId === selectedGroup) {
-			selectedGroup = 'My Day';
+			selectedGroup = 'Tasks';
 		}
 
 		await deleteTaskGroupFetch(taskGroupId);
@@ -163,10 +148,10 @@
 						}
 					}}
 					onfocus={() => (selectedTaskId = task.id)}
-					class="rounded-lg p-4 transition-all duration-200
+					class="rounded-lg p-2 px-4 transition-all duration-200
 			{task.completedAt ? '' : 'hover:bg-neutral-100 dark:hover:bg-neutral-900'}"
 				>
-					<TaskComponent {task} {updateTask} />
+					<TaskComponent {task} {taskGroups} {updateTask} />
 				</div>
 			{/snippet}
 			{#each uncompletedTasks as task, i (task.id)}
@@ -193,7 +178,7 @@
 		</div>
 
 		<div class="p-4">
-			<Input onEnter={createTask} bind:newTaskContent />
+			<TaskInput onEnter={createTask} bind:newTaskContent {taskGroups} />
 		</div>
 	</div>
 

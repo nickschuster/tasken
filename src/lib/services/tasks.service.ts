@@ -4,14 +4,14 @@ import { Event } from '$lib/models/event.js';
 import type { Task } from '$lib/server/db/schema';
 import { invalidate } from '$app/navigation';
 
-export const createTaskFetch = async (content: string): Promise<boolean> => {
+export const createTaskFetch = async (task: Partial<Task>): Promise<boolean> => {
 	try {
 		const result = await fetch('/api/tasks', {
 			method: 'POST',
 			headers: {
 				'Content-Type': 'application/json'
 			},
-			body: JSON.stringify({ content })
+			body: JSON.stringify(task)
 		});
 
 		if (result.ok) {
