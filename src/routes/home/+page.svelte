@@ -22,7 +22,7 @@
 	let tasks = $derived(getTasks());
 	let taskGroups = $derived(getTaskGroups());
 	let isSidebarOpen = $state(false);
-	let selectedGroup = $state('My Day');
+	let selectedGroup = $state('Tasks');
 	let selectedTaskId = $state<string | null>(null);
 	let selectedTask = $derived(tasks.find((t) => t.id === selectedTaskId) ?? null);
 
@@ -49,12 +49,12 @@
 		wsService.setShouldReconnect(false);
 	};
 
-	const createTask = async () => {
+	const createTask = async (task: Partial<Task>) => {
 		if (newTaskContent.trim() === '') {
 			return;
 		}
 
-		const success = await createTaskFetch(newTaskContent);
+		const success = await createTaskFetch(task);
 
 		if (success) {
 			newTaskContent = '';
@@ -148,7 +148,7 @@
 						}
 					}}
 					onfocus={() => (selectedTaskId = task.id)}
-					class="rounded-lg p-4 transition-all duration-200
+					class="rounded-lg p-2 px-4 transition-all duration-200
 			{task.completedAt ? '' : 'hover:bg-neutral-100 dark:hover:bg-neutral-900'}"
 				>
 					<TaskComponent {task} {updateTask} />
