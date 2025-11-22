@@ -1,10 +1,8 @@
 <script lang="ts">
 	import Input from '$lib/ui/Input.svelte';
 	import TaskComponent from '$lib/ui/task/Task.svelte';
-	import Collapsible from '$lib/ui/Collapsible.svelte';
 	import Sidebar from '$lib/ui/sidebar/Sidebar.svelte';
 	import { CircleCheckBigIcon, MenuIcon, ChevronDown } from '@lucide/svelte';
-	import { DateTime } from 'luxon';
 	import { getTasks, setTasks } from '$lib/states/task.state.svelte.js';
 	import { getTaskGroups, setTaskGroups } from '$lib/states/taskGroup.state.svelte.js';
 	import { wsService } from '$lib/services/ws.service.js';
@@ -17,7 +15,6 @@
 	} from '$lib/services/taskgroups.service.js';
 	import { createTaskFetch, updateTaskFetch, getTasksFetch } from '$lib/services/tasks.service.js';
 	import DetailedTaskView from '$lib/ui/DetailedTaskView.svelte';
-	import { date } from 'drizzle-orm/mysql-core';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
@@ -87,7 +84,7 @@
 		);
 	};
 
-	const handleLogout = (_event: SubmitEvent) => {
+	const handleLogout = () => {
 		wsService.setShouldReconnect(false);
 	};
 
@@ -118,7 +115,11 @@
 
 		if (updatedTask.completedAt === undefined) return;
 
-		updatedTask.completedAt ? totalCompletedTasksCount++ : totalCompletedTasksCount--;
+		if (updatedTask.completedAt) {
+			totalCompletedTasksCount++;
+		} else {
+			totalCompletedTasksCount--;
+		}
 	};
 
 	const createTaskGroup = async () => {
@@ -217,7 +218,7 @@
 					<TaskComponent {task} {updateTask} />
 				</div>
 			{/snippet}
-			{#each filterTasksByGroup(tasks, selectedGroup) as task, i (task.id)}
+			{#each filterTasksByGroup(tasks, selectedGroup) as task (task.id)}
 				{@render taskSnippet(task)}
 			{/each}
 

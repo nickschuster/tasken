@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { Task } from '$lib/server/db/schema';
 	import { Check, Circle } from '@lucide/svelte';
 
 	type Props = {
@@ -10,7 +9,7 @@
 	let { checked = false, toggleChecked }: Props = $props();
 
 	let mouseDown = $state(false);
-	let visuallyChecked = $state(checked);
+	let visuallyChecked = $derived(checked);
 	const ANIMATION_DURATION_MS = 200;
 
 	function handleToggle(event: Event) {

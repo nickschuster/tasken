@@ -13,7 +13,7 @@ export function setTasks(newTasks: Task[]) {
 }
 
 export function addTask(task: Task) {
-	tasks = [task, ...tasks];
+	tasks.unshift(task);
 }
 
 export function updateTask(id: string, updatedTask: Partial<Task>) {
@@ -34,5 +34,7 @@ wsService.on(Event.TaskUpdated, (updatedTask: Task) => {
 
 	if (index !== -1) {
 		tasks[index] = { ...tasks[index], ...updatedTask };
+	} else {
+		tasks.push(updatedTask);
 	}
 });

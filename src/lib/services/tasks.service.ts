@@ -71,8 +71,6 @@ export const getTasksFetch = async (
 		if (result.ok) {
 			const response = await result.json();
 
-			// sync
-
 			return { tasks: response.tasks, hasMoreCompletedTasks: response.hasMoreCompletedTasks };
 		}
 
