@@ -1,10 +1,10 @@
 <script lang="ts">
-	import DropDownItem from '$lib/ui/dropdown/DropDownItem.svelte';
-	import DropdownMenuContent from '$lib/ui/dropdown/DropDownContent.svelte';
 	import { CalendarIcon, House } from '@lucide/svelte';
 	import { DropdownMenu } from 'bits-ui';
+	import TaskInputGroupSelector from './TaskInputGroupSelector.svelte';
+	import TaskInputDueDateSelector from './TaskInputDueDateSelector.svelte';
 
-	let { taskGroups } = $props();
+	let { taskGroups, selectedGroup, groupSelected, selectedDate, dateSelected } = $props();
 </script>
 
 <div class="flex items-center gap-1">
@@ -18,15 +18,7 @@
 			</DropdownMenu.Trigger>
 
 			<DropdownMenu.Portal>
-				<DropdownMenuContent contentProps={{ side: 'top' }}>
-					<DropDownItem
-						callback={() => {
-							console.log('click');
-						}}
-					>
-						All Tasks
-					</DropDownItem>
-				</DropdownMenuContent>
+				<TaskInputGroupSelector {taskGroups} {groupSelected} />
 			</DropdownMenu.Portal>
 		</DropdownMenu.Root>
 	{/if}
@@ -39,9 +31,7 @@
 		</DropdownMenu.Trigger>
 
 		<DropdownMenu.Portal>
-			<DropdownMenu.Content>
-				<DropdownMenu.Item />
-			</DropdownMenu.Content>
+			<TaskInputDueDateSelector {selectedDate} {dateSelected} />
 		</DropdownMenu.Portal>
 	</DropdownMenu.Root>
 </div>

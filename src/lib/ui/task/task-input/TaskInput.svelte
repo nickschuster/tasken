@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Task, TaskGroup } from '$lib/server/db/schema';
-	import type { CalendarDateTime, DateValue } from '@internationalized/date';
+	import type { CalendarDateTime } from '@internationalized/date';
 	import { Circle, Plus } from '@lucide/svelte';
 	import { elasticOut } from 'svelte/easing';
 	import { fade } from 'svelte/transition';
@@ -18,18 +18,34 @@
 
 	let focused = $state(false);
 	let showContextMenu = $state(false);
-	let selectedGroupId = $state<string | null>(null);
-	let date = $state<CalendarDateTime | null>(null);
+	let selectedGroup = $state<TaskGroup | null>(null);
+	let selectedDate = $state<CalendarDateTime | null>(null);
 
 	$effect(() => {
 		showContextMenu = focused || newTaskContent.trim().length > 0;
 	});
 
-	function handleEnter(content: string) {}
+	function handleEnter(content: string) {
+		if (content.trim().length === 0) return;
 
-	function handleGroupSelect(groupId: string | null) {}
+		onEnter({
+			content: content.trim(),
+			taskGroupId: selectedGroup?.id,
+			dueDate: selectedDate?.toDate('utc')
+		});
 
-	function handleDateTimeChange() {}
+		newTaskContent = '';
+		selectedGroup = null;
+		selectedDate = null;
+	}
+
+	function groupSelected(group: TaskGroup | null) {
+		selectedGroup = group;
+	}
+
+	function dateSelected(date: CalendarDateTime | null) {
+		selectedDate = date;
+	}
 </script>
 
 <div
@@ -62,6 +78,12 @@
 	/>
 
 	{#if showContextMenu && newTaskContent.trim().length !== 0}
-		<TaskInputDropdowns {taskGroups} />
+		<TaskInputDropdowns
+			{taskGroups}
+			{selectedGroup}
+			{groupSelected}
+			{selectedDate}
+			{dateSelected}
+		/>
 	{/if}
 </div>

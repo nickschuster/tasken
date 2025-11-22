@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { DropdownMenu, type WithoutChild } from 'bits-ui';
-	import DropdownMenuItem from './dropdown/DropDownItem.svelte';
-	import DropdownMenuContent from './dropdown/DropDownContent.svelte';
+	import DropdownMenuItem from './dropdown/DropdownMenuItem.svelte';
+	import DropdownMenuContent from './dropdown/DropdownMenuContent.svelte';
 
 	type MenuItem = {
 		id: string;
