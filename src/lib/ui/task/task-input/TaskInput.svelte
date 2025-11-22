@@ -17,11 +17,12 @@
 	} = $props();
 
 	let focused = $state(false);
+	let showContextMenu = $state(false);
 	let selectedGroupId = $state<string | null>(null);
 	let date = $state<CalendarDateTime | null>(null);
 
 	$effect(() => {
-		focused = focused || newTaskContent.trim().length > 0;
+		showContextMenu = focused || newTaskContent.trim().length > 0;
 	});
 
 	function handleEnter(content: string) {}
@@ -35,11 +36,11 @@
 	class="relative flex h-14 w-full items-center gap-3 rounded-lg border border-neutral-300 bg-white
        px-3 pr-1 transition-all duration-200 ease-in-out
       dark:border-neutral-700 dark:bg-neutral-900
-      dark:placeholder:text-neutral-500 dark:focus:ring-white {focused
+      dark:placeholder:text-neutral-500 dark:focus:ring-white {showContextMenu
 		? 'border-transparent ring-2 ring-black dark:ring-white'
 		: ''}"
 >
-	{#if focused}
+	{#if showContextMenu}
 		<div in:fade={{ duration: 200, easing: elasticOut }}>
 			<Circle size="28" />
 		</div>
@@ -60,7 +61,7 @@
 		}}
 	/>
 
-	{#if focused && newTaskContent.trim().length !== 0}
-		<TaskInputDropdowns />
+	{#if showContextMenu && newTaskContent.trim().length !== 0}
+		<TaskInputDropdowns {taskGroups} />
 	{/if}
 </div>

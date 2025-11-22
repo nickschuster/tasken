@@ -1,7 +1,7 @@
 <script lang="ts">
 	import { Trash2Icon, TextCursorInput } from '@lucide/svelte';
 	import type { TaskGroup } from '$lib/server/db/schema';
-	import DropdownMenu from '../DropdownMenu.svelte';
+	import DropdownMenu from '../GroupContextMenu.svelte';
 
 	type TaskGroupItemProps = {
 		group: TaskGroup;
