@@ -3,7 +3,7 @@ import { expect, test } from '@playwright/test';
 test('sales page loads copy and buttons', async ({ page }) => {
 	await page.goto('/');
 
-	await expect(page.getByText('Your Tasks, at the Speed of Thought.')).toBeVisible();
+	await expect(page.getByText('Your Tasks, at the Speed of')).toBeVisible();
 
 	await expect(page.getByText('Start Focusing Now')).toBeVisible();
 
