@@ -1,11 +1,10 @@
 <script lang="ts">
-	import Input from '$lib/ui/Input.svelte';
+	import TaskInput from '$lib/ui/task/task-input/TaskInput.svelte';
 	import TaskComponent from '$lib/ui/task/Task.svelte';
 	import Sidebar from '$lib/ui/sidebar/Sidebar.svelte';
 	import { CircleCheckBigIcon, MenuIcon, ChevronDown } from '@lucide/svelte';
 	import { getTasks, setTasks } from '$lib/states/task.state.svelte.js';
 	import { getTaskGroups, setTaskGroups } from '$lib/states/taskGroup.state.svelte.js';
-	import { wsService } from '$lib/services/ws.service.js';
 	import type { Task, TaskGroup } from '$lib/server/db/schema';
 	import SubscriptionsDialog from '$lib/ui/SubscriptionsDialog.svelte';
 	import {
@@ -14,6 +13,7 @@
 		updateTaskGroupFetch
 	} from '$lib/services/taskgroups.service.js';
 	import { createTaskFetch, updateTaskFetch, getTasksFetch } from '$lib/services/tasks.service.js';
+	import { wsService } from '$lib/services/ws.service.js';
 	import DetailedTaskView from '$lib/ui/DetailedTaskView.svelte';
 
 	let { data } = $props();
@@ -22,7 +22,7 @@
 
 	let taskGroups = $derived(getTaskGroups());
 	let isSidebarOpen = $state(false);
-	let selectedGroup = $state('My Day');
+	let selectedGroup = $state('Tasks');
 	let selectedTaskId = $state<string | null>(null);
 	let selectedTask = $derived(tasks.find((t) => t.id === selectedTaskId) ?? null);
 
@@ -49,18 +49,12 @@
 		});
 	}
 
-	const filterTasksByGroup = (tasks: Task[], group: string) => {
-		const today = new Date();
-		const tomorrow = new Date();
-		tomorrow.setDate(tomorrow.getDate() + 1);
-
+	const filterTasksByGroup = (group: string) => {
 		switch (group) {
-			case 'My Day':
+			case 'Tasks':
 				return tasks;
-			case 'Today':
-				return tasks.filter((t) => isSameDay(t.dueDate, today) && !t.completedAt);
-			case 'Tomorrow':
-				return tasks.filter((t) => isSameDay(t.dueDate, tomorrow) && !t.completedAt);
+			case 'Planned':
+				return tasks.filter((t) => t.dueDate !== null && !t.completedAt);
 			case 'Important':
 				return tasks.filter((t) => t.isImportant && !t.completedAt);
 			default:
@@ -101,9 +95,13 @@
 			completedTasksLimit = response.tasks.filter((t) => t.completedAt).length;
 		}
 	};
+  
+	const createTask = async (task: Partial<Task>) => {
+		if (newTaskContent.trim() === '') {
+			return;
+		}
 
-	const createTask = async () => {
-		const success = await createTaskFetch(newTaskContent);
+		const success = await createTaskFetch(task);
 
 		if (success) {
 			newTaskContent = '';
@@ -132,7 +130,7 @@
 
 	const deleteTaskGroup = async (taskGroupId: string) => {
 		if (taskGroupId === selectedGroup) {
-			selectedGroup = 'My Day';
+			selectedGroup = 'Tasks';
 		}
 
 		await deleteTaskGroupFetch(taskGroupId);
@@ -212,10 +210,10 @@
 						}
 					}}
 					onfocus={() => (selectedTaskId = task.id)}
-					class="rounded-lg p-4 transition-all duration-200
+					class="rounded-lg p-2 px-4 transition-all duration-200
 			{task.completedAt ? '' : 'hover:bg-neutral-100 dark:hover:bg-neutral-900'}"
 				>
-					<TaskComponent {task} {updateTask} />
+					<TaskComponent {task} {taskGroups} {updateTask} />
 				</div>
 			{/snippet}
 			{#each filterTasksByGroup(tasks, selectedGroup) as task (task.id)}
@@ -249,7 +247,7 @@
 		</div>
 
 		<div class="p-4">
-			<Input onEnter={createTask} bind:newTaskContent />
+			<TaskInput onEnter={createTask} bind:newTaskContent {taskGroups} />
 		</div>
 	</div>
 

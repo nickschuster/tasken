@@ -1,4 +1,6 @@
 import { createTask, getCompletedTasks, getUncompletedTasks } from '$lib/server/tasks';
+import { parseDate } from '$lib/server/helper';
+import { createTask } from '$lib/server/tasks';
 import { json } from '@sveltejs/kit';
 
 export async function POST({ request, locals }) {
@@ -8,7 +10,12 @@ export async function POST({ request, locals }) {
 
 	const taskToCreate = await request.json();
 
-	const createdTask = await createTask(locals.user.id, taskToCreate);
+	const validTaskToCreate = {
+		...taskToCreate,
+		...parseDate(taskToCreate, 'dueDate')
+	};
+
+	const createdTask = await createTask(locals.user.id, validTaskToCreate);
 
 	return json(createdTask);
 }

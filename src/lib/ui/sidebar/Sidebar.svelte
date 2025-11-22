@@ -2,13 +2,12 @@
 	import {
 		ChevronRightIcon,
 		PlusIcon,
-		Calendar1Icon,
-		CalendarPlusIcon,
 		StarIcon,
-		ListIcon
+		ListIcon,
+		CalendarIcon
 	} from '@lucide/svelte';
 	import { DateTime } from 'luxon';
-	import { Button, ScrollArea } from 'bits-ui';
+	import { ScrollArea } from 'bits-ui';
 	import type { TaskGroup } from '$lib/server/db/schema';
 	import TaskGroupItem from './TaskGroupItem.svelte';
 
@@ -36,9 +35,8 @@
 	let formattedDate = today.toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY);
 
 	const defaultGroups = {
-		'My Day': ListIcon,
-		Today: Calendar1Icon,
-		Tomorrow: CalendarPlusIcon,
+		Tasks: ListIcon,
+		Planned: CalendarIcon,
 		Important: StarIcon
 	};
 
@@ -108,15 +106,14 @@
 						onclick={() => (selectedGroup = group)}
 						class="
           flex w-full items-center
-          justify-start
-          rounded-md px-4 py-2
+          rounded-md p-2
           text-sm font-medium
           transition-all duration-150
           hover:bg-neutral-200 dark:hover:bg-neutral-800
           {selectedGroup === group
 							? 'bg-neutral-300 text-neutral-900 dark:bg-neutral-700 dark:text-white'
 							: 'text-neutral-700 dark:text-neutral-300'}
-          {!isSidebarOpen ? 'h-10 w-10 justify-center p-0' : 'w-auto'}
+          {!isSidebarOpen ? 'h-10 w-10 justify-center p-0' : 'w-auto justify-start'}
           mx-2
         "
 					>

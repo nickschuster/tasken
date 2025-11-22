@@ -4,9 +4,9 @@
 	import type { DateValue } from '@internationalized/date';
 
 	type Props = {
-		label: string;
+		label?: string;
 		value: DateValue | undefined;
-		onChange: () => void;
+		onChange: (change: DateValue | undefined) => void;
 	};
 
 	let { label, value = $bindable(), onChange }: Props = $props();
@@ -14,9 +14,11 @@
 
 <DatePicker.Root weekdayFormat="short" fixedWeeks bind:value onValueChange={onChange}>
 	<div class="flex w-full flex-col gap-1.5">
-		<DatePicker.Label class="block text-xs font-medium text-neutral-500">
-			{label}
-		</DatePicker.Label>
+		{#if label}
+			<DatePicker.Label class="block text-xs font-medium text-neutral-500">
+				{label}
+			</DatePicker.Label>
+		{/if}
 
 		<DatePicker.Input
 			class="dark:focus-within:white flex w-full items-center rounded-lg border border-neutral-300 bg-white 
