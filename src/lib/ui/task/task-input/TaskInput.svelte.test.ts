@@ -42,7 +42,11 @@ describe('TaskInput.svelte', () => {
 		const input = getByRole('textbox') as HTMLInputElement;
 
 		await fireEvent.keyDown(input, { code: 'Enter', key: 'Enter' });
-		expect(onEnter).toHaveBeenCalledWith('abc');
+		expect(onEnter).toHaveBeenCalledWith({
+			content: 'abc',
+			taskGroupId: undefined,
+			dueDate: undefined
+		});
 	});
 
 	it('does not call onEnter on other keys', async () => {
