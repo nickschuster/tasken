@@ -151,7 +151,7 @@
 					class="rounded-lg p-2 px-4 transition-all duration-200
 			{task.completedAt ? '' : 'hover:bg-neutral-100 dark:hover:bg-neutral-900'}"
 				>
-					<TaskComponent {task} {updateTask} />
+					<TaskComponent {task} {taskGroups} {updateTask} />
 				</div>
 			{/snippet}
 			{#each uncompletedTasks as task, i (task.id)}

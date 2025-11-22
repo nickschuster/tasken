@@ -1,14 +1,17 @@
 <script lang="ts">
-	import type { Task } from '$lib/server/db/schema';
+	import type { Task, TaskGroup } from '$lib/server/db/schema';
 	import { vibrate } from '$lib/utils/vibrate';
 	import TaskCheck from './TaskCheck.svelte';
 
 	type Props = {
 		task: Task;
+		taskGroups: TaskGroup[];
 		updateTask?: (taskId: string, updates: Partial<Task>) => void;
 	};
 
-	let { task, updateTask = () => {} }: Props = $props();
+	let { task, taskGroups, updateTask = () => {} }: Props = $props();
+
+	let taskGroup = $derived(taskGroups.find((group) => group.id === task.taskGroupId) ?? null);
 
 	function toggleChecked(checked: boolean) {
 		if (checked) {
@@ -36,7 +39,14 @@
 		{/if}
 
 		<div class="flex">
-			<span class="text-xs">Tasks</span>
+			{#if task.taskGroupId}
+				<div class="flex items-center gap-1">
+					<span class="h-2 w-2 rounded-full" style={`background-color: ${taskGroup?.color}`}></span>
+					<span class="text-xs">{taskGroup?.name}</span>
+				</div>
+			{:else}
+				<span class="text-xs">Tasks</span>
+			{/if}
 			{#if task.dueDate}
 				<span class="mx-1 text-xs">•</span>
 				<span class="text-xs">
