@@ -1,5 +1,5 @@
 <script lang="ts">
-	import TaskInput from '$lib/ui/task/TaskInput.svelte';
+	import TaskInput from '$lib/ui/task/task-input/TaskInput.svelte';
 	import TaskComponent from '$lib/ui/task/Task.svelte';
 	import Collapsible from '$lib/ui/Collapsible.svelte';
 	import Sidebar from '$lib/ui/sidebar/Sidebar.svelte';
@@ -33,8 +33,6 @@
 	setTaskGroups(data.taskGroups);
 
 	const filterTasksByGroup = (group: string) => {
-		const today = new Date();
-
 		switch (group) {
 			case 'Tasks':
 				return tasks;
