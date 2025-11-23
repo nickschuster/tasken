@@ -26,7 +26,7 @@ export async function GET({ locals, url }) {
 
 	const limit = Number(url.searchParams.get('limit'));
 
-	if (isNaN(limit) || limit < 0) {
+	if (isNaN(limit) || limit <= 0) {
 		return json({ error: 'Invalid limit parameter' }, { status: 400 });
 	}
 

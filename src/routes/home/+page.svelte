@@ -32,15 +32,17 @@
 	let selectedTaskId = $state<string | null>(null);
 	let selectedTask = $derived(tasks.find((t) => t.id === selectedTaskId) ?? null);
 
-	let completedTasksLimit = $state(50);
-	let hasMoreCompletedTasks = $state(data.completedTasksCount[0].count !== 0);
+	let completedTasksLimit = $state(0);
+	let hasMoreCompletedTasks = $state((data.completedTasksCount[0]?.count ?? 0) !== 0);
 	let totalCompletedCount = $derived(getTotalCompletedCount());
+
+	const COMPLETED_TASKS_PAGE_SIZE = 50;
 
 	wsService.setShouldReconnect(true);
 	wsService.connect();
 
 	setTasks(data.tasks);
-	setTotalCompletedCount(data.completedTasksCount[0].count);
+	setTotalCompletedCount(data.completedTasksCount[0]?.count ?? 0);
 	setTaskGroups(data.taskGroups);
 
 	function orderTasks(tasks: Task[]) {
@@ -76,7 +78,7 @@
 	const loadMoreTasks = async () => {
 		if (!hasMoreCompletedTasks) return;
 
-		completedTasksLimit += 50;
+		completedTasksLimit += COMPLETED_TASKS_PAGE_SIZE;
 
 		const response = await getTasksFetch(completedTasksLimit);
 
@@ -208,7 +210,7 @@
 				{@render taskSnippet(task)}
 			{/each}
 
-			{#if tasks.length === 0}
+			{#if filterTasksByGroup(selectedGroup).length === 0}
 				<div
 					class="flex grow flex-col items-center justify-center text-gray-200 dark:text-neutral-950"
 				>

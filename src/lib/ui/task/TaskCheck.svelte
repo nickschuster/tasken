@@ -10,16 +10,22 @@
 
 	let mouseDown = $state(false);
 	let visuallyChecked = $derived(checked);
+	let isToggling = $state(false);
+
 	const ANIMATION_DURATION_MS = 200;
 
-	function handleToggle(event: Event) {
+	async function handleToggle(event: Event) {
 		event.preventDefault();
 		event.stopPropagation();
+
+		if (isToggling) return;
+		isToggling = true;
 
 		visuallyChecked = !visuallyChecked;
 
 		setTimeout(() => {
 			toggleChecked(visuallyChecked);
+			isToggling = false;
 		}, ANIMATION_DURATION_MS);
 	}
 
