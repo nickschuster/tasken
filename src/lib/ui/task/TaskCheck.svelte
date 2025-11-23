@@ -1,5 +1,4 @@
 <script lang="ts">
-	import type { Task } from '$lib/server/db/schema';
 	import { Check, Circle } from '@lucide/svelte';
 
 	type Props = {
@@ -10,17 +9,23 @@
 	let { checked = false, toggleChecked }: Props = $props();
 
 	let mouseDown = $state(false);
-	let visuallyChecked = $state(checked);
+	let visuallyChecked = $derived(checked);
+	let isToggling = $state(false);
+
 	const ANIMATION_DURATION_MS = 200;
 
 	function handleToggle(event: Event) {
 		event.preventDefault();
 		event.stopPropagation();
 
+		if (isToggling) return;
+		isToggling = true;
+
 		visuallyChecked = !visuallyChecked;
 
 		setTimeout(() => {
 			toggleChecked(visuallyChecked);
+			isToggling = false;
 		}, ANIMATION_DURATION_MS);
 	}
 

@@ -61,3 +61,23 @@ export const updateTaskFetch = async (taskId: string, updates: Partial<Task>): P
 		return false;
 	}
 };
+
+export const getTasksFetch = async (
+	limit: number
+): Promise<{ tasks: Task[]; hasMoreCompletedTasks: boolean } | null> => {
+	try {
+		const result = await fetch(`/api/tasks?limit=${limit}`);
+
+		if (result.ok) {
+			const response = await result.json();
+
+			return { tasks: response.tasks, hasMoreCompletedTasks: response.hasMoreCompletedTasks };
+		}
+
+		return null;
+	} catch (e) {
+		console.error('Error fetching tasks:', e);
+
+		return null;
+	}
+};

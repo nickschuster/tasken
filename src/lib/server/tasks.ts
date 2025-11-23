@@ -1,14 +1,36 @@
-import { and, eq, isNull } from 'drizzle-orm';
+import { and, eq, isNotNull, isNull, desc, count } from 'drizzle-orm';
 import { db } from './db';
 import { task, type Task } from './db/schema';
 import { UUIDV4 } from './helper';
+
+export const getCompletedTasks = async (userId: string, limit: number) => {
+	const query = db
+		.select()
+		.from(task)
+		.where(and(eq(task.userId, userId), isNotNull(task.completedAt)))
+		.limit(limit)
+		.orderBy(desc(task.completedAt));
+
+	return query.execute();
+};
+
+export const getCompletedTasksCount = async (userId: string) => {
+	const query = db
+		.select({ count: count() })
+		.from(task)
+		.where(and(eq(task.userId, userId), isNotNull(task.completedAt)));
+
+	const [result] = await query.execute();
+
+	return result.count;
+};
 
 export const getUncompletedTasks = async (userId: string) => {
 	const query = db
 		.select()
 		.from(task)
 		.where(and(isNull(task.completedAt), eq(task.userId, userId)))
-		.orderBy(task.createdAt);
+		.orderBy(desc(task.createdAt));
 
 	return query.execute();
 };

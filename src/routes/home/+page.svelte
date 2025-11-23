@@ -1,9 +1,8 @@
 <script lang="ts">
 	import TaskInput from '$lib/ui/task/task-input/TaskInput.svelte';
 	import TaskComponent from '$lib/ui/task/Task.svelte';
-	import Collapsible from '$lib/ui/Collapsible.svelte';
 	import Sidebar from '$lib/ui/sidebar/Sidebar.svelte';
-	import { CircleCheckBigIcon, MenuIcon } from '@lucide/svelte';
+	import { CircleCheckBigIcon, MenuIcon, ChevronDown } from '@lucide/svelte';
 	import { getTasks, setTasks } from '$lib/states/task.state.svelte.js';
 	import { getTaskGroups, setTaskGroups } from '$lib/states/taskGroup.state.svelte.js';
 	import type { Task, TaskGroup } from '$lib/server/db/schema';
@@ -13,40 +12,81 @@
 		deleteTaskGroupFetch,
 		updateTaskGroupFetch
 	} from '$lib/services/taskgroups.service.js';
-	import { createTaskFetch, updateTaskFetch } from '$lib/services/tasks.service.js';
+	import { createTaskFetch, updateTaskFetch, getTasksFetch } from '$lib/services/tasks.service.js';
 	import { wsService } from '$lib/services/ws.service.js';
 	import DetailedTaskView from '$lib/ui/DetailedTaskView.svelte';
+	import {
+		decrementCompletedCount,
+		getTotalCompletedCount,
+		incrementCompletedCount,
+		setTotalCompletedCount
+	} from '$lib/states/completedCount.state.svelte.js';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
-	let tasks = $derived(getTasks());
+	let tasks = $derived(orderTasks(getTasks()));
+
 	let taskGroups = $derived(getTaskGroups());
 	let isSidebarOpen = $state(false);
 	let selectedGroup = $state('Tasks');
 	let selectedTaskId = $state<string | null>(null);
 	let selectedTask = $derived(tasks.find((t) => t.id === selectedTaskId) ?? null);
 
+	let completedTasksLimit = $state(0);
+	let hasMoreCompletedTasks = $state((data.completedTasksCount ?? 0) !== 0);
+	let totalCompletedCount = $derived(getTotalCompletedCount());
+
+	const COMPLETED_TASKS_PAGE_SIZE = 50;
+
 	wsService.setShouldReconnect(true);
 	wsService.connect();
 
 	setTasks(data.tasks);
+	setTotalCompletedCount(data.completedTasksCount ?? 0);
 	setTaskGroups(data.taskGroups);
+
+	function orderTasks(tasks: Task[]) {
+		return tasks.toSorted((a, b) => {
+			if (a.completedAt && !b.completedAt) return 1;
+			if (!a.completedAt && b.completedAt) return -1;
+
+			if (!a.completedAt && !b.completedAt) {
+				return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+			}
+
+			return new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime();
+		});
+	}
 
 	const filterTasksByGroup = (group: string) => {
 		switch (group) {
 			case 'Tasks':
 				return tasks;
 			case 'Planned':
-				return tasks.filter((t) => t.dueDate !== null);
+				return tasks.filter((t) => t.dueDate !== null && !t.completedAt);
 			case 'Important':
-				return tasks.filter((t) => t.isImportant);
+				return tasks.filter((t) => t.isImportant && !t.completedAt);
 			default:
-				return tasks.filter((t) => t.taskGroupId === group);
+				return tasks.filter((t) => t.taskGroupId === group && !t.completedAt);
 		}
 	};
 
-	const handleLogout = (_event: SubmitEvent) => {
+	const handleLogout = () => {
 		wsService.setShouldReconnect(false);
+	};
+
+	const loadMoreTasks = async () => {
+		if (!hasMoreCompletedTasks) return;
+
+		completedTasksLimit += COMPLETED_TASKS_PAGE_SIZE;
+
+		const response = await getTasksFetch(completedTasksLimit);
+
+		if (response && response.tasks.length > 0) {
+			setTasks(response.tasks);
+			hasMoreCompletedTasks = response.hasMoreCompletedTasks;
+			completedTasksLimit = response.tasks.filter((t) => t.completedAt).length;
+		}
 	};
 
 	const createTask = async (task: Partial<Task>) => {
@@ -63,6 +103,11 @@
 
 	const updateTask = async (taskId: string, updatedTask: Partial<Task>) => {
 		await updateTaskFetch(taskId, updatedTask);
+
+		if (updatedTask.completedAt === undefined) return;
+
+		if (updatedTask.completedAt) incrementCompletedCount();
+		else decrementCompletedCount();
 	};
 
 	const createTaskGroup = async () => {
@@ -80,13 +125,6 @@
 
 		await deleteTaskGroupFetch(taskGroupId);
 	};
-
-	const uncompletedTasks = $derived(
-		filterTasksByGroup(selectedGroup).filter((task) => !task.completedAt)
-	);
-	const completedTasks = $derived(
-		filterTasksByGroup(selectedGroup).filter((task) => task.completedAt)
-	);
 </script>
 
 <div class="flex h-screen dark:bg-black dark:text-white">
@@ -117,15 +155,29 @@
 					{taskGroups.find((g) => g.id === selectedGroup)?.name ?? selectedGroup}
 				</h2>
 			</div>
-			<div class="text-2xl">
+
+			<div class="flex items-center gap-3">
+				<span
+					class="flex h-10 items-center gap-2 rounded-md border-2 border-neutral-200/50
+		bg-neutral-50 px-4 text-sm font-semibold
+		text-neutral-800 dark:border-neutral-900 dark:bg-neutral-950 dark:text-neutral-100
+		"
+				>
+					<CircleCheckBigIcon size="16" class="text-neutral-700 dark:text-neutral-300" />
+					{totalCompletedCount}
+				</span>
+
 				<form method="POST" action="?/logout" onsubmit={handleLogout}>
 					<button
 						type="submit"
 						title="logout"
-						class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-neutral-300 text-center dark:bg-neutral-900"
+						class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border-2 border-neutral-200/50 bg-neutral-50
+			 text-xl font-semibold text-neutral-800 transition
+			hover:bg-neutral-300 dark:border-neutral-900
+			dark:bg-neutral-950 dark:text-neutral-100 dark:hover:bg-neutral-800"
 					>
 						{#if data.user}
-							{data.user.email.charAt(0)}
+							{data.user.email.charAt(0).toUpperCase()}
 						{/if}
 					</button>
 				</form>
@@ -154,11 +206,11 @@
 					<TaskComponent {task} {taskGroups} {updateTask} />
 				</div>
 			{/snippet}
-			{#each uncompletedTasks as task, i (task.id)}
+			{#each filterTasksByGroup(selectedGroup) as task (task.id)}
 				{@render taskSnippet(task)}
 			{/each}
 
-			{#if uncompletedTasks.length === 0 && completedTasks.length === 0}
+			{#if filterTasksByGroup(selectedGroup).length === 0}
 				<div
 					class="flex grow flex-col items-center justify-center text-gray-200 dark:text-neutral-950"
 				>
@@ -166,14 +218,21 @@
 				</div>
 			{/if}
 
-			{#if completedTasks.length > 0}
-				<Collapsible headerText="Completed">
-					{#snippet children()}
-						{#each completedTasks as task, i (task.id)}
-							{@render taskSnippet(task)}
-						{/each}
-					{/snippet}
-				</Collapsible>
+			{#if hasMoreCompletedTasks && selectedGroup === 'Tasks'}
+				<button
+					class="
+		mt-4 flex w-full
+		cursor-pointer justify-center
+		bg-transparent py-6
+		text-neutral-400 transition
+		select-none
+		hover:bg-neutral-50 dark:text-neutral-500
+		dark:hover:bg-neutral-950
+	"
+					onclick={loadMoreTasks}
+				>
+					<ChevronDown class="text-black dark:text-white/60" />
+				</button>
 			{/if}
 		</div>
 
