@@ -1,4 +1,4 @@
-import { getUncompletedTasks } from '$lib/server/tasks';
+import { getUncompletedTasks, getCompletedTasksCount } from '$lib/server/tasks';
 import { getTaskGroups } from '$lib/server/taskGroups';
 import type { Actions, PageServerLoad } from './$types';
 import { fail, redirect } from '@sveltejs/kit';
@@ -28,6 +28,7 @@ export const load: PageServerLoad = async ({ url, locals }) => {
 
 	return {
 		tasks: await getUncompletedTasks(locals.user.id),
+		completedTasksCount: await getCompletedTasksCount(locals.user.id),
 		taskGroups: await getTaskGroups(locals.user.id),
 		user: locals.user,
 		subscriptionDetails

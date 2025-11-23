@@ -279,9 +279,11 @@
 						class="rounded-lg border-1 border-green-400 bg-green-100 p-4 text-sm font-medium text-green-600 dark:border-green-800 dark:bg-green-950 dark:text-green-300"
 					>
 						Completed
-						{DateTime.fromJSDate(selectedTask.completedAt).toLocaleString(
-							DateTime.DATE_MED_WITH_WEEKDAY
-						)}
+						{DateTime.fromJSDate(
+							typeof selectedTask.completedAt === 'string'
+								? new Date(selectedTask.completedAt)
+								: selectedTask.completedAt
+						).toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY)}
 					</div>
 				{/if}
 			</div>

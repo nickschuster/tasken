@@ -1,6 +1,7 @@
 import { wsService } from '$lib/services/ws.service';
 import type { Task } from '$lib/server/db/schema';
 import { Event } from '$lib/models/event';
+import { decrementCompletedCount, incrementCompletedCount } from './completedCount.state.svelte';
 
 let tasks: Task[] = $state([]);
 
@@ -13,7 +14,7 @@ export function setTasks(newTasks: Task[]) {
 }
 
 export function addTask(task: Task) {
-	tasks.push(task);
+	tasks.unshift(task);
 }
 
 export function updateTask(id: string, updatedTask: Partial<Task>) {
@@ -31,8 +32,20 @@ wsService.on(Event.TaskAdded, (newTask: Task) => {
 
 wsService.on(Event.TaskUpdated, (updatedTask: Task) => {
 	const index = tasks.findIndex((t) => t.id === updatedTask.id);
+	const existingTask = index !== -1 ? tasks[index] : null;
 
-	if (index !== -1) {
-		tasks[index] = { ...tasks[index], ...updatedTask };
+	const wasCompleted = !!existingTask?.completedAt;
+	const isCompleted = !!updatedTask.completedAt;
+
+	if (wasCompleted !== isCompleted) {
+		if (isCompleted) incrementCompletedCount();
+		else decrementCompletedCount();
+	}
+
+	if (existingTask) {
+		tasks[index] = { ...existingTask, ...updatedTask };
+	} else {
+		tasks.push(updatedTask);
+		decrementCompletedCount();
 	}
 });

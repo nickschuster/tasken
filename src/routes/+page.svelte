@@ -76,16 +76,7 @@
 		>
 			<h1 class="text-5xl font-bold tracking-tighter sm:text-6xl md:text-7xl">
 				Your Tasks, at the Speed of
-				<span class="tracking-[-6px] sm:tracking-[-8px] md:tracking-[-9px] lg:tracking-[-12px]">
-					<span class="text-blur">T</span>
-					<span class="text-blur">h</span>
-					<span class="text-blur">o</span>
-					<span class="text-blur">u</span>
-					<span class="text-blur">g</span>
-					<span class="text-blur">h</span>
-					<span class="text-blur">t</span>
-					<span class="text-blur">.</span>
-				</span>
+				<span class="text-blur">Thought.</span>
 			</h1>
 			<p class="max-w-3xl text-lg text-neutral-600 md:text-xl dark:text-neutral-400">
 				<strong>Tasken</strong> is the radically fast, minimalist task manager for professionals
@@ -328,34 +319,6 @@
 		opacity: 0;
 		filter: blur(15px);
 		animation: blur-in 2s ease-out forwards;
-	}
-
-	.text-blur:nth-child(1) {
-		animation-delay: 0s;
-	}
-	.text-blur:nth-child(2) {
-		animation-delay: 0.1s;
-	}
-	.text-blur:nth-child(3) {
-		animation-delay: 0.2s;
-	}
-	.text-blur:nth-child(4) {
-		animation-delay: 0.3s;
-	}
-	.text-blur:nth-child(5) {
-		animation-delay: 0.4s;
-	}
-	.text-blur:nth-child(6) {
-		animation-delay: 0.5s;
-	}
-	.text-blur:nth-child(7) {
-		animation-delay: 0.6s;
-	}
-	.text-blur:nth-child(8) {
-		animation-delay: 0.7s;
-	}
-	.text-blur:nth-child(9) {
-		animation-delay: 0.8s;
 	}
 
 	@keyframes blur-in {
