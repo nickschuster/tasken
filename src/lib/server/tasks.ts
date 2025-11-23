@@ -8,7 +8,7 @@ export const getCompletedTasks = async (userId: string, limit: number) => {
 		.select()
 		.from(task)
 		.where(and(eq(task.userId, userId), isNotNull(task.completedAt)))
-		.limit(limit + 1)
+		.limit(limit)
 		.orderBy(desc(task.completedAt));
 
 	return query.execute();
@@ -20,7 +20,9 @@ export const getCompletedTasksCount = async (userId: string) => {
 		.from(task)
 		.where(and(eq(task.userId, userId), isNotNull(task.completedAt)));
 
-	return query.execute();
+	const [result] = await query.execute();
+
+	return result.count;
 };
 
 export const getUncompletedTasks = async (userId: string) => {

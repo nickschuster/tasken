@@ -1,4 +1,9 @@
-import { createTask, getCompletedTasks, getUncompletedTasks } from '$lib/server/tasks';
+import {
+	createTask,
+	getCompletedTasks,
+	getCompletedTasksCount,
+	getUncompletedTasks
+} from '$lib/server/tasks';
 import { parseDate } from '$lib/server/helper';
 import { json } from '@sveltejs/kit';
 
@@ -32,8 +37,9 @@ export async function GET({ locals, url }) {
 
 	const tasks = await getUncompletedTasks(locals.user.id);
 	const completedTasks = await getCompletedTasks(locals.user.id, limit);
+	const completedTasksCount = await getCompletedTasksCount(locals.user.id);
 
-	const hasMoreCompletedTasks = completedTasks.length > limit;
+	const hasMoreCompletedTasks = completedTasksCount > limit;
 
-	return json({ tasks: [...tasks, ...completedTasks.slice(0, limit)], hasMoreCompletedTasks });
+	return json({ tasks: tasks.concat(completedTasks), hasMoreCompletedTasks });
 }

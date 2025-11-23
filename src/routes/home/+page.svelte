@@ -33,7 +33,7 @@
 	let selectedTask = $derived(tasks.find((t) => t.id === selectedTaskId) ?? null);
 
 	let completedTasksLimit = $state(0);
-	let hasMoreCompletedTasks = $state((data.completedTasksCount[0]?.count ?? 0) !== 0);
+	let hasMoreCompletedTasks = $state((data.completedTasksCount ?? 0) !== 0);
 	let totalCompletedCount = $derived(getTotalCompletedCount());
 
 	const COMPLETED_TASKS_PAGE_SIZE = 50;
@@ -42,7 +42,7 @@
 	wsService.connect();
 
 	setTasks(data.tasks);
-	setTotalCompletedCount(data.completedTasksCount[0]?.count ?? 0);
+	setTotalCompletedCount(data.completedTasksCount ?? 0);
 	setTaskGroups(data.taskGroups);
 
 	function orderTasks(tasks: Task[]) {
