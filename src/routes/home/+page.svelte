@@ -15,6 +15,12 @@
 	import { createTaskFetch, updateTaskFetch, getTasksFetch } from '$lib/services/tasks.service.js';
 	import { wsService } from '$lib/services/ws.service.js';
 	import DetailedTaskView from '$lib/ui/DetailedTaskView.svelte';
+	import {
+		decrementCompletedCount,
+		getTotalCompletedCount,
+		incrementCompletedCount,
+		setTotalCompletedCount
+	} from '$lib/states/completedCount.state.svelte.js';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
@@ -26,14 +32,15 @@
 	let selectedTaskId = $state<string | null>(null);
 	let selectedTask = $derived(tasks.find((t) => t.id === selectedTaskId) ?? null);
 
-	let completedTasksLimit = $derived(50);
+	let completedTasksLimit = $state(50);
 	let hasMoreCompletedTasks = $state(data.completedTasksCount[0].count !== 0);
-	let totalCompletedTasksCount = $state(data.completedTasksCount[0].count);
+	let totalCompletedCount = $derived(getTotalCompletedCount());
 
 	wsService.setShouldReconnect(true);
 	wsService.connect();
 
 	setTasks(data.tasks);
+	setTotalCompletedCount(data.completedTasksCount[0].count);
 	setTaskGroups(data.taskGroups);
 
 	function orderTasks(tasks: Task[]) {
@@ -62,22 +69,6 @@
 		}
 	};
 
-	const isSameDay = (dateA: Date | null, dateB: Date) => {
-		if (!dateA) {
-			return false;
-		}
-
-		if (typeof dateA === 'string') {
-			dateA = new Date(dateA);
-		}
-
-		return (
-			dateA.getFullYear() === dateB.getFullYear() &&
-			dateA.getMonth() === dateB.getMonth() &&
-			dateA.getDate() === dateB.getDate()
-		);
-	};
-
 	const handleLogout = () => {
 		wsService.setShouldReconnect(false);
 	};
@@ -95,7 +86,7 @@
 			completedTasksLimit = response.tasks.filter((t) => t.completedAt).length;
 		}
 	};
-  
+
 	const createTask = async (task: Partial<Task>) => {
 		if (newTaskContent.trim() === '') {
 			return;
@@ -113,11 +104,8 @@
 
 		if (updatedTask.completedAt === undefined) return;
 
-		if (updatedTask.completedAt) {
-			totalCompletedTasksCount++;
-		} else {
-			totalCompletedTasksCount--;
-		}
+		if (updatedTask.completedAt) incrementCompletedCount();
+		else decrementCompletedCount();
 	};
 
 	const createTaskGroup = async () => {
@@ -174,7 +162,7 @@
 		"
 				>
 					<CircleCheckBigIcon size="16" class="text-neutral-700 dark:text-neutral-300" />
-					{totalCompletedTasksCount}
+					{totalCompletedCount}
 				</span>
 
 				<form method="POST" action="?/logout" onsubmit={handleLogout}>
@@ -216,7 +204,7 @@
 					<TaskComponent {task} {taskGroups} {updateTask} />
 				</div>
 			{/snippet}
-			{#each filterTasksByGroup(tasks, selectedGroup) as task (task.id)}
+			{#each filterTasksByGroup(selectedGroup) as task (task.id)}
 				{@render taskSnippet(task)}
 			{/each}
 
@@ -228,7 +216,7 @@
 				</div>
 			{/if}
 
-			{#if hasMoreCompletedTasks && selectedGroup === 'My Day'}
+			{#if hasMoreCompletedTasks && selectedGroup === 'Tasks'}
 				<button
 					class="
 		mt-4 flex w-full
@@ -241,7 +229,7 @@
 	"
 					onclick={loadMoreTasks}
 				>
-					<ChevronDown class="text-white/60" />
+					<ChevronDown class="text-black dark:text-white/60" />
 				</button>
 			{/if}
 		</div>

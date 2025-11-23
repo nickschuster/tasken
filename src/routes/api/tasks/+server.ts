@@ -1,6 +1,5 @@
 import { createTask, getCompletedTasks, getUncompletedTasks } from '$lib/server/tasks';
 import { parseDate } from '$lib/server/helper';
-import { createTask } from '$lib/server/tasks';
 import { json } from '@sveltejs/kit';
 
 export async function POST({ request, locals }) {
