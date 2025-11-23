@@ -1,11 +1,9 @@
 ## Conventions
 
-TODO: create contributing.md
-
-- need global tsx
+- need global tsx for running migrations
 - node v22 minimum
 - yourname/feature for branches
-- every branch needs an e2e test if its new functionanlity and unit tests and component tests
+- every branch needs an e2e test if its new functionanlity, some unit tests and component tests also please
 - if you fix a bug, add a test for it
 - make sure you have prettier extension installed and configured as default
 - PR names should follow [conventional commits](https://www.conventionalcommits.org/en/v1.0.0/#summary)
@@ -57,4 +55,4 @@ You can preview the production build with `npm run preview`.
 
 ## Deployment
 
-TBA
+Commits to `master` run the deployment pipeline.
