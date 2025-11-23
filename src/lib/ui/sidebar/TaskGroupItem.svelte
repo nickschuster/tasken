@@ -109,7 +109,10 @@
 						stopEditing();
 					}
 				}}
-				onblur={stopEditing}
+				onblur={() => {
+					updateTaskGroup(group.id, { name: newName });
+					stopEditing();
+				}}
 			/>
 		{/if}
 	{:else}
