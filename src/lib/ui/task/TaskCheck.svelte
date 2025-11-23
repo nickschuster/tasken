@@ -14,7 +14,7 @@
 
 	const ANIMATION_DURATION_MS = 200;
 
-	async function handleToggle(event: Event) {
+	function handleToggle(event: Event) {
 		event.preventDefault();
 		event.stopPropagation();
 
