@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { Check, ChevronDown, StarIcon } from '@lucide/svelte';
+	import { Check, ChevronDown, StarIcon, X } from '@lucide/svelte';
 	import { DateTime } from 'luxon';
 	import { Select } from 'bits-ui';
 	import { type TaskGroup, type Task } from '$lib/server/db/schema';
@@ -125,23 +125,11 @@
 	"
 	>
 		{#if selectedTaskId && selectedTask}
-			<div class="flex flex-row justify-between">
-				<h1 class="font-bold">Task Details</h1>
-				<p
-					class="rounded-4xl border-1 px-2 py-1 text-xs {!!selectedTask.completedAt
-						? 'border-green-600 bg-green-700 text-green-300'
-						: 'border-blue-600 bg-blue-700 text-blue-300'}"
-				>
-					{!!selectedTask.completedAt ? 'Completed' : 'Active'}
-				</p>
+			<div class="mb-4 flex flex-row items-center justify-between">
+				<button onclick={() => (selectedTaskId = null)} class="cursor-pointer"><X /></button>
+				<span>Task Details</span>
 			</div>
-			<p class="pb-8 text-sm font-medium text-neutral-500">
-				{DateTime.fromJSDate(
-					typeof selectedTask.createdAt === 'string'
-						? new Date(selectedTask.createdAt)
-						: selectedTask.createdAt
-				).toLocaleString(DateTime.DATE_MED_WITH_WEEKDAY)}
-			</p>
+
 			<div class="flex flex-col gap-6">
 				<div
 					class="rounded-md border-2 border-neutral-200/50 bg-neutral-50 p-3 dark:border-neutral-900 dark:bg-neutral-950"
