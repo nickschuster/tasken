@@ -6,7 +6,7 @@
 	type Props = {
 		label?: string;
 		value: DateValue | undefined;
-		onChange: (change: DateValue | undefined) => void;
+		onChange?: (change: DateValue | undefined) => void;
 	};
 
 	let { label, value = $bindable(), onChange }: Props = $props();
@@ -21,7 +21,7 @@
 		{/if}
 
 		<DatePicker.Input
-			class="dark:focus-within:white flex w-full items-center rounded-lg border border-neutral-300 bg-white 
+			class="dark:focus-within:white flex w-full items-center rounded-lg border border-neutral-300 bg-white
 			px-3 text-sm text-neutral-700 transition focus-within:ring-2 focus-within:ring-black
 			 hover:border-neutral-400 focus:border-transparent focus:outline-none dark:border-neutral-700
 			  dark:bg-neutral-900 dark:text-neutral-300 dark:focus-within:ring-white"
