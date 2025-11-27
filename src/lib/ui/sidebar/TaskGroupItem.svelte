@@ -106,6 +106,7 @@
 						updateTaskGroup(group.id, { name: newName });
 						stopEditing();
 					} else if (e.key === 'Escape') {
+						newName = group.name;
 						stopEditing();
 					}
 				}}
