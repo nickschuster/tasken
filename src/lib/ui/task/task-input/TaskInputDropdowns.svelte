@@ -15,8 +15,14 @@
 		dateSelected: (date: CalendarDate | null) => void;
 	};
 
-	let { taskGroups, selectedGroup, groupSelected, selectedDate, customDate, dateSelected }: Props =
-		$props();
+	let {
+		taskGroups,
+		selectedGroup,
+		groupSelected,
+		selectedDate,
+		dateSelected,
+		customDate = $bindable()
+	}: Props = $props();
 </script>
 
 <div class="flex items-center gap-1">
@@ -48,7 +54,11 @@
 			<button class="flex gap-2 rounded-lg p-2 hover:bg-neutral-200 dark:hover:bg-neutral-950">
 				<CalendarIcon />
 				{#if selectedDate}
-					<span>{selectedDate}</span>
+					{@const formatted = `${String(selectedDate.month).padStart(2, '0')}-${String(
+						selectedDate.day
+					).padStart(2, '0')}-${selectedDate.year}`}
+
+					<span>{formatted}</span>
 				{:else}
 					<span class="text-neutral-400">Schedule</span>
 				{/if}
@@ -56,7 +66,7 @@
 		</DropdownMenu.Trigger>
 
 		<DropdownMenu.Portal>
-			<TaskInputDueDateSelector {dateSelected} {customDate} {selectedDate} />
+			<TaskInputDueDateSelector {dateSelected} {selectedDate} bind:customDate />
 		</DropdownMenu.Portal>
 	</DropdownMenu.Root>
 </div>

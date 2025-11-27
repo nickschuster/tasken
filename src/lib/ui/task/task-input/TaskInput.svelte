@@ -34,6 +34,7 @@
 		newTaskContent = '';
 		selectedGroup = null;
 		selectedDate = null;
+		customDate = undefined;
 	}
 
 	function groupSelected(group: TaskGroup | null) {
@@ -80,8 +81,8 @@
 			{selectedGroup}
 			{groupSelected}
 			{selectedDate}
-			{customDate}
 			{dateSelected}
+			bind:customDate
 		/>
 	{/if}
 </div>

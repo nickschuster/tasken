@@ -3,7 +3,6 @@
 	import DropdownMenuContent from '$lib/ui/dropdown/DropdownMenuContent.svelte';
 	import DatePicker from '$lib/ui/DatePicker.svelte';
 	import { CalendarDate, type DateValue } from '@internationalized/date';
-
 	type Props = {
 		dateSelected: (date: CalendarDate | null) => void;
 		selectedDate: CalendarDate | null;
@@ -13,12 +12,14 @@
 	let { dateSelected, customDate = $bindable(), selectedDate }: Props = $props();
 
 	const handleToday = () => {
+		clearDueDate();
 		const now = new Date();
 		const todayCalendar = new CalendarDate(now.getFullYear(), now.getMonth() + 1, now.getDate());
 		dateSelected(todayCalendar);
 	};
 
 	const handleTomorrow = () => {
+		clearDueDate();
 		const now = new Date();
 		const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
 
