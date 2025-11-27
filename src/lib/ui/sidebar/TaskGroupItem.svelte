@@ -106,10 +106,14 @@
 						updateTaskGroup(group.id, { name: newName });
 						stopEditing();
 					} else if (e.key === 'Escape') {
+						newName = group.name;
 						stopEditing();
 					}
 				}}
-				onblur={stopEditing}
+				onblur={() => {
+					updateTaskGroup(group.id, { name: newName });
+					stopEditing();
+				}}
 			/>
 		{/if}
 	{:else}
