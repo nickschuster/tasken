@@ -31,8 +31,6 @@ const handleAuth: Handle = async ({ event, resolve }) => {
 };
 
 async function buildPostHogRelayResponse(pathname: string, event: RequestEvent) {
-	console.log('start event', event.request.url, event.request.headers, pathname);
-
 	// Determine target hostname based on static or dynamic ingestion
 	const hostname = pathname.startsWith('/relay-5HTB/static/')
 		? 'us-assets.i.posthog.com' // change us to eu for EU Cloud
@@ -55,8 +53,6 @@ async function buildPostHogRelayResponse(pathname: string, event: RequestEvent) 
 	headers.set('Accept-Encoding', '');
 	headers.set('host', hostname);
 
-	console.log('before fetch', url);
-
 	let response: Response;
 	try {
 		// Proxy the request to the external host
@@ -71,8 +67,6 @@ async function buildPostHogRelayResponse(pathname: string, event: RequestEvent) 
 
 		response = new Response('Error proxying request to PostHog', { status: 502 });
 	}
-
-	console.log('response', response);
 
 	return response;
 }
