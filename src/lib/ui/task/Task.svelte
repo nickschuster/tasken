@@ -25,18 +25,7 @@
 <div class="flex items-center gap-2">
 	<TaskCheck checked={!!task.completedAt} {toggleChecked} />
 	<div class="flex flex-col">
-		{#if !!task.completedAt}
-			<span class="line-through">{task.content}</span>
-		{:else}
-			<input
-				bind:value={task.content}
-				type="text"
-				class="w-full outline-none"
-				onchange={() => updateTask(task.id, { content: task.content })}
-				onkeypress={(e) => e.stopPropagation()}
-				onclick={(e) => e.stopPropagation()}
-			/>
-		{/if}
+		<span class={task.completedAt ? 'line-through' : ''}>{task.content}</span>
 
 		<div class="flex">
 			{#if task.taskGroupId}
