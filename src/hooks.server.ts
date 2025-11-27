@@ -45,16 +45,28 @@ async function buildPostHogRelayResponse(pathname: string, event: RequestEvent) 
 
 	// Clone and adjust headers
 	const headers = new Headers(event.request.headers);
+
+	if (headers.get('connection')) {
+		headers.delete('connection');
+	}
+
 	headers.set('Accept-Encoding', '');
 	headers.set('host', hostname);
 
-	// Proxy the request to the external host
-	const response = await fetch(url.toString(), {
-		method: event.request.method,
-		headers,
-		body: event.request.body,
-		duplex: 'half'
-	} as RequestInit);
+	let response: Response;
+	try {
+		// Proxy the request to the external host
+		response = await fetch(url.toString(), {
+			method: event.request.method,
+			headers,
+			body: event.request.body,
+			duplex: 'half'
+		} as RequestInit);
+	} catch (error) {
+		console.error('Error during fetch to PostHog:', error);
+
+		response = new Response('Error proxying request to PostHog', { status: 502 });
+	}
 
 	return response;
 }
