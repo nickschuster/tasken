@@ -1,6 +1,6 @@
 <script lang="ts">
 	import type { Task, TaskGroup } from '$lib/server/db/schema';
-	import type { CalendarDateTime } from '@internationalized/date';
+	import { getLocalTimeZone, CalendarDate } from '@internationalized/date';
 	import { Circle, Plus } from '@lucide/svelte';
 	import { elasticOut } from 'svelte/easing';
 	import { fade } from 'svelte/transition';
@@ -17,13 +17,10 @@
 	} = $props();
 
 	let focused = $state(false);
-	let showContextMenu = $state(false);
+	let showContextMenu = $derived(focused || newTaskContent.trim().length > 0);
 	let selectedGroup = $state<TaskGroup | null>(null);
-	let selectedDate = $state<CalendarDateTime | null>(null);
-
-	$effect(() => {
-		showContextMenu = focused || newTaskContent.trim().length > 0;
-	});
+	let selectedDate = $state<CalendarDate | null>(null);
+	let customDate = $state<CalendarDate | undefined>(undefined);
 
 	function handleEnter(content: string) {
 		if (content.trim().length === 0) return;
@@ -31,19 +28,20 @@
 		onEnter({
 			content: content.trim(),
 			taskGroupId: selectedGroup?.id,
-			dueDate: selectedDate?.toDate('utc')
+			dueDate: selectedDate?.toDate(getLocalTimeZone())
 		});
 
 		newTaskContent = '';
 		selectedGroup = null;
 		selectedDate = null;
+		customDate = undefined;
 	}
 
 	function groupSelected(group: TaskGroup | null) {
 		selectedGroup = group;
 	}
 
-	function dateSelected(date: CalendarDateTime | null) {
+	function dateSelected(date: CalendarDate | null) {
 		selectedDate = date;
 	}
 </script>
@@ -84,6 +82,7 @@
 			{groupSelected}
 			{selectedDate}
 			{dateSelected}
+			bind:customDate
 		/>
 	{/if}
 </div>

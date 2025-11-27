@@ -3,8 +3,26 @@
 	import { DropdownMenu } from 'bits-ui';
 	import TaskInputGroupSelector from './TaskInputGroupSelector.svelte';
 	import TaskInputDueDateSelector from './TaskInputDueDateSelector.svelte';
+	import type { TaskGroup } from '$lib/server/db/schema';
+	import type { CalendarDate } from '@internationalized/date';
 
-	let { taskGroups, selectedGroup, groupSelected, selectedDate, dateSelected } = $props();
+	type Props = {
+		taskGroups: TaskGroup[];
+		selectedGroup: TaskGroup | null;
+		groupSelected: (group: TaskGroup | null) => void;
+		selectedDate: CalendarDate | null;
+		customDate: CalendarDate | undefined;
+		dateSelected: (date: CalendarDate | null) => void;
+	};
+
+	let {
+		taskGroups,
+		selectedGroup,
+		groupSelected,
+		selectedDate,
+		dateSelected,
+		customDate = $bindable()
+	}: Props = $props();
 </script>
 
 <div class="flex items-center gap-1">
@@ -12,8 +30,16 @@
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger>
 				<button class="flex gap-2 rounded-lg p-2 hover:bg-neutral-200 dark:hover:bg-neutral-950">
-					<House />
-					<span>Tasks</span>
+					{#if selectedGroup}
+						<div
+							style={'background-color: ' + selectedGroup.color}
+							class="m-1 size-3 rounded-full"
+						></div>
+						<div>{selectedGroup.name}</div>
+					{:else}
+						<House />
+						<span class="text-neutral-400">Assign</span>
+					{/if}
 				</button>
 			</DropdownMenu.Trigger>
 
@@ -25,13 +51,22 @@
 
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger>
-			<button class="rounded-lg p-2 hover:bg-neutral-200 dark:hover:bg-neutral-950">
+			<button class="flex gap-2 rounded-lg p-2 hover:bg-neutral-200 dark:hover:bg-neutral-950">
 				<CalendarIcon />
+				{#if selectedDate}
+					{@const formatted = `${String(selectedDate.month).padStart(2, '0')}-${String(
+						selectedDate.day
+					).padStart(2, '0')}-${selectedDate.year}`}
+
+					<span>{formatted}</span>
+				{:else}
+					<span class="text-neutral-400">Schedule</span>
+				{/if}
 			</button>
 		</DropdownMenu.Trigger>
 
 		<DropdownMenu.Portal>
-			<TaskInputDueDateSelector {selectedDate} {dateSelected} />
+			<TaskInputDueDateSelector {dateSelected} {selectedDate} bind:customDate />
 		</DropdownMenu.Portal>
 	</DropdownMenu.Root>
 </div>
