@@ -9,7 +9,9 @@ import {
 export function _initTelemetry() {
 	console.log('[InitTelementry] veryifing browser, posthog key, ci, and dev');
 	if (!browser || !POSTHOG_KEY || CI || DEV) {
-		console.error(`[InitTelementry] Check failed CI: ${CI}, DEV: ${DEV}`);
+		console.error(
+			`[InitTelementry] Check failed CI: ${CI}, DEV: ${DEV}, POSTHOG_KEY: ${POSTHOG_KEY}, browser: ${browser}`
+		);
 		return;
 	}
 
