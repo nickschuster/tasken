@@ -1,8 +1,11 @@
 import posthog from 'posthog-js';
 import { browser } from '$app/environment';
-import { PUBLIC_POSTHOG_KEY as POSTHOG_KEY, PUBLIC_CI as CI, PUBLIC_DEV as DEV } from '$env/static/public';
+import { PUBLIC_POSTHOG_KEY as POSTHOG_KEY, PUBLIC_CI, PUBLIC_DEV } from '$env/static/public';
 
 export function _initTelemetry() {
+	const CI = PUBLIC_CI === 'true';
+	const DEV = PUBLIC_DEV === 'true';
+
 	if (!browser || !POSTHOG_KEY || CI || DEV) {
 		return;
 	}
