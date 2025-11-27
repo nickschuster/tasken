@@ -8,18 +8,7 @@ import {
 
 export function _initTelemetry() {
 	console.log('[InitTelementry] veryifing browser, posthog key, ci, and dev');
-
-	console.log('[InitTelementry] am I here?', !browser || !POSTHOG_KEY || CI || DEV);
-
-	console.error(
-		`[InitTelementry] Check failed CI: ${CI}, DEV: ${DEV}, POSTHOG_KEY: ${POSTHOG_KEY}, browser: ${browser}`
-	);
-
-	console.log('before if');
-
 	if (!browser || !POSTHOG_KEY || CI || DEV) {
-		console.log('[InitTelementry] am I here?', !browser || !POSTHOG_KEY || CI || DEV);
-
 		console.error(
 			`[InitTelementry] Check failed CI: ${CI}, DEV: ${DEV}, POSTHOG_KEY: ${POSTHOG_KEY}, browser: ${browser}`
 		);
