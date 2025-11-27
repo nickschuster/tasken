@@ -47,6 +47,11 @@ async function buildPostHogRelayResponse(pathname: string, event: RequestEvent) 
 
 	// Clone and adjust headers
 	const headers = new Headers(event.request.headers);
+
+	if (headers.get('connection')) {
+		headers.delete('connection');
+	}
+
 	headers.set('Accept-Encoding', '');
 	headers.set('host', hostname);
 
