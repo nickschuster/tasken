@@ -7,13 +7,26 @@ import {
 } from '$env/static/public';
 
 export function _initTelemetry() {
-	const isCI = CI === 'true';
-	const isDev = DEV === 'true';
+	console.log('[InitTelementry] veryifing browser, posthog key, ci, and dev');
 
-	if (!browser || !POSTHOG_KEY || isCI || isDev) {
+	console.log('[InitTelementry] am I here?', !browser || !POSTHOG_KEY || CI || DEV);
+
+	console.error(
+		`[InitTelementry] Check failed CI: ${CI}, DEV: ${DEV}, POSTHOG_KEY: ${POSTHOG_KEY}, browser: ${browser}`
+	);
+
+	console.log('before if');
+
+	if (!browser || !POSTHOG_KEY || CI || DEV) {
+		console.log('[InitTelementry] am I here?', !browser || !POSTHOG_KEY || CI || DEV);
+
+		console.error(
+			`[InitTelementry] Check failed CI: ${CI}, DEV: ${DEV}, POSTHOG_KEY: ${POSTHOG_KEY}, browser: ${browser}`
+		);
 		return;
 	}
 
+	console.log('[InitTelementry] Initilizing posthog...');
 	posthog.init(POSTHOG_KEY, {
 		api_host: '/relay-5HTB',
 		ui_host: 'https://us.posthog.com',
