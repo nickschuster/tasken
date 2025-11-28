@@ -21,6 +21,7 @@
 		incrementCompletedCount,
 		setTotalCompletedCount
 	} from '$lib/states/completedCount.state.svelte.js';
+	import Profile from '$lib/ui/Profile.svelte';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
@@ -69,10 +70,6 @@
 			default:
 				return tasks.filter((t) => t.taskGroupId === group && !t.completedAt);
 		}
-	};
-
-	const handleLogout = () => {
-		wsService.setShouldReconnect(false);
 	};
 
 	const loadMoreTasks = async () => {
@@ -167,20 +164,10 @@
 					{totalCompletedCount}
 				</span>
 
-				<form method="POST" action="?/logout" onsubmit={handleLogout}>
-					<button
-						type="submit"
-						title="logout"
-						class="flex h-10 w-10 cursor-pointer items-center justify-center rounded-md border-2 border-neutral-200/50 bg-neutral-50
-			 text-xl font-semibold text-neutral-800 transition
-			hover:bg-neutral-300 dark:border-neutral-900
-			dark:bg-neutral-950 dark:text-neutral-100 dark:hover:bg-neutral-800"
-					>
-						{#if data.user}
-							{data.user.email.charAt(0).toUpperCase()}
-						{/if}
-					</button>
-				</form>
+				<Profile
+					userNameFirstLetter={data.user ? data.user.email.charAt(0).toUpperCase() : ''}
+					userEmail={data.user ? data.user.email : ''}
+				/>
 			</div>
 		</div>
 
