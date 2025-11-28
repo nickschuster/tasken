@@ -3,7 +3,7 @@
 	import DropdownMenuContent from './dropdown/DropdownMenuContent.svelte';
 	import DropdownMenuItem from './dropdown/DropdownMenuItem.svelte';
 	import { wsService } from '$lib/services/ws.service';
-	import posthog from 'posthog-js';
+	import { PostHog } from '$lib/services/posthog.service';
 
 	let { userNameFirstLetter, userEmail } = $props();
 
@@ -28,7 +28,7 @@
 			if (response.ok) {
 				wsService.setShouldReconnect(false);
 
-				posthog.reset();
+				PostHog.reset();
 			}
 
 			if (body.status === 302) {

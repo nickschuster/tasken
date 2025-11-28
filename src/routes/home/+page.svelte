@@ -22,7 +22,7 @@
 		setTotalCompletedCount
 	} from '$lib/states/completedCount.state.svelte.js';
 	import Profile from '$lib/ui/Profile.svelte';
-	import posthog from 'posthog-js';
+	import { PostHog } from '$lib/services/posthog.service';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
@@ -43,7 +43,7 @@
 	wsService.setShouldReconnect(true);
 	wsService.connect();
 
-	posthog.identify(data.user?.id ?? 'guest', { email: data.user?.email ?? '' });
+	PostHog.identify(data.user?.id ?? 'guest', { email: data.user?.email ?? '' });
 
 	setTasks(data.tasks);
 	setTotalCompletedCount(data.completedTasksCount ?? 0);
