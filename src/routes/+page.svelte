@@ -13,7 +13,11 @@
 		Check,
 		SquareTerminal,
 		ChartColumn,
-		ChevronDown
+		ChevronDown,
+		LineChart,
+		LineChartIcon,
+		BarChart,
+		ChartArea
 	} from '@lucide/svelte';
 	import DarkDemoFull from '$lib/assets/DarkDemoFull.png';
 	import LightDemoFull from '$lib/assets/LightDemoFull.png';
@@ -157,7 +161,7 @@
 					</p>
 				</div>
 				<div
-					class="mt-16 grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3 md:gap-x-8 lg:grid-cols-4 xl:grid-cols-5"
+					class="mt-16 grid grid-cols-2 gap-x-6 gap-y-12 sm:grid-cols-3 md:gap-x-8 lg:grid-cols-4 xl:grid-cols-4"
 				>
 					<div class="flex flex-col items-center gap-3 text-center">
 						<div class="rounded-lg bg-neutral-100 p-4 dark:bg-neutral-900">
@@ -170,9 +174,16 @@
 					</div>
 					<div class="flex flex-col items-center gap-3 text-center">
 						<div class="rounded-lg bg-neutral-100 p-4 dark:bg-neutral-900">
-							<SquareTerminal class="h-10 w-10" />
+							<BellRing class="h-10 w-10" />
 						</div>
-						<h3 class="text-xl font-semibold">First Class CLI Support</h3>
+						<h3 class="text-xl font-semibold">Advanced Reminders</h3>
+						<span class="text-sm font-medium text-neutral-500 dark:text-neutral-500">PLANNED</span>
+					</div>
+					<div class="flex flex-col items-center gap-3 text-center">
+						<div class="rounded-lg bg-neutral-100 p-4 dark:bg-neutral-900">
+							<Command class="h-10 w-10" />
+						</div>
+						<h3 class="text-xl font-semibold">Command Palette</h3>
 						<span class="text-sm font-medium text-neutral-500 dark:text-neutral-500">PLANNED</span>
 					</div>
 					<div class="flex flex-col items-center gap-3 text-center">
@@ -191,13 +202,6 @@
 					</div>
 					<div class="flex flex-col items-center gap-3 text-center">
 						<div class="rounded-lg bg-neutral-100 p-4 dark:bg-neutral-900">
-							<BellRing class="h-10 w-10" />
-						</div>
-						<h3 class="text-xl font-semibold">Advanced Reminders</h3>
-						<span class="text-sm font-medium text-neutral-500 dark:text-neutral-500">PLANNED</span>
-					</div>
-					<div class="flex flex-col items-center gap-3 text-center">
-						<div class="rounded-lg bg-neutral-100 p-4 dark:bg-neutral-900">
 							<Workflow class="h-10 w-10" />
 						</div>
 						<h3 class="text-xl font-semibold">Slack & Jira Sync</h3>
@@ -205,16 +209,16 @@
 					</div>
 					<div class="flex flex-col items-center gap-3 text-center">
 						<div class="rounded-lg bg-neutral-100 p-4 dark:bg-neutral-900">
-							<Command class="h-10 w-10" />
+							<SquareTerminal class="h-10 w-10" />
 						</div>
-						<h3 class="text-xl font-semibold">Command Palette</h3>
+						<h3 class="text-xl font-semibold">First Class CLI Support</h3>
 						<span class="text-sm font-medium text-neutral-500 dark:text-neutral-500">PLANNED</span>
 					</div>
 					<div class="flex flex-col items-center gap-3 text-center">
 						<div class="rounded-lg bg-neutral-100 p-4 dark:bg-neutral-900">
-							<Sparkles class="h-10 w-10" />
+							<ChartArea class="h-10 w-10" />
 						</div>
-						<h3 class="text-xl font-semibold">AI Task Parsing</h3>
+						<h3 class="text-xl font-semibold">Analytics Enabled</h3>
 						<span class="text-sm font-medium text-neutral-500 dark:text-neutral-500">PLANNED</span>
 					</div>
 				</div>
@@ -228,7 +232,7 @@
 						</h2>
 						<p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-600 dark:text-neutral-400">
 							Tasken is free to self-host from our open-source code. For effortless cloud sync
-							across all your devices, subscribe and experience nirvana.
+							across all your devices, subscribe and experience todo nirvana.
 						</p>
 					</div>
 					<div class="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-3">
@@ -297,8 +301,10 @@
 						rel="noopener noreferrer"
 						class="hover:text-black dark:hover:text-white">GitHub</a
 					>
-					<a href="/terms" class="hover:text-black dark:hover:text-white">Terms</a>
-					<a href="/privacy" class="hover:text-black dark:hover:text-white">Privacy</a>
+					<a
+						href="https://www.schustersoftware.ca/src/tasken/legal.html"
+						class="hover:text-black dark:hover:text-white">Terms & Privacy</a
+					>
 				</div>
 			</div>
 		</footer>
