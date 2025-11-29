@@ -11,3 +11,8 @@ html {
 #color-picker::-moz-color-swatch {
 	border: transparent;
 }
+
+.height-control {
+	height: 100vh;
+	height: 100dvh;
+}

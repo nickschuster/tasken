@@ -29,16 +29,18 @@
 	{#if taskGroups.length > 0}
 		<DropdownMenu.Root>
 			<DropdownMenu.Trigger>
-				<button class="flex gap-2 rounded-lg p-2 hover:bg-neutral-200 dark:hover:bg-neutral-950">
+				<button
+					class="flex items-center gap-2 rounded-lg p-2 hover:bg-neutral-200 dark:hover:bg-neutral-950"
+				>
 					{#if selectedGroup}
 						<div
 							style={'background-color: ' + selectedGroup.color}
 							class="m-1 size-3 rounded-full"
 						></div>
-						<div>{selectedGroup.name}</div>
+						<div class="hidden sm:inline">{selectedGroup.name}</div>
 					{:else}
 						<House />
-						<span class="text-neutral-400">Assign</span>
+						<span class="hidden text-neutral-400 sm:inline">Assign</span>
 					{/if}
 				</button>
 			</DropdownMenu.Trigger>
@@ -51,16 +53,18 @@
 
 	<DropdownMenu.Root>
 		<DropdownMenu.Trigger>
-			<button class="flex gap-2 rounded-lg p-2 hover:bg-neutral-200 dark:hover:bg-neutral-950">
+			<button
+				class="flex items-center gap-2 rounded-lg p-2 hover:bg-neutral-200 dark:hover:bg-neutral-950"
+			>
 				<CalendarIcon />
 				{#if selectedDate}
 					{@const formatted = `${String(selectedDate.month).padStart(2, '0')}-${String(
 						selectedDate.day
 					).padStart(2, '0')}-${selectedDate.year}`}
 
-					<span>{formatted}</span>
+					<span class="hidden sm:inline">{formatted}</span>
 				{:else}
-					<span class="text-neutral-400">Schedule</span>
+					<span class="hidden text-neutral-400 sm:inline">Schedule</span>
 				{/if}
 			</button>
 		</DropdownMenu.Trigger>

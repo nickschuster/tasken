@@ -64,7 +64,7 @@
 
 	<input
 		type="text"
-		class=" grow text-lg
+		class="grow text-lg
       text-black placeholder:text-neutral-400 focus:outline-none dark:bg-neutral-900 dark:text-neutral-200 dark:placeholder:text-neutral-500"
 		bind:focused
 		bind:value={newTaskContent}
