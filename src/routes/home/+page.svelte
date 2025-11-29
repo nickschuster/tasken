@@ -26,7 +26,23 @@
 
 	let { data } = $props();
 	let newTaskContent = $state('');
-	let tasks = $derived(orderTasks(getTasks()));
+	let localOrder = $state<string[]>([]);
+	let tasks = $derived.by(() => {
+		const raw = getTasks();
+
+		const map = new Map(raw.map((t) => [t.id, t]));
+
+		const complete = raw.filter((t) => t.completedAt);
+
+		const orderedIncomplete = localOrder
+			.filter((id) => map.has(id))
+			.map((id) => map.get(id)!)
+			.filter((t) => !t.completedAt);
+
+		const orderedComplete = orderTasks(complete);
+
+		return orderedIncomplete.concat(orderedComplete);
+	});
 
 	let taskGroups = $derived(getTaskGroups());
 	let isSidebarOpen = $state(false);
@@ -37,6 +53,18 @@
 	let completedTasksLimit = $state(0);
 	let hasMoreCompletedTasks = $state((data.completedTasksCount ?? 0) !== 0);
 	let totalCompletedCount = $derived(getTotalCompletedCount());
+
+	let draggedTaskId = $state<string | null>(null);
+	let taskList = $state<HTMLDivElement | null>(null);
+
+	$effect(() => {
+		const raw = getTasks();
+		for (const task of raw) {
+			if (!task.completedAt && !localOrder.includes(task.id)) {
+				localOrder.unshift(task.id);
+			}
+		}
+	});
 
 	const COMPLETED_TASKS_PAGE_SIZE = 50;
 
@@ -125,6 +153,30 @@
 
 		await deleteTaskGroupFetch(taskGroupId);
 	};
+
+	const moveTask = (taskId: string, newIndex: number) => {
+		const oldIndex = localOrder.indexOf(taskId);
+		localOrder.splice(oldIndex, 1);
+		localOrder.splice(newIndex, 0, taskId);
+	};
+
+	const onDragOver = (e: DragEvent) => {
+		e.preventDefault();
+		const target = (e.target as HTMLElement).closest('.taskItem');
+		if (target && draggedTaskId && taskList && target.id !== draggedTaskId) {
+			const boundingBox = target.getBoundingClientRect();
+			const offset = boundingBox.y + boundingBox.height / 2;
+			if (e.clientY > offset) {
+				const next = target.nextElementSibling as HTMLElement | null;
+				const nextId = next?.id ?? null;
+				const targetIndex = tasks.findIndex((t) => t?.id === nextId);
+				moveTask(draggedTaskId, targetIndex);
+			} else {
+				const targetIndex = tasks.findIndex((t) => t.id === target.id);
+				moveTask(draggedTaskId, targetIndex);
+			}
+		}
+	};
 </script>
 
 <div class="flex h-screen dark:bg-black dark:text-white">
@@ -174,30 +226,15 @@
 			</div>
 		</div>
 
-		<div class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2">
-			{#snippet taskSnippet(task: Task)}
-				<div
-					tabindex="0"
-					role="button"
-					onclick={(e) => {
-						e.stopPropagation();
-						selectedTaskId = task.id;
-					}}
-					onkeydown={(e) => {
-						if (e.key === 'Enter' || e.key === ' ') {
-							e.preventDefault();
-							selectedTaskId = task.id;
-						}
-					}}
-					onfocus={() => (selectedTaskId = task.id)}
-					class="rounded-lg p-2 px-4 transition-all duration-200
-			{task.completedAt ? '' : 'hover:bg-neutral-100 dark:hover:bg-neutral-900'}"
-				>
-					<TaskComponent {task} {taskGroups} {updateTask} />
-				</div>
-			{/snippet}
+		<div
+			class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2"
+			ondragover={onDragOver}
+			role="figure"
+			id="taskList"
+			bind:this={taskList}
+		>
 			{#each filterTasksByGroup(selectedGroup) as task (task.id)}
-				{@render taskSnippet(task)}
+				<TaskComponent {task} {taskGroups} {updateTask} bind:draggedTaskId bind:selectedTaskId />
 			{/each}
 
 			{#if filterTasksByGroup(selectedGroup).length === 0}
@@ -210,15 +247,8 @@
 
 			{#if hasMoreCompletedTasks && selectedGroup === 'Tasks'}
 				<button
-					class="
-		mt-4 flex w-full
-		cursor-pointer justify-center
-		bg-transparent py-6
-		text-neutral-400 transition
-		select-none
-		hover:bg-neutral-50 dark:text-neutral-500
-		dark:hover:bg-neutral-950
-	"
+					class="mt-4 flex w-full cursor-pointer justify-center bg-transparent py-6 text-neutral-400 transition
+				select-none hover:bg-neutral-50 dark:text-neutral-500 dark:hover:bg-neutral-950"
 					onclick={loadMoreTasks}
 				>
 					<ChevronDown class="text-black dark:text-white/60" />
