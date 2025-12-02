@@ -50,9 +50,14 @@
 
 	function onDragStart(e: DragEvent) {
 		if (!e.dataTransfer || !taskElement) return;
-		isDragging = true;
-		draggedTaskId = taskElement.id;
+
+		taskElement.classList.add('dark:bg-neutral-900', 'bg-neutral-100', 'rounded-lg');
 		e.dataTransfer.setData('text/plain', taskElement.id);
+		draggedTaskId = taskElement.id;
+
+		setTimeout(() => {
+			isDragging = true;
+		}, 0);
 	}
 
 	function onDragHandleMouseDown() {
@@ -67,59 +72,72 @@
 
 	function onDragEnd() {
 		isDragging = false;
+		setTimeout(() => {
+			draggedTaskId = null;
+		}, 500);
 	}
 </script>
 
 <div
-	tabindex="0"
-	role="button"
-	onclick={onClick}
-	onkeydown={onKeyDown}
-	onfocus={onFocus}
+	class="taskItem flex flex-row items-center {isDragging ? 'opacity-0' : ''}"
 	ondragstart={onDragStart}
 	ondragend={onDragEnd}
 	bind:this={taskElement}
 	id={task.id}
-	class="taskItem rounded-lg p-2 px-4 transition-all duration-200
-			{task.completedAt ? '' : 'hover:bg-neutral-100 dark:hover:bg-neutral-900'}
-			{isDragging ? 'opacity-0' : ''}"
+	role="figure"
 >
-	<div class="flex flex-row items-center justify-between">
-		<div class="flex items-center gap-2">
-			<TaskCheck checked={!!task.completedAt} {toggleChecked} />
-			<div class="flex flex-col">
-				<span class={task.completedAt ? 'line-through' : ''}>{task.content}</span>
-				<div class="flex">
-					{#if task.taskGroupId}
-						<div class="flex items-center gap-1">
-							<span class="h-2 w-2 rounded-full" style={`background-color: ${taskGroup?.color}`}
-							></span> <span class="text-xs">{taskGroup?.name}</span>
-						</div>
-					{:else}
-						<span class="text-xs">Tasks</span>
-					{/if}
-					{#if task.dueDate}
-						<span class="mx-1 text-xs">•</span>
-						<span class="text-xs">
-							{new Date(task.dueDate).toLocaleDateString(undefined, {
-								month: 'short',
-								day: 'numeric',
-								year: 'numeric'
-							})}
-						</span>
-					{/if}
-				</div>
-			</div>
-		</div>
+	{#if !task.completedAt}
 		<div
 			role="button"
 			tabindex="0"
 			id="dragHandle"
-			class="hover:cursor-grab"
+			class="z-10 p-2 hover:cursor-grab"
 			onmousedown={onDragHandleMouseDown}
 			onmouseup={onDragHandleMouseUp}
+			onclick={(e) => e.stopPropagation()}
+			onkeydown={(e) => e.stopPropagation()}
 		>
 			<GripVertical size={24} />
+		</div>
+	{/if}
+	<div
+		tabindex="0"
+		role="button"
+		onclick={onClick}
+		onkeydown={onKeyDown}
+		onfocus={onFocus}
+		id="taskDescription"
+		class="flex-grow rounded-lg p-2 px-4 transition-all duration-200
+			{task.completedAt ? '' : '-ml-5 hover:bg-neutral-100 dark:hover:bg-neutral-900'}
+			{draggedTaskId ? 'pointer-events-none' : 'pointer-events-auto'}"
+	>
+		<div class="flex flex-row items-center justify-between">
+			<div class="flex items-center gap-2">
+				<TaskCheck checked={!!task.completedAt} {toggleChecked} />
+				<div class="flex flex-col">
+					<span class={task.completedAt ? 'line-through' : ''}>{task.content}</span>
+					<div class="flex">
+						{#if task.taskGroupId}
+							<div class="flex items-center gap-1">
+								<span class="h-2 w-2 rounded-full" style={`background-color: ${taskGroup?.color}`}
+								></span> <span class="text-xs">{taskGroup?.name}</span>
+							</div>
+						{:else}
+							<span class="text-xs">Tasks</span>
+						{/if}
+						{#if task.dueDate}
+							<span class="mx-1 text-xs">•</span>
+							<span class="text-xs">
+								{new Date(task.dueDate).toLocaleDateString(undefined, {
+									month: 'short',
+									day: 'numeric',
+									year: 'numeric'
+								})}
+							</span>
+						{/if}
+					</div>
+				</div>
+			</div>
 		</div>
 	</div>
 </div>
