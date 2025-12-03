@@ -5,6 +5,7 @@
 	import { wsService } from '$lib/services/ws.service';
 	import DialogContainer from './dialog/DialogContainer.svelte';
 	import { accountDelete } from '$lib/services/account.service';
+	import { PostHog } from '$lib/services/posthog.service';
 
 	let { userNameFirstLetter, userEmail } = $props();
 
@@ -31,6 +32,8 @@
 
 			if (response.ok) {
 				wsService.setShouldReconnect(false);
+
+				PostHog.reset();
 			}
 
 			if (body.status === 302) {
