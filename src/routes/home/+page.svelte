@@ -134,7 +134,7 @@
 	};
 </script>
 
-<div class="flex h-screen dark:bg-black dark:text-white">
+<div class="flex dark:bg-black dark:text-white height-control">
 	<SubscriptionsDialog
 		subscriptions={data.subscriptionDetails.subscriptions}
 		open={!data.subscriptionDetails.isPremium}
@@ -211,7 +211,7 @@
 			{/if}
 		</div>
 
-		<div class="p-4">
+		<div class="p-1 sm:p-4">
 			<TaskInput onEnter={createTask} bind:newTaskContent {taskGroups} />
 		</div>
 	</div>
