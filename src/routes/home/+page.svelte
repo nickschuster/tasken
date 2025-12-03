@@ -3,7 +3,7 @@
 	import TaskComponent from '$lib/ui/task/Task.svelte';
 	import Sidebar from '$lib/ui/sidebar/Sidebar.svelte';
 	import { CircleCheckBigIcon, MenuIcon, ChevronDown } from '@lucide/svelte';
-	import { getTasks, setTasks } from '$lib/states/task.state.svelte.js';
+	import { getTasks, setTasks, moveTask } from '$lib/states/task.state.svelte.js';
 	import { getTaskGroups, setTaskGroups } from '$lib/states/taskGroup.state.svelte.js';
 	import type { Task, TaskGroup } from '$lib/server/db/schema';
 	import SubscriptionsDialog from '$lib/ui/SubscriptionsDialog.svelte';
@@ -26,23 +26,7 @@
 
 	let { data } = $props();
 	let newTaskContent = $state('');
-	let localOrder = $state<string[]>([]);
-	let tasks = $derived.by(() => {
-		const raw = getTasks();
-
-		const map = new Map(raw.map((t) => [t.id, t]));
-
-		const complete = raw.filter((t) => t.completedAt);
-
-		const orderedIncomplete = localOrder
-			.filter((id) => map.has(id))
-			.map((id) => map.get(id)!)
-			.filter((t) => !t.completedAt);
-
-		const orderedComplete = orderTasks(complete);
-
-		return orderedIncomplete.concat(orderedComplete);
-	});
+	let tasks = $derived(getTasks());
 
 	let taskGroups = $derived(getTaskGroups());
 	let isSidebarOpen = $state(false);
@@ -57,15 +41,6 @@
 	let draggedTaskId = $state<string | null>(null);
 	let taskList = $state<HTMLDivElement | null>(null);
 
-	$effect(() => {
-		const raw = getTasks();
-		for (const task of raw) {
-			if (!task.completedAt && !localOrder.includes(task.id)) {
-				localOrder.unshift(task.id);
-			}
-		}
-	});
-
 	const COMPLETED_TASKS_PAGE_SIZE = 50;
 
 	wsService.setShouldReconnect(true);
@@ -76,19 +51,6 @@
 	setTasks(data.tasks);
 	setTotalCompletedCount(data.completedTasksCount ?? 0);
 	setTaskGroups(data.taskGroups);
-
-	function orderTasks(tasks: Task[]) {
-		return tasks.toSorted((a, b) => {
-			if (a.completedAt && !b.completedAt) return 1;
-			if (!a.completedAt && b.completedAt) return -1;
-
-			if (!a.completedAt && !b.completedAt) {
-				return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-			}
-
-			return new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime();
-		});
-	}
 
 	const filterTasksByGroup = (group: string) => {
 		switch (group) {
@@ -154,25 +116,18 @@
 		await deleteTaskGroupFetch(taskGroupId);
 	};
 
-	const moveTask = (taskId: string, newIndex: number) => {
-		const oldIndex = localOrder.indexOf(taskId);
-		localOrder.splice(oldIndex, 1);
-		localOrder.splice(newIndex, 0, taskId);
-	};
-
 	const onDragOver = (e: DragEvent) => {
 		e.preventDefault();
 		const target = (e.target as HTMLElement).closest('.taskItem');
 		if (target && draggedTaskId && taskList && target.id !== draggedTaskId) {
 			const boundingBox = target.getBoundingClientRect();
 			const offset = boundingBox.y + boundingBox.height / 2;
-			if (e.clientY > offset) {
-				const next = target.nextElementSibling as HTMLElement | null;
-				const nextId = next?.id ?? null;
-				const targetIndex = tasks.findIndex((t) => t?.id === nextId);
-				moveTask(draggedTaskId, targetIndex);
-			} else {
-				const targetIndex = tasks.findIndex((t) => t.id === target.id);
+			const activeTasks = tasks.filter((t) => !t.completedAt).length;
+			const targetId =
+				e.clientY > offset ? (target.nextElementSibling as HTMLElement | null)?.id : target.id;
+
+			const targetIndex = tasks.findIndex((t) => t.id === targetId);
+			if (targetIndex < activeTasks) {
 				moveTask(draggedTaskId, targetIndex);
 			}
 		}
