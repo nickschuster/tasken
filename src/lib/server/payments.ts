@@ -73,9 +73,7 @@ export class PaymentProcessor {
 		};
 	}
 
-	async getSubscriptionDetails(
-		premiumExpiresAt: Date | null
-	): Promise<{
+	async getSubscriptionDetails(premiumExpiresAt: Date | null): Promise<{
 		isPremium: boolean;
 		isFirstTimeSubscriber?: boolean;
 		subscriptions?: DefaultSubscriptions;
@@ -112,5 +110,13 @@ export class PaymentProcessor {
 
 	async constructEvent(data: Buffer<ArrayBufferLike>, signature: string, secret: string) {
 		return this.stripe.webhooks.constructEvent(data, signature, secret);
+	}
+
+	async deleteCustomerAndCancelSubscriptions(email: string) {
+		const customers = await this.stripe.customers.list({ email });
+
+		for await (const customer of customers.data) {
+			await this.stripe.customers.del(customer.id);
+		}
 	}
 }
