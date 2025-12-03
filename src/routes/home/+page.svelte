@@ -127,7 +127,7 @@
 				e.clientY > offset ? (target.nextElementSibling as HTMLElement | null)?.id : target.id;
 
 			const targetIndex = tasks.findIndex((t) => t.id === targetId);
-			if (targetIndex < activeTasks) {
+			if (targetIndex !== -1 && targetIndex < activeTasks) {
 				moveTask(draggedTaskId, targetIndex);
 			}
 		}
