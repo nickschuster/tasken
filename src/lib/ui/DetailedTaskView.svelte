@@ -60,16 +60,17 @@
 		}
 	};
 
-	const handleDocumentClick = (e: MouseEvent) => {
+	const handleDocumentClick = async (e: MouseEvent) => {
+		if (!isTaskViewOpen || !taskViewElement) return;
+
 		const calendar = (e.target as HTMLElement)?.closest('[data-calendar-grid]');
 		const selectMenu = (e.target as HTMLElement)?.closest('[data-bits-select-group]');
 		const detailedTaskView = taskViewElement?.contains(e.target as Node);
+		const task = (e.target as HTMLElement)?.closest('.taskItem');
 
-		if (calendar || selectMenu || detailedTaskView) return;
+		if (calendar || selectMenu || detailedTaskView || task) return;
 
-		if (isTaskViewOpen && taskViewElement) {
-			selectedTaskId = null;
-		}
+		selectedTaskId = null;
 	};
 
 	const handleDueDateChange = () => {
@@ -103,7 +104,7 @@
 	};
 </script>
 
-<svelte:window bind:innerWidth onclick={handleDocumentClick} />
+<svelte:window bind:innerWidth on:mousedown={handleDocumentClick} />
 
 <div
 	class={[

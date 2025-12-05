@@ -2,6 +2,7 @@ import { wsService } from '$lib/services/ws.service';
 import type { Task } from '$lib/server/db/schema';
 import { Event } from '$lib/models/event';
 import { decrementCompletedCount, incrementCompletedCount } from './completedCount.state.svelte';
+import { SvelteDate } from 'svelte/reactivity';
 
 let tasks: Task[] = $state([]);
 
@@ -22,6 +23,30 @@ export function updateTask(id: string, updatedTask: Partial<Task>) {
 	if (index !== -1) {
 		tasks[index] = { ...tasks[index], ...updatedTask };
 	}
+
+	if (updatedTask.completedAt !== undefined) {
+		orderTasks();
+	}
+}
+
+export function moveTask(taskId: string, newIndex: number) {
+	const index = tasks.findIndex((t) => t.id === taskId);
+
+	if (index !== -1) {
+		const task = tasks[index];
+		tasks.splice(index, 1);
+		tasks.splice(newIndex, 0, task);
+	}
+}
+
+export function orderTasks() {
+	tasks.sort((a, b) => {
+		if (a.completedAt && !b.completedAt) return 1;
+		if (!a.completedAt && b.completedAt) return -1;
+		if (!a.completedAt && !b.completedAt) return 0;
+
+		return new SvelteDate(b.completedAt!).getTime() - new SvelteDate(a.completedAt!).getTime();
+	});
 }
 
 wsService.on(Event.TaskAdded, (newTask: Task) => {
@@ -37,15 +62,16 @@ wsService.on(Event.TaskUpdated, (updatedTask: Task) => {
 	const wasCompleted = !!existingTask?.completedAt;
 	const isCompleted = !!updatedTask.completedAt;
 
-	if (wasCompleted !== isCompleted) {
-		if (isCompleted) incrementCompletedCount();
-		else decrementCompletedCount();
-	}
-
 	if (existingTask) {
 		tasks[index] = { ...existingTask, ...updatedTask };
 	} else {
 		tasks.push(updatedTask);
 		decrementCompletedCount();
+	}
+
+	if (wasCompleted !== isCompleted) {
+		if (isCompleted) incrementCompletedCount();
+		else decrementCompletedCount();
+		orderTasks();
 	}
 });

@@ -3,7 +3,7 @@
 	import TaskComponent from '$lib/ui/task/Task.svelte';
 	import Sidebar from '$lib/ui/sidebar/Sidebar.svelte';
 	import { CircleCheckBigIcon, MenuIcon, ChevronDown } from '@lucide/svelte';
-	import { getTasks, setTasks } from '$lib/states/task.state.svelte.js';
+	import { getTasks, setTasks, moveTask } from '$lib/states/task.state.svelte.js';
 	import { getTaskGroups, setTaskGroups } from '$lib/states/taskGroup.state.svelte.js';
 	import type { Task, TaskGroup } from '$lib/server/db/schema';
 	import SubscriptionsDialog from '$lib/ui/SubscriptionsDialog.svelte';
@@ -26,7 +26,7 @@
 
 	let { data } = $props();
 	let newTaskContent = $state('');
-	let tasks = $derived(orderTasks(getTasks()));
+	let tasks = $derived(getTasks());
 
 	let taskGroups = $derived(getTaskGroups());
 	let isSidebarOpen = $state(false);
@@ -38,6 +38,9 @@
 	let hasMoreCompletedTasks = $state((data.completedTasksCount ?? 0) !== 0);
 	let totalCompletedCount = $derived(getTotalCompletedCount());
 
+	let draggedTaskId = $state<string | null>(null);
+	let taskList = $state<HTMLDivElement | null>(null);
+
 	const COMPLETED_TASKS_PAGE_SIZE = 50;
 
 	wsService.setShouldReconnect(true);
@@ -48,19 +51,6 @@
 	setTasks(data.tasks);
 	setTotalCompletedCount(data.completedTasksCount ?? 0);
 	setTaskGroups(data.taskGroups);
-
-	function orderTasks(tasks: Task[]) {
-		return tasks.toSorted((a, b) => {
-			if (a.completedAt && !b.completedAt) return 1;
-			if (!a.completedAt && b.completedAt) return -1;
-
-			if (!a.completedAt && !b.completedAt) {
-				return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
-			}
-
-			return new Date(b.completedAt!).getTime() - new Date(a.completedAt!).getTime();
-		});
-	}
 
 	const filterTasksByGroup = (group: string) => {
 		switch (group) {
@@ -125,6 +115,23 @@
 
 		await deleteTaskGroupFetch(taskGroupId);
 	};
+
+	const onDragOver = (e: DragEvent) => {
+		e.preventDefault();
+		const target = (e.target as HTMLElement).closest('.taskItem');
+		if (target && draggedTaskId && taskList && target.id !== draggedTaskId) {
+			const boundingBox = target.getBoundingClientRect();
+			const offset = boundingBox.y + boundingBox.height / 2;
+			const activeTasks = tasks.filter((t) => !t.completedAt).length;
+			const targetId =
+				e.clientY > offset ? (target.nextElementSibling as HTMLElement | null)?.id : target.id;
+
+			const targetIndex = tasks.findIndex((t) => t.id === targetId);
+			if (targetIndex !== -1 && targetIndex < activeTasks) {
+				moveTask(draggedTaskId, targetIndex);
+			}
+		}
+	};
 </script>
 
 <div class="flex dark:bg-black dark:text-white height-control">
@@ -174,30 +181,15 @@
 			</div>
 		</div>
 
-		<div class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2">
-			{#snippet taskSnippet(task: Task)}
-				<div
-					tabindex="0"
-					role="button"
-					onclick={(e) => {
-						e.stopPropagation();
-						selectedTaskId = task.id;
-					}}
-					onkeydown={(e) => {
-						if (e.key === 'Enter' || e.key === ' ') {
-							e.preventDefault();
-							selectedTaskId = task.id;
-						}
-					}}
-					onfocus={() => (selectedTaskId = task.id)}
-					class="rounded-lg p-2 px-4 transition-all duration-200
-			{task.completedAt ? '' : 'hover:bg-neutral-100 dark:hover:bg-neutral-900'}"
-				>
-					<TaskComponent {task} {taskGroups} {updateTask} />
-				</div>
-			{/snippet}
+		<div
+			class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2"
+			ondragover={onDragOver}
+			role="figure"
+			id="taskList"
+			bind:this={taskList}
+		>
 			{#each filterTasksByGroup(selectedGroup) as task (task.id)}
-				{@render taskSnippet(task)}
+				<TaskComponent {task} {taskGroups} {updateTask} bind:draggedTaskId bind:selectedTaskId />
 			{/each}
 
 			{#if filterTasksByGroup(selectedGroup).length === 0}
@@ -210,15 +202,8 @@
 
 			{#if hasMoreCompletedTasks && selectedGroup === 'Tasks'}
 				<button
-					class="
-		mt-4 flex w-full
-		cursor-pointer justify-center
-		bg-transparent py-6
-		text-neutral-400 transition
-		select-none
-		hover:bg-neutral-50 dark:text-neutral-500
-		dark:hover:bg-neutral-950
-	"
+					class="mt-4 flex w-full cursor-pointer justify-center bg-transparent py-6 text-neutral-400 transition
+				select-none hover:bg-neutral-50 dark:text-neutral-500 dark:hover:bg-neutral-950"
 					onclick={loadMoreTasks}
 				>
 					<ChevronDown class="text-black dark:text-white/60" />
