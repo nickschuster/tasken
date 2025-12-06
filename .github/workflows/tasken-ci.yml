@@ -24,6 +24,10 @@ jobs:
       PUBLIC_DEV: true
       BASE_URL: http://localhost:4173
       PUBLIC_WS_URL: wss://tasken.app/ws/
+      GOOGLE_OAUTH_CLIENT_ID: 'test'
+      GOOGLE_OAUTH_CLIENT_SECRET: 'test'
+      GITHUB_OAUTH_CLIENT_ID: 'test'
+      GITHUB_OAUTH_CLIENT_SECRET: 'test'
 
     steps:
       - name: Checkout code

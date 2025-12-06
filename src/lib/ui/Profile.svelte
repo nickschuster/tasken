@@ -2,10 +2,8 @@
 	import { Dialog, DropdownMenu } from 'bits-ui';
 	import DropdownMenuContent from './dropdown/DropdownMenuContent.svelte';
 	import DropdownMenuItem from './dropdown/DropdownMenuItem.svelte';
-	import { wsService } from '$lib/services/ws.service';
 	import DialogContainer from './dialog/DialogContainer.svelte';
-	import { accountDelete } from '$lib/services/account.service';
-	import { PostHog } from '$lib/services/posthog.service';
+	import { accountDelete, logoutPost } from '$lib/services/account.service';
 
 	let { userNameFirstLetter, userEmail } = $props();
 
@@ -17,32 +15,6 @@
 		'https://billing.stripe.com/p/login/9B6eVef7BcYT27zc571kA00' +
 			(userEmail ? `?prefilled_email=${encodeURIComponent(userEmail)}` : '')
 	);
-
-	const handleLogout = async () => {
-		try {
-			const response = await fetch('?/logout', {
-				method: 'POST',
-				body: '',
-				headers: {
-					'x-sveltekit-action': 'true'
-				}
-			});
-
-			const body = await response.json();
-
-			if (response.ok) {
-				wsService.setShouldReconnect(false);
-
-				PostHog.reset();
-			}
-
-			if (body.status === 302) {
-				window.location.href = body.location;
-			}
-		} catch (e) {
-			console.error('Logout failed', e);
-		}
-	};
 </script>
 
 <DialogContainer bind:open={showDeleteDialog}>
@@ -118,7 +90,7 @@
 			<DropdownMenuItem callback={() => window.open(BILLING_PORTAL_URL, '_blank')}>
 				<div>Manage Subscription</div>
 			</DropdownMenuItem>
-			<DropdownMenuItem callback={handleLogout}>
+			<DropdownMenuItem callback={logoutPost}>
 				<div>Logout</div>
 			</DropdownMenuItem>
 			<DropdownMenuItem callback={() => (showDeleteDialog = true)}>
