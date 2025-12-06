@@ -21,6 +21,10 @@ jobs:
       PUBLIC_CI: false
       PUBLIC_DEV: false
       PUBLIC_WS_URL: wss://tasken.app/ws/
+      GOOGLE_OAUTH_CLIENT_ID: ${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}
+      GOOGLE_OAUTH_CLIENT_SECRET: ${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}
+      GITHUB_OAUTH_CLIENT_ID: ${{ secrets.GITHUB_OAUTH_CLIENT_ID }}
+      GITHUB_OAUTH_CLIENT_SECRET: ${{ secrets.GITHUB_OAUTH_CLIENT_SECRET }}
 
     steps:
       - uses: actions/checkout@v4
@@ -53,6 +57,10 @@ jobs:
 
           ssh $DEPLOY_USER@$DEPLOY_HOST "\
             export BASE_URL='https://tasken.app' && \
+            export GOOGLE_OAUTH_CLIENT_ID='${{ secrets.GOOGLE_OAUTH_CLIENT_ID }}' && \
+            export GOOGLE_OAUTH_CLIENT_SECRET='${{ secrets.GOOGLE_OAUTH_CLIENT_SECRET }}' && \
+            export GITHUB_OAUTH_CLIENT_ID='${{ secrets.GITHUB_OAUTH_CLIENT_ID }}' && \
+            export GITHUB_OAUTH_CLIENT_SECRET='${{ secrets.GITHUB_OAUTH_CLIENT_SECRET }}' && \
             export STRIPE_API_KEY='${{ secrets.STRIPE_API_KEY }}' && \
             export STRIPE_WEBHOOK_SECRET='${{ secrets.STRIPE_WEBHOOK_SECRET }}' && \
             export PUBLIC_STRIPE_DASHBOARD='${{ secrets.PUBLIC_STRIPE_DASHBOARD }}' && \
