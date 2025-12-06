@@ -50,7 +50,7 @@ export async function GET(event: RequestEvent) {
 	return new Response(null, {
 		status: 302,
 		headers: {
-			Location: '/'
+			Location: '/home'
 		}
 	});
 }
