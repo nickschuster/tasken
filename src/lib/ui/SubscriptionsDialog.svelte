@@ -3,6 +3,8 @@
 	import SubscriptionCards from './SubscriptionCards.svelte';
 	import type { DefaultSubscriptions } from '$lib/models/subscription';
 	import DialogContainer from './dialog/DialogContainer.svelte';
+	import { X } from '@lucide/svelte';
+	import { logoutPost } from '$lib/services/account.service';
 
 	type Props = {
 		open?: boolean;
@@ -37,6 +39,7 @@
 		<h2 class="pb-4 text-4xl font-bold tracking-tighter sm:text-5xl dark:text-white">
 			Choose Your Plan
 		</h2>
+		<button class="absolute top-4 right-4" onclick={logoutPost}><X /></button>
 	</Dialog.Title>
 	<Dialog.Description>
 		<div class="flex flex-col gap-4 md:flex-row">
