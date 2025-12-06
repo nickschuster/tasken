@@ -7,6 +7,7 @@
 </script>
 
 <button
+	onclick={() => (location.href = '/api/auth/google')}
 	type="button"
 	class="flex w-full items-center justify-center gap-3
 	rounded-md border border-neutral-300
