@@ -76,7 +76,6 @@ export const updateTask = async (taskId: string, updatedTask: Partial<Task>) => 
 	const existingTask = await getTaskById(taskId);
 
 	if (existingTask.completedAt && updatedTask.completedAt === null) {
-		console.log('Task is being uncompleted; recalculating order');
 		const [minRow] = await db
 			.select({ order: task.order })
 			.from(task)
@@ -88,8 +87,6 @@ export const updateTask = async (taskId: string, updatedTask: Partial<Task>) => 
 			.execute();
 
 		const minOrder = minRow?.order ?? null;
-
-		console.log('New min order for uncompleted tasks:', minOrder);
 
 		updatedTask.order = minOrder ? midBefore(minOrder) : mid('', null);
 	}

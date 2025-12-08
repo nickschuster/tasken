@@ -15,6 +15,7 @@ describe('DetailedTaskView.svelte', () => {
 				completedAt: null,
 				taskGroupId: null,
 				dueDate: null,
+				order: null,
 				createdAt: new Date()
 			},
 			selectedTaskId: '1',
@@ -39,6 +40,7 @@ describe('DetailedTaskView.svelte', () => {
 				completedAt: null,
 				taskGroupId: null,
 				dueDate: null,
+				order: null,
 				createdAt: new Date()
 			},
 			selectedTaskId: '1',
@@ -67,6 +69,7 @@ describe('DetailedTaskView.svelte', () => {
 				completedAt: null,
 				taskGroupId: null,
 				dueDate: null,
+				order: null,
 				createdAt: new Date()
 			},
 			selectedTaskId: '1',
@@ -90,6 +93,7 @@ describe('DetailedTaskView.svelte', () => {
 				completedAt: null,
 				taskGroupId: 'group1',
 				dueDate: null,
+				order: null,
 				createdAt: new Date()
 			},
 			selectedTaskId: '1',
@@ -115,6 +119,7 @@ describe('DetailedTaskView.svelte', () => {
 				completedAt: completedDate,
 				taskGroupId: null,
 				dueDate: null,
+				order: null,
 				createdAt: new Date()
 			},
 			selectedTaskId: '1',
@@ -137,6 +142,7 @@ describe('DetailedTaskView.svelte', () => {
 				completedAt: null,
 				taskGroupId: null,
 				dueDate: null,
+				order: null,
 				createdAt: new Date()
 			},
 			selectedTaskId: '1',
@@ -158,6 +164,7 @@ describe('DetailedTaskView.svelte', () => {
 				completedAt: null,
 				taskGroupId: null,
 				dueDate: null,
+				order: null,
 				createdAt: new Date()
 			},
 			selectedTaskId: '1',
@@ -185,6 +192,7 @@ describe('DetailedTaskView.svelte', () => {
 				completedAt: null,
 				taskGroupId: null,
 				dueDate: null,
+				order: null,
 				createdAt: new Date()
 			},
 			selectedTaskId: '1',
@@ -212,6 +220,7 @@ describe('DetailedTaskView.svelte', () => {
 				completedAt: null,
 				taskGroupId: null,
 				dueDate: null,
+				order: null,
 				createdAt: new Date()
 			},
 			selectedTaskId: '1',
@@ -241,6 +250,7 @@ describe('DetailedTaskView.svelte', () => {
 				completedAt: null,
 				taskGroupId: null,
 				dueDate: null,
+				order: null,
 				createdAt: new Date()
 			},
 			selectedTaskId: '1',
@@ -263,6 +273,7 @@ describe('DetailedTaskView.svelte', () => {
 				completedAt: null,
 				taskGroupId: null,
 				dueDate: null,
+				order: null,
 				createdAt: new Date()
 			},
 			selectedTaskId: '1',
@@ -280,6 +291,7 @@ describe('DetailedTaskView.svelte', () => {
 			selectedTask: null,
 			selectedTaskId: null,
 			taskGroups: [],
+			order: null,
 			updateTask: vi.fn()
 		};
 
@@ -298,6 +310,7 @@ describe('DetailedTaskView.svelte', () => {
 				completedAt: null,
 				taskGroupId: null,
 				dueDate: null,
+				order: null,
 				createdAt: createdDate
 			},
 			selectedTaskId: '1',
@@ -321,6 +334,7 @@ describe('DetailedTaskView.svelte', () => {
 				completedAt: null,
 				taskGroupId: null,
 				dueDate: dueDate,
+				order: null,
 				createdAt: new Date()
 			},
 			selectedTaskId: '1',
@@ -341,6 +355,7 @@ describe('DetailedTaskView.svelte', () => {
 				isImportant: false,
 				completedAt: null,
 				taskGroupId: null,
+				order: null,
 				dueDate: new Date('2023-12-25T00:00:00Z'),
 				createdAt: new Date('2023-10-15T10:30:00Z')
 			},
@@ -365,6 +380,7 @@ describe('DetailedTaskView.svelte', () => {
 				completedAt: null,
 				taskGroupId: null,
 				dueDate: null,
+				order: null,
 				createdAt: new Date()
 			},
 			selectedTaskId: '1',
