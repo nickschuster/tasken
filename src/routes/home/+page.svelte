@@ -12,7 +12,12 @@
 		deleteTaskGroupFetch,
 		updateTaskGroupFetch
 	} from '$lib/services/taskgroups.service.js';
-	import { createTaskFetch, updateTaskFetch, getTasksFetch } from '$lib/services/tasks.service.js';
+	import {
+		createTaskFetch,
+		updateTaskFetch,
+		getTasksFetch,
+		orderTaskFetch
+	} from '$lib/services/tasks.service.js';
 	import { wsService } from '$lib/services/ws.service.js';
 	import DetailedTaskView from '$lib/ui/DetailedTaskView.svelte';
 	import {
@@ -116,6 +121,21 @@
 		await deleteTaskGroupFetch(taskGroupId);
 	};
 
+	const orderTask = async (taskId: string) => {
+		const index = tasks.findIndex((t) => t.id === taskId);
+
+		const left = tasks[index - 1] ?? null;
+		const right = tasks[index + 1] ?? null;
+		const leftId = left ? left.id : null;
+		const rightId = right ? right.id : null;
+
+		const ok = await orderTaskFetch(taskId, leftId, rightId);
+
+		if (!ok) {
+			// undo optimistic ui update
+		}
+	};
+
 	const onDragOver = (e: DragEvent) => {
 		e.preventDefault();
 		const target = (e.target as HTMLElement).closest('.taskItem');
@@ -134,7 +154,7 @@
 	};
 </script>
 
-<div class="flex dark:bg-black dark:text-white height-control">
+<div class="height-control flex dark:bg-black dark:text-white">
 	<SubscriptionsDialog
 		subscriptions={data.subscriptionDetails.subscriptions}
 		open={!data.subscriptionDetails.isPremium}
@@ -189,7 +209,14 @@
 			bind:this={taskList}
 		>
 			{#each filterTasksByGroup(selectedGroup) as task (task.id)}
-				<TaskComponent {task} {taskGroups} {updateTask} bind:draggedTaskId bind:selectedTaskId />
+				<TaskComponent
+					{task}
+					{taskGroups}
+					{updateTask}
+					{orderTask}
+					bind:draggedTaskId
+					bind:selectedTaskId
+				/>
 			{/each}
 
 			{#if filterTasksByGroup(selectedGroup).length === 0}

@@ -10,6 +10,7 @@
 		updateTask?: (taskId: string, updates: Partial<Task>) => void;
 		draggedTaskId: string | null;
 		selectedTaskId: string | null;
+		orderTask?: (taskId: string) => Promise<void>;
 	};
 
 	let {
@@ -17,7 +18,8 @@
 		taskGroups,
 		updateTask = () => {},
 		draggedTaskId = $bindable(),
-		selectedTaskId = $bindable()
+		selectedTaskId = $bindable(),
+		orderTask = async () => {}
 	}: Props = $props();
 
 	let taskGroup = $derived(taskGroups.find((group) => group.id === task.taskGroupId) ?? null);
@@ -69,6 +71,7 @@
 	function onDragEnd() {
 		isDragging = false;
 		draggedTaskId = null;
+		orderTask(task.id);
 	}
 </script>
 

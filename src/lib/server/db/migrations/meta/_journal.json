@@ -64,6 +64,13 @@
       "when": 1760812211000,
       "tag": "0008_huge_miracleman",
       "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1765110813391,
+      "tag": "0009_bouncy_wendell_rand",
+      "breakpoints": true
     }
   ]
 }

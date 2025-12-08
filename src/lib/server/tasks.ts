@@ -1,7 +1,8 @@
-import { and, eq, isNotNull, isNull, desc, count } from 'drizzle-orm';
+import { and, eq, isNotNull, isNull, desc, count, sql } from 'drizzle-orm';
 import { db } from './db';
 import { task, type Task } from './db/schema';
 import { UUIDV4 } from './helper';
+import { midAfter, mid, midBefore } from '$lib/services/ordering.service';
 
 export const getCompletedTasks = async (userId: string, limit: number) => {
 	const query = db
@@ -30,26 +31,69 @@ export const getUncompletedTasks = async (userId: string) => {
 		.select()
 		.from(task)
 		.where(and(isNull(task.completedAt), eq(task.userId, userId)))
-		.orderBy(desc(task.createdAt));
+		.orderBy(desc(sql`${task.order} COLLATE "C"`));
 
 	return query.execute();
+};
+
+export const getTaskById = async (taskId: string) => {
+	const query = db.select().from(task).where(eq(task.id, taskId)).limit(1);
+
+	const [taskResult] = await query.execute();
+
+	return taskResult;
 };
 
 export const createTask = async (
 	userId: string,
 	taskToCreate: Pick<Task, 'content' | 'dueDate' | 'taskGroupId'>
 ) => {
-	const insert = db
-		.insert(task)
-		.values({ id: UUIDV4(), ...taskToCreate, userId })
-		.returning();
+	const [maxRow] = await db
+		.select({ order: task.order })
+		.from(task)
+		.where(and(eq(task.userId, userId), isNotNull(task.order), isNull(task.completedAt)))
+		.orderBy(desc(sql`${task.order} COLLATE "C"`))
+		.limit(1)
+		.execute();
 
-	const [createdTask] = await insert.execute();
+	const newOrder = maxRow?.order ? midAfter(maxRow.order) : mid('', null);
+
+	const [createdTask] = await db
+		.insert(task)
+		.values({
+			id: UUIDV4(),
+			...taskToCreate,
+			userId,
+			order: newOrder
+		})
+		.returning()
+		.execute();
 
 	return createdTask;
 };
 
 export const updateTask = async (taskId: string, updatedTask: Partial<Task>) => {
+	const existingTask = await getTaskById(taskId);
+
+	if (existingTask.completedAt && updatedTask.completedAt === null) {
+		console.log('Task is being uncompleted; recalculating order');
+		const [minRow] = await db
+			.select({ order: task.order })
+			.from(task)
+			.where(
+				and(eq(task.userId, existingTask.userId), isNotNull(task.order), isNull(task.completedAt))
+			)
+			.orderBy(sql`${task.order} COLLATE "C"`)
+			.limit(1)
+			.execute();
+
+		const minOrder = minRow?.order ?? null;
+
+		console.log('New min order for uncompleted tasks:', minOrder);
+
+		updatedTask.order = minOrder ? midBefore(minOrder) : mid('', null);
+	}
+
 	const update = db
 		.update(task)
 		.set({ ...updatedTask })

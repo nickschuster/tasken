@@ -62,6 +62,36 @@ export const updateTaskFetch = async (taskId: string, updates: Partial<Task>): P
 	}
 };
 
+export const orderTaskFetch = async (
+	taskId: string,
+	leftId: string | null,
+	rightId: string | null
+) => {
+	try {
+		const result = await fetch(`/api/tasks/${taskId}/move`, {
+			method: 'POST',
+			headers: {
+				'Content-Type': 'application/json'
+			},
+			body: JSON.stringify({ leftId, rightId })
+		});
+
+		if (result.ok) {
+			const data = await result.json();
+
+			updateTask(taskId, { order: data.order });
+		}
+
+		await invalidate('/home');
+
+		return result.ok;
+	} catch (e) {
+		console.error('Error ordering task:', e);
+
+		return false;
+	}
+};
+
 export const getTasksFetch = async (
 	limit: number
 ): Promise<{ tasks: Task[]; hasMoreCompletedTasks: boolean } | null> => {
