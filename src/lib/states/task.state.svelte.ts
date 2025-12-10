@@ -47,7 +47,8 @@ export function orderTasks() {
 		if (!a.completedAt && !b.completedAt) {
 			const aOrder = a.order ?? '';
 			const bOrder = b.order ?? '';
-			return bOrder < aOrder ? -1 : bOrder > aOrder ? 1 : 0;
+
+			return aOrder > bOrder ? -1 : aOrder < bOrder ? 1 : 0;
 		}
 
 		return new SvelteDate(b.completedAt!).getTime() - new SvelteDate(a.completedAt!).getTime();

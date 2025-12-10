@@ -28,6 +28,7 @@
 	} from '$lib/states/completedCount.state.svelte.js';
 	import Profile from '$lib/ui/Profile.svelte';
 	import { PostHog } from '$lib/services/posthog.service';
+	import { invalidate } from '$app/navigation';
 
 	let { data } = $props();
 	let newTaskContent = $state('');
@@ -122,17 +123,19 @@
 	};
 
 	const orderTask = async (taskId: string) => {
-		const index = tasks.findIndex((t) => t.id === taskId);
+		const active = tasks.filter((t) => !t.completedAt);
 
-		const left = tasks[index - 1] ?? null;
-		const right = tasks[index + 1] ?? null;
+		const index = active.findIndex((t) => t.id === taskId);
+
+		const left = active[index - 1] ?? null;
+		const right = active[index + 1] ?? null;
 		const leftId = left ? left.id : null;
 		const rightId = right ? right.id : null;
 
 		const ok = await orderTaskFetch(taskId, leftId, rightId);
 
 		if (!ok) {
-			// undo optimistic ui update
+			invalidate('/home');
 		}
 	};
 
