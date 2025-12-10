@@ -43,7 +43,12 @@ export function orderTasks() {
 	tasks.sort((a, b) => {
 		if (a.completedAt && !b.completedAt) return 1;
 		if (!a.completedAt && b.completedAt) return -1;
-		if (!a.completedAt && !b.completedAt) return 0;
+
+		if (!a.completedAt && !b.completedAt) {
+			const aOrder = a.order ?? '';
+			const bOrder = b.order ?? '';
+			return bOrder < aOrder ? -1 : bOrder > aOrder ? 1 : 0;
+		}
 
 		return new SvelteDate(b.completedAt!).getTime() - new SvelteDate(a.completedAt!).getTime();
 	});
@@ -51,7 +56,7 @@ export function orderTasks() {
 
 wsService.on(Event.TaskAdded, (newTask: Task) => {
 	if (!tasks.find((t) => t.id === newTask.id)) {
-		tasks.push(newTask);
+		tasks.unshift(newTask);
 	}
 });
 
@@ -61,6 +66,8 @@ wsService.on(Event.TaskUpdated, (updatedTask: Task) => {
 
 	const wasCompleted = !!existingTask?.completedAt;
 	const isCompleted = !!updatedTask.completedAt;
+	const completedChanged = wasCompleted !== isCompleted;
+	const orderChanged = existingTask?.order !== updatedTask.order;
 
 	if (existingTask) {
 		tasks[index] = { ...existingTask, ...updatedTask };
@@ -69,9 +76,12 @@ wsService.on(Event.TaskUpdated, (updatedTask: Task) => {
 		decrementCompletedCount();
 	}
 
-	if (wasCompleted !== isCompleted) {
+	if (completedChanged) {
 		if (isCompleted) incrementCompletedCount();
 		else decrementCompletedCount();
+	}
+
+	if (orderChanged || completedChanged) {
 		orderTasks();
 	}
 });

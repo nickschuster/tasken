@@ -2,7 +2,7 @@ import { and, eq, isNotNull, isNull, desc, count, sql } from 'drizzle-orm';
 import { db } from './db';
 import { task, type Task } from './db/schema';
 import { UUIDV4 } from './helper';
-import { midAfter, mid, midBefore } from '$lib/services/ordering.service';
+import { midAfter, mid } from '$lib/services/ordering.service';
 
 export const getCompletedTasks = async (userId: string, limit: number) => {
 	const query = db
@@ -51,7 +51,7 @@ export const createTask = async (
 	const [maxRow] = await db
 		.select({ order: task.order })
 		.from(task)
-		.where(and(eq(task.userId, userId), isNotNull(task.order), isNull(task.completedAt)))
+		.where(and(eq(task.userId, userId), isNotNull(task.order)))
 		.orderBy(desc(sql`${task.order} COLLATE "C"`))
 		.limit(1)
 		.execute();
@@ -73,24 +73,6 @@ export const createTask = async (
 };
 
 export const updateTask = async (taskId: string, updatedTask: Partial<Task>) => {
-	const existingTask = await getTaskById(taskId);
-
-	if (existingTask.completedAt && updatedTask.completedAt === null) {
-		const [minRow] = await db
-			.select({ order: task.order })
-			.from(task)
-			.where(
-				and(eq(task.userId, existingTask.userId), isNotNull(task.order), isNull(task.completedAt))
-			)
-			.orderBy(sql`${task.order} COLLATE "C"`)
-			.limit(1)
-			.execute();
-
-		const minOrder = minRow?.order ?? null;
-
-		updatedTask.order = minOrder ? midBefore(minOrder) : mid('', null);
-	}
-
 	const update = db
 		.update(task)
 		.set({ ...updatedTask })

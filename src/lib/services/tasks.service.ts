@@ -77,9 +77,11 @@ export const orderTaskFetch = async (
 		});
 
 		if (result.ok) {
-			const data = await result.json();
+			const updatedTask = await result.json();
 
-			updateTask(taskId, { order: data.order });
+			updateTask(taskId, { order: updatedTask.order });
+
+			wsService.sendMessage(Event.TaskUpdated, updatedTask);
 		}
 
 		await invalidate('/home');

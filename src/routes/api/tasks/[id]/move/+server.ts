@@ -31,9 +31,9 @@ export async function POST({ params, request }) {
 			newOrder = mid(a, b);
 		}
 
-		const updatedTask = await updateTask(taskId, { order: newOrder });
+		const updatedResult = await updateTask(taskId, { order: newOrder });
 
-		return json({ order: updatedTask.order }, { status: 200 });
+		return json(updatedResult, { status: 200 });
 	} catch (err) {
 		console.error('Error moving task:', err);
 
