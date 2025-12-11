@@ -3,6 +3,7 @@
 	import { vibrate } from '$lib/utils/vibrate';
 	import TaskCheck from './TaskCheck.svelte';
 	import { GripVertical } from '@lucide/svelte';
+	import { getTasks } from '$lib/states/task.state.svelte';
 
 	type Props = {
 		task: Task;
@@ -25,6 +26,7 @@
 	let taskGroup = $derived(taskGroups.find((group) => group.id === task.taskGroupId) ?? null);
 	let taskElement = $state<HTMLDivElement | null>(null);
 	let isDragging = $state(false);
+	let startIndex = $state<number | null>(null);
 
 	function toggleChecked(checked: boolean) {
 		if (checked) {
@@ -55,6 +57,9 @@
 
 		draggedTaskId = taskElement.id;
 		isDragging = true;
+		startIndex = getTasks()
+			.filter((t) => !t.completedAt)
+			.findIndex((t) => t.id === task.id);
 		e.dataTransfer.setData('text/plain', taskElement.id);
 	}
 
@@ -71,7 +76,16 @@
 	function onDragEnd() {
 		isDragging = false;
 		draggedTaskId = null;
-		orderTask(task.id);
+
+		const endIndex = getTasks()
+			.filter((t) => !t.completedAt)
+			.findIndex((t) => t.id === task.id);
+
+		if (startIndex !== null && startIndex !== endIndex) {
+			orderTask(task.id);
+		}
+
+		startIndex = null;
 	}
 </script>
 

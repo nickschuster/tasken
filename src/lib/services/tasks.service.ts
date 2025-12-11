@@ -84,8 +84,6 @@ export const orderTaskFetch = async (
 			wsService.sendMessage(Event.TaskUpdated, updatedTask);
 		}
 
-		await invalidate('/home');
-
 		return result.ok;
 	} catch (e) {
 		console.error('Error ordering task:', e);

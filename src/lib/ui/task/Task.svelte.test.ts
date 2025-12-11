@@ -67,6 +67,7 @@ describe('Task component vibration', () => {
 
 	it('calls vibrate when task is completed via the checkbox', async () => {
 		const updateTask = vi.fn();
+		const orderTask = vi.fn();
 		const taskGroups: TaskGroup[] = [];
 		const draggedTaskId = '';
 		const selectedTaskId = '';
@@ -85,6 +86,7 @@ describe('Task component vibration', () => {
 		const { getByRole } = render(Task, {
 			task,
 			updateTask,
+			orderTask,
 			taskGroups,
 			draggedTaskId,
 			selectedTaskId

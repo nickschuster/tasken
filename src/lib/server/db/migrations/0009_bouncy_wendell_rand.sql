@@ -8,7 +8,7 @@ WITH ordered AS (
 )
 UPDATE task
 SET "order" = (
-    SELECT CHR(97 + ((rownum::INT - 1) % 26))
+    SELECT LPAD(rownum::TEXT, 5, '0')
     FROM ordered o
     WHERE o.id = task.id
 );
