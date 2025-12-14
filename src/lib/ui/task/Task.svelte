@@ -135,7 +135,6 @@
 				<div
 					role="button"
 					tabindex="0"
-					id="dragHandle"
 					class="drag-handle pointer-events-none absolute top-1/2 left-0 -translate-x-1/2
 						       -translate-y-1/2 cursor-grab p-2 opacity-0 transition-all duration-200
 						{!isDragging && draggedTaskId ? 'hidden' : ''}"

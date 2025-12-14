@@ -25,3 +25,6 @@ vite.config.ts.timestamp-*
 
 *storybook.log
 storybook-static
+
+# Playwright auth state
+.auth/
