@@ -65,15 +65,19 @@
 
 	function onDragHandleMouseDown() {
 		if (!taskElement) return;
+
 		taskElement.setAttribute('draggable', 'true');
 	}
 
 	function onDragHandleMouseUp() {
 		if (!taskElement) return;
+
 		taskElement.setAttribute('draggable', 'false');
 	}
 
-	function onDragEnd() {
+	function onDragEnd(e: DragEvent) {
+		e.preventDefault();
+
 		isDragging = false;
 		draggedTaskId = null;
 
@@ -136,11 +140,13 @@
 					role="button"
 					tabindex="0"
 					id="dragHandle"
-					class="drag-handle pointer-events-none absolute top-1/2 left-0 -translate-x-1/2
-						       -translate-y-1/2 cursor-grab p-2 opacity-0 transition-all duration-200
+					class="drag-handle pointer-events-none absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none
+						       p-2 opacity-0 transition-all duration-200
 						{!isDragging && draggedTaskId ? 'hidden' : ''}"
 					onmousedown={onDragHandleMouseDown}
 					onmouseup={onDragHandleMouseUp}
+					ontouchstart={onDragHandleMouseDown}
+					ontouchend={onDragHandleMouseUp}
 					onclick={(e) => e.stopPropagation()}
 					onkeydown={(e) => e.stopPropagation()}
 				>
