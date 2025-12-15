@@ -24,6 +24,7 @@ export const task = pgTable('task', {
 	content: text('content'),
 	isImportant: boolean('is_important').notNull().default(false),
 	taskGroupId: text('task_group_id').references(() => taskGroup.id, { onDelete: 'set null' }),
+	order: text('order'),
 	dueDate: timestamp('due_date', { withTimezone: true, mode: 'date' }),
 	completedAt: timestamp('completed_at', { withTimezone: true, mode: 'date' }),
 	createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow()

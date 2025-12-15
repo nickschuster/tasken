@@ -3,6 +3,7 @@
 	import { vibrate } from '$lib/utils/vibrate';
 	import TaskCheck from './TaskCheck.svelte';
 	import { GripVertical } from '@lucide/svelte';
+	import { getTasks } from '$lib/states/task.state.svelte';
 
 	type Props = {
 		task: Task;
@@ -10,6 +11,7 @@
 		updateTask?: (taskId: string, updates: Partial<Task>) => void;
 		draggedTaskId: string | null;
 		selectedTaskId: string | null;
+		orderTask?: (taskId: string) => Promise<void>;
 	};
 
 	let {
@@ -17,12 +19,14 @@
 		taskGroups,
 		updateTask = () => {},
 		draggedTaskId = $bindable(),
-		selectedTaskId = $bindable()
+		selectedTaskId = $bindable(),
+		orderTask = async () => {}
 	}: Props = $props();
 
 	let taskGroup = $derived(taskGroups.find((group) => group.id === task.taskGroupId) ?? null);
 	let taskElement = $state<HTMLDivElement | null>(null);
 	let isDragging = $state(false);
+	let startIndex = $state<number | null>(null);
 
 	function toggleChecked(checked: boolean) {
 		if (checked) {
@@ -53,22 +57,39 @@
 
 		draggedTaskId = taskElement.id;
 		isDragging = true;
+		startIndex = getTasks()
+			.filter((t) => !t.completedAt)
+			.findIndex((t) => t.id === task.id);
 		e.dataTransfer.setData('text/plain', taskElement.id);
 	}
 
 	function onDragHandleMouseDown() {
 		if (!taskElement) return;
+
 		taskElement.setAttribute('draggable', 'true');
 	}
 
 	function onDragHandleMouseUp() {
 		if (!taskElement) return;
+
 		taskElement.setAttribute('draggable', 'false');
 	}
 
-	function onDragEnd() {
+	function onDragEnd(e: DragEvent) {
+		e.preventDefault();
+
 		isDragging = false;
 		draggedTaskId = null;
+
+		const endIndex = getTasks()
+			.filter((t) => !t.completedAt)
+			.findIndex((t) => t.id === task.id);
+
+		if (startIndex !== null && startIndex !== endIndex) {
+			orderTask(task.id);
+		}
+
+		startIndex = null;
 	}
 </script>
 
@@ -119,11 +140,13 @@
 					role="button"
 					tabindex="0"
 					id="dragHandle"
-					class="drag-handle pointer-events-none absolute top-1/2 left-0 -translate-x-1/2
-						       -translate-y-1/2 cursor-grab p-2 opacity-0 transition-all duration-200
+					class="drag-handle pointer-events-none absolute top-1/2 left-0 -translate-x-1/2 -translate-y-1/2 cursor-grab touch-none
+						       p-2 opacity-0 transition-all duration-200
 						{!isDragging && draggedTaskId ? 'hidden' : ''}"
 					onmousedown={onDragHandleMouseDown}
 					onmouseup={onDragHandleMouseUp}
+					ontouchstart={onDragHandleMouseDown}
+					ontouchend={onDragHandleMouseUp}
 					onclick={(e) => e.stopPropagation()}
 					onkeydown={(e) => e.stopPropagation()}
 				>

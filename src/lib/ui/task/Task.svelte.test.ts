@@ -5,6 +5,7 @@ const vibrateMock = vi.fn();
 const ANIMATION_DURATION = 250;
 
 import Task from './Task.svelte';
+import type { TaskGroup } from '$lib/server/db/schema';
 
 let originalNavigator: Navigator | undefined;
 let originalMatchMedia: typeof window.matchMedia | undefined;
@@ -66,6 +67,10 @@ describe('Task component vibration', () => {
 
 	it('calls vibrate when task is completed via the checkbox', async () => {
 		const updateTask = vi.fn();
+		const orderTask = vi.fn();
+		const taskGroups: TaskGroup[] = [];
+		const draggedTaskId = '';
+		const selectedTaskId = '';
 		const task = {
 			id: 'task-1',
 			userId: '1',
@@ -74,10 +79,18 @@ describe('Task component vibration', () => {
 			isImportant: false,
 			taskGroupId: null,
 			dueDate: null,
+			order: null,
 			createdAt: new Date()
 		};
 
-		const { getByRole } = render(Task, { task, updateTask });
+		const { getByRole } = render(Task, {
+			task,
+			updateTask,
+			orderTask,
+			taskGroups,
+			draggedTaskId,
+			selectedTaskId
+		});
 
 		const button = getByRole('checkbox');
 
