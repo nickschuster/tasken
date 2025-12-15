@@ -2,7 +2,7 @@ import { getTaskById, updateTask } from '$lib/server/tasks.js';
 import { midBefore, midAfter, mid } from '$lib/services/ordering.service.js';
 import { json } from '@sveltejs/kit';
 
-export async function POST({ params, request, locals }) {
+export async function PATCH({ params, request, locals }) {
 	if (!locals.user) {
 		return json({ error: 'Unauthorized' }, { status: 401 });
 	}

@@ -207,6 +207,10 @@
 		<div
 			class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2"
 			ondragover={onDragOver}
+			ondrop={(e) => {
+				e.preventDefault();
+				e.stopPropagation();
+			}}
 			role="figure"
 			id="taskList"
 			bind:this={taskList}
