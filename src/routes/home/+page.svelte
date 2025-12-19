@@ -246,7 +246,12 @@
 		</div>
 
 		<div class="p-1 sm:p-4">
-			<TaskInput onEnter={createTask} bind:newTaskContent {taskGroups} />
+			<TaskInput
+				onEnter={createTask}
+				activeTaskGroupId={selectedGroup}
+				bind:newTaskContent
+				{taskGroups}
+			/>
 		</div>
 	</div>
 

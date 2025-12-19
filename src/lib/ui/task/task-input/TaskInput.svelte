@@ -8,17 +8,21 @@
 
 	let {
 		taskGroups = [],
+		activeTaskGroupId,
 		newTaskContent = $bindable(''),
 		onEnter = () => {}
 	}: {
 		taskGroups: TaskGroup[];
+		activeTaskGroupId: string;
 		newTaskContent?: string;
 		onEnter?: (task: Partial<Task>) => void;
 	} = $props();
 
 	let focused = $state(false);
 	let showContextMenu = $derived(focused || newTaskContent.trim().length > 0);
-	let selectedGroup = $state<TaskGroup | null>(null);
+	let selectedGroup = $derived<TaskGroup | null>(
+		taskGroups.find((g) => g.id === activeTaskGroupId) ?? null
+	);
 	let selectedDate = $state<CalendarDate | null>(null);
 	let customDate = $state<CalendarDate | undefined>(undefined);
 
@@ -32,7 +36,6 @@
 		});
 
 		newTaskContent = '';
-		selectedGroup = null;
 		selectedDate = null;
 		customDate = undefined;
 	}
