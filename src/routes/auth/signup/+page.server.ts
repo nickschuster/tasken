@@ -27,7 +27,7 @@ export const actions = {
 			return fail(400, { error: 'Email is required' });
 		}
 
-		if (PUBLIC_DEV && email === 'dev@tasken.app') {
+		if ((PUBLIC_DEV || PUBLIC_CI) && email === 'dev@tasken.app') {
 			const user = await upsertUserByEmail(email);
 
 			const sessionToken = auth.generateSessionToken();

@@ -1,0 +1,26 @@
+import { test as setup, expect } from '@playwright/test';
+
+setup('authenticate', async ({ page, context }) => {
+	await page.goto('/auth/signup');
+	await page.getByPlaceholder('Email').fill('dev@tasken.app');
+
+	await page.getByRole('button', { name: 'Continue with email' }).click();
+
+	await expect(page.getByText('Choose Your Plan')).toBeVisible();
+
+	await page.getByRole('button', { name: 'Choose Basic' }).click();
+
+	await expect(page).toHaveURL(/checkout.stripe.com/);
+
+	await page.getByRole('textbox', { name: 'Card number' }).fill('4242424242424242');
+	await page.getByRole('textbox', { name: 'Expiration' }).fill('1230');
+	await page.getByRole('textbox', { name: 'CVC' }).fill('123');
+	await page.getByRole('textbox', { name: 'Cardholder name' }).fill('Test');
+	await page.getByRole('button', { name: 'Subscribe' }).click();
+
+	await page.waitForLoadState('networkidle');
+
+	await expect(page).toHaveURL(/home/);
+
+	await context.storageState({ path: 'e2e/.auth/user.json' });
+});
