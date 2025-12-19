@@ -397,3 +397,65 @@ describe('DetailedTaskView.svelte', () => {
 		expect(document.querySelector('[aria-label="Select a group"]')).toBeTruthy();
 	});
 });
+
+it('handles today date selector', async () => {
+	const props = {
+		selectedTask: {
+			id: '1',
+			userId: 'user1',
+			content: 'Task without due date',
+			isImportant: false,
+			completedAt: null,
+			taskGroupId: null,
+			dueDate: null,
+			order: null,
+			createdAt: new Date()
+		},
+		selectedTaskId: '1',
+		taskGroups: [],
+		updateTask: vi.fn()
+	};
+
+	const { getByRole, queryByText } = render(DetailedTaskView, props);
+
+	const todayButton = getByRole('button', { name: 'Today' });
+
+	await fireEvent.click(todayButton);
+
+	expect(props.updateTask).toHaveBeenCalledWith(props.selectedTask.id, {
+		dueDate: expect.anything()
+	});
+
+	expect(queryByText('Due Date')).toBeTruthy();
+});
+
+it('handles tomorrow date selector', async () => {
+	const props = {
+		selectedTask: {
+			id: '1',
+			userId: 'user1',
+			content: 'Task without due date',
+			isImportant: false,
+			completedAt: null,
+			taskGroupId: null,
+			dueDate: null,
+			order: null,
+			createdAt: new Date()
+		},
+		selectedTaskId: '1',
+		taskGroups: [],
+		updateTask: vi.fn()
+	};
+
+	const { getByRole, queryByText } = render(DetailedTaskView, props);
+
+	const tomorrowButton = getByRole('button', { name: 'Tomorrow' });
+
+	await fireEvent.click(tomorrowButton);
+
+	expect(props.updateTask).toHaveBeenCalledWith(props.selectedTask.id, {
+		dueDate: expect.anything()
+	});
+
+	expect(queryByText('Due Date')).toBeTruthy();
+});
