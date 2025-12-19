@@ -51,6 +51,50 @@
 			: 'No Group'
 	);
 
+	const setToday = () => {
+		const now = new Date();
+		const todayCalendar = new CalendarDate(now.getFullYear(), now.getMonth() + 1, now.getDate());
+		dueDate = todayCalendar;
+		handleDueDateChange();
+	};
+
+	const setTomorrow = () => {
+		const now = new Date();
+		const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+
+		const tomorrowCalendar = new CalendarDate(
+			tomorrow.getFullYear(),
+			tomorrow.getMonth() + 1,
+			tomorrow.getDate()
+		);
+		dueDate = tomorrowCalendar;
+		handleDueDateChange();
+	};
+
+	const isToday = () => {
+		if (!dueDate) return false;
+
+		const now = new Date();
+		return (
+			dueDate.year === now.getFullYear() &&
+			dueDate.month === now.getMonth() + 1 &&
+			dueDate.day === now.getDate()
+		);
+	};
+
+	const isTomorrow = () => {
+		if (!dueDate) return false;
+
+		const now = new Date();
+		const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
+
+		return (
+			dueDate.year === tomorrow.getFullYear() &&
+			dueDate.month === tomorrow.getMonth() + 1 &&
+			dueDate.day === tomorrow.getDate()
+		);
+	};
+
 	const handleContentChange = () => {
 		if (selectedTask && content.trim().length > 0) {
 			selectedTask = { ...selectedTask, content: content };
@@ -238,7 +282,29 @@
 
 				<!-- Due Date Section -->
 				<div class="space-y-2">
-					<span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Due Date</span>
+					<div class="flex items-center justify-between">
+						<span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">
+							Due Date
+						</span>
+
+						<div class="flex gap-3 text-xs font-medium dark:text-neutral-400">
+							<button
+								onclick={setToday}
+								class="hover:text-neutral-900 dark:hover:text-neutral-100
+							{isToday() ? 'text-black dark:text-white' : 'text-neutral-600 dark:text-neutral-400'}"
+							>
+								Today
+							</button>
+							<button
+								onclick={setTomorrow}
+								class="hover:text-neutral-900 dark:hover:text-neutral-100
+							{isTomorrow() ? 'text-black dark:text-white' : 'text-neutral-600 dark:text-neutral-400'}"
+							>
+								Tomorrow
+							</button>
+						</div>
+					</div>
+
 					<DatePicker bind:value={dueDate} onChange={handleDueDateChange} />
 				</div>
 
