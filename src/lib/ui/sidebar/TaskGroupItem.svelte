@@ -9,6 +9,7 @@
 		selectedGroup: string;
 		updateTaskGroup: (taskGroupId: string, updates: Partial<TaskGroup>) => Promise<void>;
 		deleteTaskGroup: (taskGroupId: string) => Promise<void>;
+		selectGroup: (group: string) => void;
 	};
 
 	let {
@@ -16,6 +17,7 @@
 		isSidebarOpen,
 		updateTaskGroup,
 		deleteTaskGroup,
+		selectGroup,
 		selectedGroup = $bindable()
 	}: TaskGroupItemProps = $props();
 
@@ -38,7 +40,9 @@
 	}
 </script>
 
-<button
+<div
+	role="button"
+	tabindex="0"
 	class={[
 		'flex cursor-pointer items-center gap-2 rounded-md  transition-colors duration-150',
 		'hover:bg-neutral-200 dark:hover:bg-neutral-800',
@@ -48,7 +52,10 @@
 		!isSidebarOpen && 'justify-center py-3',
 		isSidebarOpen && 'pl-2'
 	]}
-	onclick={() => (selectedGroup = group.id)}
+	onclick={() => selectGroup(group.id)}
+	onkeydown={(e) => {
+		if (e.key === 'Enter') selectGroup(group.id);
+	}}
 >
 	<input type="hidden" name="groupId" value={group.id} />
 
@@ -63,6 +70,7 @@
 						id="color-picker"
 						class="size-3 cursor-pointer rounded-full border-none"
 						style="background-color: {group.color}"
+						onclick={(e) => e.stopPropagation()}
 						onchange={(e) => {
 							updateTaskGroup(group.id, { color: e.currentTarget.value });
 						}}
@@ -102,6 +110,7 @@
 					dark:text-neutral-100 dark:focus:border-neutral-400
 				"
 				onkeydown={(e) => {
+					e.stopPropagation();
 					if (e.key === 'Enter') {
 						updateTaskGroup(group.id, { name: newName });
 						stopEditing();
@@ -119,4 +128,4 @@
 	{:else}
 		<div class="size-3 rounded-full" style="background-color: {group.color}"></div>
 	{/if}
-</button>
+</div>

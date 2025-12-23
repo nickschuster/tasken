@@ -118,8 +118,8 @@
 	};
 
 	const handleDueDateChange = () => {
-		if (dueDate && selectedTask) {
-			const newDueDate = dueDate.toDate(getLocalTimeZone());
+		if (selectedTask) {
+			const newDueDate = dueDate ? dueDate.toDate(getLocalTimeZone()) : null;
 
 			selectedTask = { ...selectedTask, dueDate: newDueDate };
 
@@ -259,7 +259,7 @@
 									data-bits-select-group
 								>
 									<Select.Viewport class="p-1">
-										{#each groups as group, i (group.value)}
+										{#each groups as group (group.value)}
 											<Select.Item
 												class="flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-neutral-800 transition-colors outline-none hover:bg-neutral-100 focus:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
 												value={group.value}
