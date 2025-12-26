@@ -62,7 +62,7 @@
 	{#if isSidebarOpen}
 		{#if !isEditing}
 			<div class="flex w-full flex-row items-center justify-between">
-				<div class="truncate text-sm font-medium">{group.name}</div>
+				<div class="truncate font-medium md:text-sm">{group.name}</div>
 
 				<div class="flex flex-row items-center gap-3">
 					<input
@@ -104,9 +104,9 @@
 				type="text"
 				class="
 					flex-1 rounded border-neutral-300
-					bg-transparent py-2 text-sm
-					font-medium text-neutral-800 outline-none
-					focus:border-neutral-500 dark:border-neutral-700
+					bg-transparent py-2 font-medium
+					text-neutral-800 outline-none focus:border-neutral-500
+					md:text-sm dark:border-neutral-700
 					dark:text-neutral-100 dark:focus:border-neutral-400
 				"
 				onkeydown={(e) => {
