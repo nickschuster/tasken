@@ -1,11 +1,5 @@
 <script lang="ts">
-	import {
-		ChevronRightIcon,
-		PlusIcon,
-		StarIcon,
-		ListIcon,
-		CalendarIcon
-	} from '@lucide/svelte';
+	import { ChevronRightIcon, PlusIcon, StarIcon, ListIcon, CalendarIcon } from '@lucide/svelte';
 	import { DateTime } from 'luxon';
 	import { ScrollArea } from 'bits-ui';
 	import type { TaskGroup } from '$lib/server/db/schema';
@@ -45,6 +39,11 @@
 	}
 
 	function closeMobileSidebar() {
+		if (isMobile) isSidebarOpen = false;
+	}
+
+	function selectGroup(group: string) {
+		selectedGroup = group;
 		if (isMobile) isSidebarOpen = false;
 	}
 </script>
@@ -99,11 +98,11 @@
 		</div>
 
 		<ul class="flex flex-col gap-1">
-			{#each Object.entries(defaultGroups) as [group, Icon]}
+			{#each Object.entries(defaultGroups) as [group, Icon] (group)}
 				<li class="mr-4">
 					<button
 						type="button"
-						onclick={() => (selectedGroup = group)}
+						onclick={() => selectGroup(group)}
 						class="
           flex w-full items-center
           rounded-md p-2
@@ -161,6 +160,7 @@
 							{isSidebarOpen}
 							{updateTaskGroup}
 							{deleteTaskGroup}
+							{selectGroup}
 							bind:selectedGroup
 							bind:group={taskGroups[i]}
 						/>

@@ -157,7 +157,7 @@
 	};
 </script>
 
-<div class="height-control flex dark:bg-black dark:text-white">
+<div class="height-control flex overflow-hidden dark:bg-black dark:text-white">
 	<SubscriptionsDialog
 		subscriptions={data.subscriptionDetails.subscriptions}
 		open={!data.subscriptionDetails.isPremium}
@@ -245,7 +245,7 @@
 			{/if}
 		</div>
 
-		<div class="p-1 sm:p-4">
+		<div class="task-input-container p-1 sm:p-4">
 			<TaskInput
 				onEnter={createTask}
 				activeTaskGroupId={selectedGroup}
@@ -257,3 +257,9 @@
 
 	<DetailedTaskView bind:selectedTask bind:selectedTaskId {taskGroups} {updateTask} />
 </div>
+
+<style>
+	.task-input-container {
+		padding-bottom: env(safe-area-inset-bottom);
+	}
+</style>

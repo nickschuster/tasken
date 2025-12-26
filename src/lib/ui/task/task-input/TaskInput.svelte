@@ -19,6 +19,7 @@
 	} = $props();
 
 	let focused = $state(false);
+	let taskInputElement = $state<HTMLInputElement | null>(null);
 	let showContextMenu = $derived(focused || newTaskContent.trim().length > 0);
 	let selectedGroup = $derived<TaskGroup | null>(
 		taskGroups.find((g) => g.id === activeTaskGroupId) ?? null
@@ -62,7 +63,10 @@
 			<Circle size="28" />
 		</div>
 	{:else}
-		<Plus class="display-none text-neutral-500" />
+		<Plus
+			class="display-none text-neutral-500 hover:text-neutral-400"
+			onclick={() => taskInputElement?.focus()}
+		></Plus>
 	{/if}
 
 	<input
@@ -71,6 +75,7 @@
       text-black placeholder:text-neutral-400 focus:outline-none dark:bg-neutral-900 dark:text-neutral-200 dark:placeholder:text-neutral-500"
 		bind:focused
 		bind:value={newTaskContent}
+		bind:this={taskInputElement}
 		onkeydown={(event) => {
 			if (event.code === 'Enter') {
 				handleEnter(newTaskContent);
