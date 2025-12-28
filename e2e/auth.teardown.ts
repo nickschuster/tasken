@@ -3,6 +3,14 @@ import { test as teardown, expect } from '@playwright/test';
 teardown('delete test account', async ({ page }) => {
 	await page.goto('/home');
 
+	const loginButton = await page.getByText('Continue with email').isVisible();
+
+	if (loginButton) {
+		await page.getByPlaceholder('Email').fill('dev@tasken.app');
+
+		await page.getByRole('button', { name: 'Continue with email' }).click();
+	}
+
 	await expect(page).toHaveURL('/home');
 
 	await page.getByRole('button', { name: 'D', exact: true }).click();

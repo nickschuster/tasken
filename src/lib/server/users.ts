@@ -15,7 +15,7 @@ export const updateUser = async (userId: string, updates: Partial<User>) => {
 	return updateResult;
 };
 
-export async function upsertUserByEmail(email: string) {
+export async function upsertUserByEmailOnLogin(email: string) {
 	let [user] = await db.select().from(userTable).where(eq(userTable.email, email));
 
 	if (!user) {

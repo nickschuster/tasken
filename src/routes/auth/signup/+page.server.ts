@@ -5,8 +5,8 @@ import {
 } from '$lib/server/magiclink.js';
 import { fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
-import { PUBLIC_DEV } from '$env/static/public';
-import { upsertUserByEmail } from '$lib/server/users';
+import { PUBLIC_DEV, PUBLIC_CI } from '$env/static/public';
+import { upsertUserByEmailOnLogin } from '$lib/server/users';
 import * as auth from '$lib/server/auth';
 
 export const load: PageServerLoad = async (event) => {
@@ -27,8 +27,10 @@ export const actions = {
 			return fail(400, { error: 'Email is required' });
 		}
 
+		console.log(PUBLIC_DEV, PUBLIC_CI, email);
 		if ((PUBLIC_DEV || PUBLIC_CI) && email === 'dev@tasken.app') {
-			const user = await upsertUserByEmail(email);
+			console.log('here');
+			const user = await upsertUserByEmailOnLogin(email);
 
 			const sessionToken = auth.generateSessionToken();
 			const session = await auth.createSession(sessionToken, user.id);

@@ -2,7 +2,7 @@ import type { RequestEvent } from './$types';
 import { generateSessionToken, createSession, setSessionTokenCookie } from '$lib/server/auth';
 import { googleOAuth } from '$lib/server/oauth';
 import { decodeIdToken } from 'arctic';
-import { upsertUserByEmail } from '$lib/server/users';
+import { upsertUserByEmailOnLogin } from '$lib/server/users';
 
 export async function GET(event: RequestEvent) {
 	const code = event.url.searchParams.get('code');
@@ -43,7 +43,7 @@ export async function GET(event: RequestEvent) {
 	}
 
 	// TODO: not the best, should use a sub per OAuth provider
-	const user = await upsertUserByEmail(googleUserEmail);
+	const user = await upsertUserByEmailOnLogin(googleUserEmail);
 
 	const sessionToken = generateSessionToken();
 	const session = await createSession(sessionToken, user.id);
