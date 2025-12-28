@@ -9,6 +9,7 @@
 		selectedGroup: string;
 		updateTaskGroup: (taskGroupId: string, updates: Partial<TaskGroup>) => Promise<void>;
 		deleteTaskGroup: (taskGroupId: string) => Promise<void>;
+		selectGroup: (group: string) => void;
 	};
 
 	let {
@@ -16,6 +17,7 @@
 		isSidebarOpen,
 		updateTaskGroup,
 		deleteTaskGroup,
+		selectGroup,
 		selectedGroup = $bindable()
 	}: TaskGroupItemProps = $props();
 
@@ -38,7 +40,9 @@
 	}
 </script>
 
-<button
+<div
+	role="button"
+	tabindex="0"
 	class={[
 		'flex cursor-pointer items-center gap-2 rounded-md  transition-colors duration-150',
 		'hover:bg-neutral-200 dark:hover:bg-neutral-800',
@@ -48,14 +52,17 @@
 		!isSidebarOpen && 'justify-center py-3',
 		isSidebarOpen && 'pl-2'
 	]}
-	onclick={() => (selectedGroup = group.id)}
+	onclick={() => selectGroup(group.id)}
+	onkeydown={(e) => {
+		if (e.key === 'Enter') selectGroup(group.id);
+	}}
 >
 	<input type="hidden" name="groupId" value={group.id} />
 
 	{#if isSidebarOpen}
 		{#if !isEditing}
 			<div class="flex w-full flex-row items-center justify-between">
-				<div class="truncate text-sm font-medium">{group.name}</div>
+				<div class="truncate font-medium md:text-sm">{group.name}</div>
 
 				<div class="flex flex-row items-center gap-3">
 					<input
@@ -63,6 +70,7 @@
 						id="color-picker"
 						class="size-3 cursor-pointer rounded-full border-none"
 						style="background-color: {group.color}"
+						onclick={(e) => e.stopPropagation()}
 						onchange={(e) => {
 							updateTaskGroup(group.id, { color: e.currentTarget.value });
 						}}
@@ -96,12 +104,13 @@
 				type="text"
 				class="
 					flex-1 rounded border-neutral-300
-					bg-transparent py-2 text-sm
-					font-medium text-neutral-800 outline-none
-					focus:border-neutral-500 dark:border-neutral-700
+					bg-transparent py-2 font-medium
+					text-neutral-800 outline-none focus:border-neutral-500
+					md:text-sm dark:border-neutral-700
 					dark:text-neutral-100 dark:focus:border-neutral-400
 				"
 				onkeydown={(e) => {
+					e.stopPropagation();
 					if (e.key === 'Enter') {
 						updateTaskGroup(group.id, { name: newName });
 						stopEditing();
@@ -119,4 +128,4 @@
 	{:else}
 		<div class="size-3 rounded-full" style="background-color: {group.color}"></div>
 	{/if}
-</button>
+</div>
