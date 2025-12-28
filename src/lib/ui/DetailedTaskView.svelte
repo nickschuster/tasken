@@ -1,10 +1,13 @@
 <script lang="ts">
 	import { Check, ChevronDown, StarIcon, X } from '@lucide/svelte';
 	import { DateTime } from 'luxon';
-	import { Select } from 'bits-ui';
+	import { Select, ToggleGroup } from 'bits-ui';
 	import { type TaskGroup, type Task } from '$lib/server/db/schema';
-	import { getLocalTimeZone, CalendarDate } from '@internationalized/date';
+	import { getLocalTimeZone, CalendarDate, Time } from '@internationalized/date';
 	import DatePicker from '$lib/ui/DatePicker.svelte';
+	import TimeField from '$lib/ui/TimeField.svelte';
+	import { isToday, isTomorrow } from '$lib/utils/date';
+	import { REPEAT_PRESETS, REPEAT_DAYS, RepeatUnit } from '$lib/models/repeat';
 
 	type Props = {
 		selectedTask: Task | null;
@@ -51,6 +54,56 @@
 			: 'No Group'
 	);
 
+	let repeat = $derived.by(() => {
+		if (!selectedTask?.repeatUnit || !selectedTask?.repeatInterval) return 'Never';
+
+		if (
+			selectedTask?.repeatDays ||
+			(selectedTask?.repeatInterval !== 1 && selectedTask?.repeatUnit !== RepeatUnit.WEEK)
+		)
+			return 'Custom';
+
+		const preset = REPEAT_PRESETS.find(
+			(p) => p.unit === selectedTask?.repeatUnit && p.interval === selectedTask?.repeatInterval
+		);
+
+		return preset?.value ?? 'Custom';
+	});
+
+	let repeatTime = $derived<Time | undefined>(
+		selectedTask?.repeatTime
+			? new Time(...selectedTask.repeatTime.split(':').map(Number))
+			: undefined
+	);
+
+	let customRepeatUnit = $derived(selectedTask?.repeatUnit ?? RepeatUnit.DAY);
+
+	let customRepeatDays = $derived<string[]>(
+		selectedTask?.repeatDays?.split(',').map((v) => REPEAT_DAYS[Number(v)]) ?? []
+	);
+
+	let customRepeatInterval = $derived(selectedTask?.repeatInterval ?? 1);
+
+	const repeatLabels = [
+		{
+			label: 'Never',
+			value: 'Never'
+		},
+		...REPEAT_PRESETS.map((preset) => ({
+			label: preset.value,
+			value: preset.value
+		})),
+		{
+			label: 'Custom',
+			value: 'Custom'
+		}
+	];
+
+	const repeatUnits = Object.values(RepeatUnit).map((unit) => ({
+		label: (unit + '(s)') as string,
+		value: unit as string
+	}));
+
 	const setToday = () => {
 		const now = new Date();
 		const todayCalendar = new CalendarDate(now.getFullYear(), now.getMonth() + 1, now.getDate());
@@ -69,30 +122,6 @@
 		);
 		dueDate = tomorrowCalendar;
 		handleDueDateChange();
-	};
-
-	const isToday = () => {
-		if (!dueDate) return false;
-
-		const now = new Date();
-		return (
-			dueDate.year === now.getFullYear() &&
-			dueDate.month === now.getMonth() + 1 &&
-			dueDate.day === now.getDate()
-		);
-	};
-
-	const isTomorrow = () => {
-		if (!dueDate) return false;
-
-		const now = new Date();
-		const tomorrow = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1);
-
-		return (
-			dueDate.year === tomorrow.getFullYear() &&
-			dueDate.month === tomorrow.getMonth() + 1 &&
-			dueDate.day === tomorrow.getDate()
-		);
 	};
 
 	const handleContentChange = () => {
@@ -145,6 +174,76 @@
 		selectedTask = { ...prev, isImportant: !prev.isImportant };
 
 		updateTask(selectedTask.id, { isImportant: selectedTask.isImportant });
+	};
+
+	const handleRepeatPreset = (value: string) => {
+		if (!selectedTask) return;
+
+		if (value === 'Never') {
+			selectedTask.repeatUnit = null;
+			selectedTask.repeatInterval = 1;
+			selectedTask.repeatDays = null;
+			selectedTask.repeatTime = null;
+		} else {
+			const preset = REPEAT_PRESETS.find((p) => p.value === value);
+			if (!preset) return;
+
+			selectedTask.repeatUnit = preset.unit;
+			selectedTask.repeatInterval = preset.interval;
+			selectedTask.repeatDays = null;
+		}
+
+		updateTask(selectedTask.id, {
+			repeatUnit: selectedTask.repeatUnit,
+			repeatInterval: selectedTask.repeatInterval,
+			repeatDays: selectedTask.repeatDays,
+			repeatTime: selectedTask.repeatTime
+		});
+	};
+
+	const handleRepeatTime = (value: Time | undefined) => {
+		if (!selectedTask) return;
+
+		selectedTask.repeatTime = value ? value.toString() : null;
+
+		updateTask(selectedTask.id, { repeatTime: selectedTask.repeatTime });
+	};
+
+	const handleCustomRepeatUnit = (unit: string) => {
+		if (!selectedTask) return;
+
+		selectedTask.repeatUnit = unit;
+
+		if (unit !== RepeatUnit.WEEK) {
+			selectedTask.repeatDays = null;
+		}
+
+		updateTask(selectedTask.id, {
+			repeatUnit: selectedTask.repeatUnit,
+			repeatDays: selectedTask.repeatDays
+		});
+	};
+
+	const handleCustomInterval = (interval: number) => {
+		if (!selectedTask) return;
+
+		selectedTask.repeatInterval = Math.max(1, interval);
+
+		updateTask(selectedTask.id, {
+			repeatInterval: selectedTask.repeatInterval
+		});
+	};
+
+	const handleCustomWeekdays = (days: string[]) => {
+		if (!selectedTask || customRepeatUnit !== RepeatUnit.WEEK) return;
+
+		selectedTask.repeatDays = days.length
+			? days.map((day) => REPEAT_DAYS.findIndex((d) => d === day)).join(',')
+			: null;
+
+		updateTask(selectedTask.id, {
+			repeatDays: selectedTask.repeatDays
+		});
 	};
 </script>
 
@@ -259,7 +358,7 @@
 									data-bits-select-group
 								>
 									<Select.Viewport class="p-1">
-										{#each groups as group, i (group.value)}
+										{#each groups as group (group.value)}
 											<Select.Item
 												class="flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-neutral-800 transition-colors outline-none hover:bg-neutral-100 focus:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
 												value={group.value}
@@ -291,14 +390,18 @@
 							<button
 								onclick={setToday}
 								class="hover:text-neutral-900 dark:hover:text-neutral-100
-							{isToday() ? 'text-black dark:text-white' : 'text-neutral-600 dark:text-neutral-400'}"
+							{isToday(dueDate?.toDate(getLocalTimeZone()))
+									? 'text-black dark:text-white'
+									: 'text-neutral-600 dark:text-neutral-400'}"
 							>
 								Today
 							</button>
 							<button
 								onclick={setTomorrow}
 								class="hover:text-neutral-900 dark:hover:text-neutral-100
-							{isTomorrow() ? 'text-black dark:text-white' : 'text-neutral-600 dark:text-neutral-400'}"
+							{isTomorrow(dueDate?.toDate(getLocalTimeZone()))
+									? 'text-black dark:text-white'
+									: 'text-neutral-600 dark:text-neutral-400'}"
 							>
 								Tomorrow
 							</button>
@@ -307,6 +410,163 @@
 
 					<DatePicker bind:value={dueDate} onChange={handleDueDateChange} />
 				</div>
+
+				<!-- Repeat Section -->
+				{#if dueDate}
+					<div class="space-y-2">
+						<span class="text-sm font-medium text-neutral-600 dark:text-neutral-400">Repeat</span>
+						<Select.Root
+							type="single"
+							onValueChange={handleRepeatPreset}
+							items={repeatLabels}
+							bind:value={repeat}
+							disabled={!dueDate}
+						>
+							<Select.Trigger
+								class="inline-flex w-full items-center justify-between rounded-md border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900 transition select-none hover:border-neutral-400 focus:border-transparent focus:ring-2 focus:ring-black focus:outline-none disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-neutral-300 dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100 dark:focus:ring-white dark:disabled:hover:border-neutral-700"
+								aria-label="Select repeat schedule"
+							>
+								{repeat}
+								<ChevronDown class="size-4 text-neutral-500 dark:text-neutral-400" />
+							</Select.Trigger>
+
+							<Select.Portal>
+								{#if repeatLabels.length !== 0}
+									<Select.Content
+										class="z-50 mt-1 max-h-64 w-[var(--bits-select-anchor-width)] overflow-y-auto rounded-md border border-neutral-200 bg-white shadow-lg dark:border-neutral-800 dark:bg-neutral-900"
+										sideOffset={4}
+										data-bits-select-group
+									>
+										<Select.Viewport class="p-1">
+											{#each repeatLabels as label (label.value)}
+												<Select.Item
+													class="flex w-full cursor-pointer items-center gap-2 rounded-md px-3 py-2 text-sm text-neutral-800 transition-colors outline-none hover:bg-neutral-100 focus:bg-neutral-100 dark:text-neutral-200 dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
+													value={label.value}
+													label={label.label}
+												>
+													<span class="flex-1">{label.label}</span>
+												</Select.Item>
+											{/each}
+										</Select.Viewport>
+									</Select.Content>
+								{/if}
+							</Select.Portal>
+						</Select.Root>
+					</div>
+
+					{#if repeat === 'Custom'}
+						<div class="flex items-center gap-1 text-sm text-neutral-600 dark:text-neutral-400">
+							<div class="flex w-full flex-row items-center justify-between">
+								<label
+									for="repeat-interval"
+									class="text-sm font-medium text-neutral-600 dark:text-neutral-400"
+								>
+									Repeat every
+								</label>
+
+								<div>
+									<input
+										id="repeat-interval"
+										type="number"
+										min={1}
+										bind:value={customRepeatInterval}
+										class="w-16 rounded-md border border-neutral-300 bg-white px-3 py-2 text-center text-sm text-neutral-900 transition
+                                            hover:border-neutral-400
+                                            focus:border-transparent focus:ring-2 focus:ring-black focus:outline-none
+                                            disabled:cursor-not-allowed disabled:opacity-50
+                                            dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100
+                                            dark:focus:ring-white"
+										onchange={() => handleCustomInterval(customRepeatInterval)}
+									/>
+
+									<Select.Root
+										type="single"
+										onValueChange={handleCustomRepeatUnit}
+										items={repeatUnits}
+										bind:value={customRepeatUnit}
+										disabled={!dueDate}
+									>
+										<Select.Trigger
+											class="inline-flex min-w-[96px] items-center justify-between rounded-md
+                                                border border-neutral-300 bg-white px-3 py-2 text-sm text-neutral-900
+                                                transition select-none
+                                                hover:border-neutral-400
+                                                focus:border-transparent focus:ring-2 focus:ring-black focus:outline-none
+                                                disabled:cursor-not-allowed disabled:opacity-50
+                                                disabled:hover:border-neutral-300
+                                                dark:border-neutral-700 dark:bg-neutral-900 dark:text-neutral-100
+                                                dark:focus:ring-white dark:disabled:hover:border-neutral-700"
+											aria-label="Select repeat schedule"
+										>
+											{customRepeatUnit + '(s)'}
+											<ChevronDown class="ml-2 size-4 text-neutral-500 dark:text-neutral-400" />
+										</Select.Trigger>
+
+										<Select.Portal>
+											{#if repeatUnits.length !== 0}
+												<Select.Content
+													class="z-50 mt-1 max-h-64 w-[var(--bits-select-anchor-width)]
+                                                        overflow-y-auto rounded-md border border-neutral-200
+                                                        bg-white shadow-lg
+                                                        dark:border-neutral-800 dark:bg-neutral-900"
+													sideOffset={4}
+												>
+													<Select.Viewport class="p-1">
+														{#each repeatUnits as label (label.value)}
+															<Select.Item
+																class="flex w-full cursor-pointer items-center gap-2 rounded-md
+                                                                    px-3 py-2 text-sm text-neutral-800 transition-colors
+                                                                    outline-none
+                                                                    hover:bg-neutral-100 focus:bg-neutral-100
+                                                                    dark:text-neutral-200
+                                                                    dark:hover:bg-neutral-800 dark:focus:bg-neutral-800"
+																value={label.value}
+																label={label.label}
+															>
+																<span class="flex-1">{label.label}</span>
+															</Select.Item>
+														{/each}
+													</Select.Viewport>
+												</Select.Content>
+											{/if}
+										</Select.Portal>
+									</Select.Root>
+								</div>
+							</div>
+						</div>
+
+						{#if customRepeatUnit === RepeatUnit.WEEK}
+							<ToggleGroup.Root
+								bind:value={customRepeatDays}
+								onValueChange={handleCustomWeekdays}
+								type="multiple"
+								class="flex h-10 items-center gap-x-0.5 rounded-md border border-neutral-300 bg-white px-1 py-1 dark:border-neutral-700 dark:bg-neutral-900"
+							>
+								{#each REPEAT_DAYS as day (day)}
+									<ToggleGroup.Item
+										aria-label="toggle bold"
+										value={day}
+										class="inline-flex h-10 w-10 items-center justify-center rounded-md text-neutral-600
+                                            transition-all
+                                            hover:bg-neutral-200 hover:text-neutral-900
+                                            active:scale-[0.98] active:bg-neutral-300
+                                            data-[state=on]:bg-neutral-200 data-[state=on]:text-black
+                                            dark:text-neutral-400
+                                            dark:hover:bg-neutral-800 dark:hover:text-neutral-100
+                                            dark:active:bg-neutral-700
+                                            dark:data-[state=on]:bg-neutral-800 dark:data-[state=on]:text-white"
+									>
+										{day}
+									</ToggleGroup.Item>
+								{/each}
+							</ToggleGroup.Root>
+						{/if}
+					{/if}
+
+					{#if repeat !== 'Never' && repeat !== 'Hourly' && customRepeatUnit !== RepeatUnit.HOUR}
+						<TimeField bind:value={repeatTime} handleValueChange={handleRepeatTime} />
+					{/if}
+				{/if}
 
 				<!-- Completion Status -->
 				{#if !!selectedTask.completedAt}

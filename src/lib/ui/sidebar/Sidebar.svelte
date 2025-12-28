@@ -1,11 +1,5 @@
 <script lang="ts">
-	import {
-		ChevronRightIcon,
-		PlusIcon,
-		StarIcon,
-		ListIcon,
-		CalendarIcon
-	} from '@lucide/svelte';
+	import { ChevronRightIcon, PlusIcon, StarIcon, ListIcon, CalendarIcon } from '@lucide/svelte';
 	import { DateTime } from 'luxon';
 	import { ScrollArea } from 'bits-ui';
 	import type { TaskGroup } from '$lib/server/db/schema';
@@ -99,7 +93,7 @@
 		</div>
 
 		<ul class="flex flex-col gap-1">
-			{#each Object.entries(defaultGroups) as [group, Icon]}
+			{#each Object.entries(defaultGroups) as [group, Icon] (group)}
 				<li class="mr-4">
 					<button
 						type="button"

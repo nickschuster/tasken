@@ -2,8 +2,11 @@
 	import type { Task, TaskGroup } from '$lib/server/db/schema';
 	import { vibrate } from '$lib/utils/vibrate';
 	import TaskCheck from './TaskCheck.svelte';
-	import { GripVertical } from '@lucide/svelte';
+	import { GripVertical, Repeat } from '@lucide/svelte';
 	import { getTasks } from '$lib/states/task.state.svelte';
+	import { isToday, isTomorrow } from '$lib/utils/date';
+	import { SvelteDate } from 'svelte/reactivity';
+	import { REPEAT_PRESETS, RepeatUnit } from '$lib/models/repeat';
 
 	type Props = {
 		task: Task;
@@ -28,12 +31,98 @@
 	let isDragging = $state(false);
 	let startIndex = $state<number | null>(null);
 
+	function computeNextDueDate(task: Task) {
+		if (!task.repeatUnit || !task.repeatInterval || !task.dueDate) return null;
+
+		if (task.repeatUnit === 'week' && task.repeatDays?.length) {
+			// Deal with custom repeat days by finding the next selected day and check if its in the current week or the next cycle
+			// Example: Every 2 weeks on Tue, Thu. Complete on Tue -> Next due is Thu (same week). Complete on Thu -> Next due is in 2 Weeks (next cycle)
+			const next = new SvelteDate(task.dueDate);
+			const days = task.repeatDays
+				.split(',')
+				.map(Number)
+				.sort((a, b) => a - b);
+
+			const currentDay = next.getDay();
+
+			// Is there another day selected later this week?
+			let found = false;
+			for (const d of days) {
+				if (d > currentDay) {
+					next.setDate(next.getDate() + (d - currentDay));
+					found = true;
+					break;
+				}
+			}
+
+			if (!found) {
+				// Jump to the next cycle
+				next.setDate(next.getDate() + task.repeatInterval * 7);
+
+				// Jump back to the start of the week, sunday
+				const offset = -next.getDay();
+				next.setDate(next.getDate() + offset);
+
+				// Jump to the first selected custom day
+				next.setDate(next.getDate() + days[0]);
+			}
+
+			if (task.repeatTime) {
+				const [h, m] = task.repeatTime.split(':').map(Number);
+				next.setHours(h, m, 0, 0);
+			}
+
+			return next;
+		}
+
+		const next = new SvelteDate(task.dueDate);
+
+		switch (task.repeatUnit) {
+			case 'hour':
+				next.setHours(next.getHours() + task.repeatInterval);
+				break;
+			case 'day':
+				next.setDate(next.getDate() + task.repeatInterval);
+				break;
+			case 'week':
+				next.setDate(next.getDate() + 7 * task.repeatInterval);
+				break;
+			case 'month':
+				next.setMonth(next.getMonth() + task.repeatInterval);
+				break;
+			case 'year':
+				next.setFullYear(next.getFullYear() + task.repeatInterval);
+				break;
+		}
+
+		if (task.repeatTime && task.repeatUnit !== RepeatUnit.HOUR) {
+			const [hours, minutes] = task.repeatTime.split(':').map(Number);
+			next.setHours(hours, minutes, 0, 0);
+		}
+
+		return next;
+	}
+
 	function toggleChecked(checked: boolean) {
 		if (checked) {
 			vibrate(50);
 		}
 
-		updateTask(task.id, { completedAt: checked ? new Date() : null });
+		if (checked) {
+			const nextDue = computeNextDueDate(task);
+
+			if (nextDue) {
+				updateTask(task.id, { dueDate: nextDue, completedAt: new Date() });
+
+				setTimeout(() => {
+					updateTask(task.id, { completedAt: null });
+				}, 2000);
+			} else {
+				updateTask(task.id, { completedAt: new Date() });
+			}
+		} else {
+			updateTask(task.id, { completedAt: null });
+		}
 	}
 
 	function onClick(e: MouseEvent) {
@@ -126,12 +215,22 @@
 					{#if task.dueDate}
 						<span class="mx-1 text-xs">•</span>
 						<span class="text-xs">
-							{new Date(task.dueDate).toLocaleDateString(undefined, {
-								month: 'short',
-								day: 'numeric',
-								year: 'numeric'
-							})}
+							{isToday(task.dueDate)
+								? 'Today'
+								: isTomorrow(task.dueDate)
+									? 'Tomorrow'
+									: new Date(task.dueDate).toLocaleDateString(undefined, {
+											month: 'short',
+											day: 'numeric',
+											year: 'numeric'
+										})}
 						</span>
+					{/if}
+					{#if task.repeatUnit}
+						<Repeat size={14} class="mx-1" />
+						<span class="text-xs"
+							>{REPEAT_PRESETS.find((preset) => preset.unit === task.repeatUnit)?.value}</span
+						>
 					{/if}
 				</div>
 			</div>
