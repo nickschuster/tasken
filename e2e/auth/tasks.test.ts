@@ -77,7 +77,7 @@ test('tasks can be completed and uncompleted', async ({ page }) => {
 	await expect(page.getByRole('button', { name: 'Task' })).toHaveCount(0);
 });
 
-test('tasks have a persistant ordering', async ({ page }) => {
+test('tasks have a persistent ordering', async ({ page }) => {
 	await page.goto('/home');
 
 	await expect(page).toHaveURL('/home');
