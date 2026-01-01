@@ -15,7 +15,7 @@ jobs:
       PUBLIC_POSTHOG_KEY: 'test'
       RESEND_FROM_EMAIL: 'no-reply@updates.tasken.app'
       RESEND_API_KEY: 'test'
-      STRIPE_API_KEY: 'test'
+      STRIPE_API_KEY: 'sk_test_51RbVlI2ZwLfEN6XyGJBNARut6M201ptTgRy6FHaSvf38BHqBeUJguCGpgo8yR9YkB6ir1fpPgma3kdWC4dW5ohMr00g0VhCNcU'
       STRIPE_WEBHOOK_SECRET: 'test'
       PUBLIC_STRIPE_DASHBOARD: 'test'
       PORT: 4173
