@@ -77,7 +77,7 @@ jobs:
         run: npm run build
 
       - name: Run Playwright tests
-        run: npm run test:e2e
+        run: npm run test:e2e -- --reporter html
 
       - name: Upload Playwright report
         if: failure()
