@@ -260,6 +260,6 @@
 
 <style>
 	.task-input-container {
-		padding-bottom: env(safe-area-inset-bottom);
+		padding-bottom: calc(1rem + env(safe-area-inset-bottom));
 	}
 </style>
