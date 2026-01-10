@@ -33,10 +33,10 @@ setup('authenticate', async ({ page, context }, testInfo) => {
 			await zipInput.fill('00000');
 		}
 
-		const phoneInput = page.getByRole('textbox', { name: '(201) 555-0123' });
+		const saveInfo = page.getByRole('checkbox').first();
 
-		if (await phoneInput.isVisible()) {
-			await phoneInput.fill('2015555555');
+		if (await saveInfo.isVisible()) {
+			await saveInfo.uncheck();
 		}
 
 		await subButton.click();
