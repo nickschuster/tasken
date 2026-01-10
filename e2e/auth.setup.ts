@@ -26,7 +26,7 @@ setup('authenticate', async ({ page, context }) => {
 
 		// stripe redirect can take a while
 		await page.waitForTimeout(20000);
-		await page.screenshot({ path: 'screenshot.png' });
+		await page.screenshot({ path: 'playwright-report/screenshot.png' });
 
 		await page.waitForLoadState('networkidle', { timeout: 20000 });
 
