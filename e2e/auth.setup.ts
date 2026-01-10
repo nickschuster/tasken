@@ -1,7 +1,7 @@
 import { test as setup, expect } from '@playwright/test';
 import { markAuthFinished } from './utils';
 
-setup('authenticate', async ({ page, context }) => {
+setup('authenticate', async ({ page, context }, testInfo) => {
 	await page.goto('/auth/signup');
 	await page.getByPlaceholder('Email').fill('dev@tasken.app');
 
@@ -26,7 +26,8 @@ setup('authenticate', async ({ page, context }) => {
 
 		// stripe redirect can take a while
 		await page.waitForTimeout(20000);
-		await page.screenshot({ path: 'playwright-report/screenshot.png' });
+		const screenshot = await page.screenshot();
+		await testInfo.attach('screenshot', { body: screenshot, contentType: 'image/png' });
 
 		await page.waitForLoadState('networkidle', { timeout: 20000 });
 
