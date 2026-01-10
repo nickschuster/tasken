@@ -22,6 +22,13 @@ setup('authenticate', async ({ page, context }, testInfo) => {
 		await page.getByRole('textbox', { name: 'Expiration' }).fill('1230');
 		await page.getByRole('textbox', { name: 'CVC' }).fill('123');
 		await page.getByRole('textbox', { name: 'Cardholder name' }).fill('Test');
+
+		const zipInput = page.getByRole('textbox', { name: 'ZIP' });
+
+		if (await zipInput.isVisible()) {
+			await zipInput.fill('00000');
+		}
+
 		await page.getByRole('button', { name: 'Subscribe' }).click();
 
 		// stripe redirect can take a while
