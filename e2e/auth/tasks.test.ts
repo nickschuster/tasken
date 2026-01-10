@@ -1,5 +1,7 @@
 import { expect, test } from '@playwright/test';
 
+test.describe.configure({ mode: 'serial' });
+
 test('tasks can be completed and uncompleted', async ({ page }) => {
 	await page.goto('/home');
 
