@@ -23,6 +23,10 @@ setup('authenticate', async ({ page, context }, testInfo) => {
 		await page.getByRole('textbox', { name: 'CVC' }).fill('123');
 		await page.getByRole('textbox', { name: 'Cardholder name' }).fill('Test');
 
+		const subButton = page.getByRole('button', { name: 'Subscribe' });
+
+		await subButton.scrollIntoViewIfNeeded();
+
 		const zipInput = page.getByRole('textbox', { name: 'ZIP' });
 
 		if (await zipInput.isVisible()) {
@@ -32,10 +36,10 @@ setup('authenticate', async ({ page, context }, testInfo) => {
 		const phoneInput = page.getByRole('textbox', { name: '(201) 555-0123' });
 
 		if (await phoneInput.isVisible()) {
-			await phoneInput.fill('5555555555');
+			await phoneInput.fill('2015555555');
 		}
 
-		await page.getByRole('button', { name: 'Subscribe' }).click();
+		await subButton.click();
 
 		// stripe redirect can take a while
 		await page.waitForTimeout(20000);
