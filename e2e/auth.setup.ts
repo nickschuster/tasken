@@ -25,6 +25,7 @@ setup('authenticate', async ({ page, context }) => {
 		await page.getByRole('button', { name: 'Subscribe' }).click();
 
 		// stripe redirect can take a while
+		await page.screenshot();
 		await page.waitForLoadState('networkidle', { timeout: 20000 });
 
 		await expect(page).toHaveURL(/home/, { timeout: 20000 });

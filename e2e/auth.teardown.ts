@@ -2,6 +2,7 @@ import { test as teardown, expect } from '@playwright/test';
 import { AUTH_FINISHED } from './utils';
 
 teardown('delete test account', async ({ page }) => {
+	console.log('AUTH_FINISHED:', AUTH_FINISHED);
 	if (!AUTH_FINISHED) {
 		teardown.skip();
 	}
