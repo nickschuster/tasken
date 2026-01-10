@@ -29,6 +29,12 @@ setup('authenticate', async ({ page, context }, testInfo) => {
 			await zipInput.fill('00000');
 		}
 
+		const phoneInput = page.getByRole('textbox', { name: '(201) 555-0123' });
+
+		if (await phoneInput.isVisible()) {
+			await phoneInput.fill('5555555555');
+		}
+
 		await page.getByRole('button', { name: 'Subscribe' }).click();
 
 		// stripe redirect can take a while
