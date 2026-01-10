@@ -1,4 +1,5 @@
 import { test as setup, expect } from '@playwright/test';
+import { markAuthFinished } from './utils';
 
 setup('authenticate', async ({ page, context }) => {
 	await page.goto('/auth/signup');
@@ -30,4 +31,6 @@ setup('authenticate', async ({ page, context }) => {
 	}
 
 	await context.storageState({ path: 'e2e/.auth/user.json' });
+
+	markAuthFinished();
 });

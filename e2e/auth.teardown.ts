@@ -1,6 +1,11 @@
 import { test as teardown, expect } from '@playwright/test';
+import { AUTH_FINISHED } from './utils';
 
 teardown('delete test account', async ({ page }) => {
+	if (!AUTH_FINISHED) {
+		teardown.skip();
+	}
+
 	await page.goto('/home');
 
 	const loginButton = await page.getByText('Continue with email').isVisible();
