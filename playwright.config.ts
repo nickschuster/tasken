@@ -31,6 +31,7 @@ export default defineConfig({
 			testDir: 'e2e/auth',
 			dependencies: ['setup'],
 			use: {
+				screenshot: 'only-on-failure',
 				storageState: 'e2e/.auth/user.json'
 			},
 			teardown: 'cleanup auth'
