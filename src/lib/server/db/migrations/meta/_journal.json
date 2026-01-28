@@ -1,76 +1,76 @@
 {
-	"version": "7",
-	"dialect": "postgresql",
-	"entries": [
-		{
-			"idx": 0,
-			"version": "7",
-			"when": 1758847753102,
-			"tag": "0000_premium_gunslinger",
-			"breakpoints": true
-		},
-		{
-			"idx": 1,
-			"version": "7",
-			"when": 1758916823395,
-			"tag": "0001_same_blizzard",
-			"breakpoints": true
-		},
-		{
-			"idx": 2,
-			"version": "7",
-			"when": 1759870860065,
-			"tag": "0002_legal_mentallo",
-			"breakpoints": true
-		},
-		{
-			"idx": 3,
-			"version": "7",
-			"when": 1759966428670,
-			"tag": "0003_woozy_may_parker",
-			"breakpoints": true
-		},
-		{
-			"idx": 4,
-			"version": "7",
-			"when": 1760243763201,
-			"tag": "0004_chemical_ikaris",
-			"breakpoints": true
-		},
-		{
-			"idx": 5,
-			"version": "7",
-			"when": 1760244614510,
-			"tag": "0005_smooth_microchip",
-			"breakpoints": true
-		},
-		{
-			"idx": 6,
-			"version": "7",
-			"when": 1760301384427,
-			"tag": "0006_whole_mathemanic",
-			"breakpoints": true
-		},
-		{
-			"idx": 7,
-			"version": "7",
-			"when": 1760552081754,
-			"tag": "0007_melodic_nomad",
-			"breakpoints": true
-		},
-		{
-			"idx": 8,
-			"version": "7",
-			"when": 1760812211000,
-			"tag": "0008_huge_miracleman",
-			"breakpoints": true
-		},
-		{
-			"idx": 9,
-			"version": "7",
-			"when": 1765110813391,
-			"tag": "0009_bouncy_wendell_rand",
-			"breakpoints": true
-		}
-	]
+  "version": "7",
+  "dialect": "postgresql",
+  "entries": [
+    {
+      "idx": 0,
+      "version": "7",
+      "when": 1758847753102,
+      "tag": "0000_premium_gunslinger",
+      "breakpoints": true
+    },
+    {
+      "idx": 1,
+      "version": "7",
+      "when": 1758916823395,
+      "tag": "0001_same_blizzard",
+      "breakpoints": true
+    },
+    {
+      "idx": 2,
+      "version": "7",
+      "when": 1759870860065,
+      "tag": "0002_legal_mentallo",
+      "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1759966428670,
+      "tag": "0003_woozy_may_parker",
+      "breakpoints": true
+    },
+    {
+      "idx": 4,
+      "version": "7",
+      "when": 1760243763201,
+      "tag": "0004_chemical_ikaris",
+      "breakpoints": true
+    },
+    {
+      "idx": 5,
+      "version": "7",
+      "when": 1760244614510,
+      "tag": "0005_smooth_microchip",
+      "breakpoints": true
+    },
+    {
+      "idx": 6,
+      "version": "7",
+      "when": 1760301384427,
+      "tag": "0006_whole_mathemanic",
+      "breakpoints": true
+    },
+    {
+      "idx": 7,
+      "version": "7",
+      "when": 1760552081754,
+      "tag": "0007_melodic_nomad",
+      "breakpoints": true
+    },
+    {
+      "idx": 8,
+      "version": "7",
+      "when": 1760812211000,
+      "tag": "0008_huge_miracleman",
+      "breakpoints": true
+    },
+    {
+      "idx": 9,
+      "version": "7",
+      "when": 1765110813391,
+      "tag": "0009_bouncy_wendell_rand",
+      "breakpoints": true
+    }
+  ]
 }

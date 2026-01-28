@@ -1,0 +1,67 @@
+{
+  "cookies": [
+    {
+      "name": "auth-session",
+      "value": "kRbHcg8ZGjhDc1-xS7AG20Lj",
+      "domain": "localhost",
+      "path": "/",
+      "expires": 1769547126.494425,
+      "httpOnly": true,
+      "secure": false,
+      "sameSite": "Lax"
+    },
+    {
+      "name": "__cf_bm",
+      "value": "ead2h__2GGMr_0ekGdTSMimAqmgkr3Cg88fWSenOnmU-1766955128-1.0.1.1-Mj73O0y7eb5krGvaLoqIm1uJIP8Koff8OJeyVT_OX3c2ZEnXlNfVPso5L3fbrnY7LenomibEiLDTZmyo_RLttbPkok3tnOWiMgj05rQeypM",
+      "domain": ".hcaptcha.com",
+      "path": "/",
+      "expires": 1766956928.063699,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "m",
+      "value": "dd676429-2484-4191-8a8f-688c10389c34c87584",
+      "domain": "m.stripe.com",
+      "path": "/",
+      "expires": 1801515129.17364,
+      "httpOnly": true,
+      "secure": true,
+      "sameSite": "None"
+    },
+    {
+      "name": "__stripe_mid",
+      "value": "2b40c789-e321-4643-abce-12951d743330c7776d",
+      "domain": ".checkout.stripe.com",
+      "path": "/",
+      "expires": 1798491129,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "__stripe_sid",
+      "value": "b0bea280-4dbe-4394-8dff-dd10f0d466ff4523bf",
+      "domain": ".checkout.stripe.com",
+      "path": "/",
+      "expires": 1766956929,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "Strict"
+    },
+    {
+      "name": "hmt_id",
+      "value": "c70b2e1b-99c6-4fbe-9d88-b21ca1a3d11a",
+      "domain": "api.hcaptcha.com",
+      "path": "/",
+      "expires": 1769547129.375558,
+      "httpOnly": false,
+      "secure": true,
+      "sameSite": "None",
+      "partitionKey": "https://stripe.com",
+      "_crHasCrossSiteAncestor": true
+    }
+  ],
+  "origins": []
+}
