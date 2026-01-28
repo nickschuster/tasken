@@ -22,8 +22,6 @@ export const createTaskGroupFetch = async (): Promise<TaskGroup | null> => {
 
 			wsService.sendMessage(Event.TaskGroupAdded, newTaskGroup);
 
-			await invalidate('/home');
-
 			return newTaskGroup;
 		}
 
