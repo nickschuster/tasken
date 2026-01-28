@@ -9,7 +9,7 @@ import { invalidate } from '$app/navigation';
 import { wsService } from './ws.service';
 import { Event } from '$lib/models/event';
 
-export const createTaskGroupFetch = async (): Promise<boolean> => {
+export const createTaskGroupFetch = async (): Promise<TaskGroup | null> => {
   try {
     const result = await fetch('/api/task-groups', {
       method: 'POST'
@@ -21,15 +21,19 @@ export const createTaskGroupFetch = async (): Promise<boolean> => {
       addTaskGroup(newTaskGroup);
 
       wsService.sendMessage(Event.TaskGroupAdded, newTaskGroup);
+
+      return newTaskGroup;
     }
 
     await invalidate('/home');
 
-    return result.ok;
+    return null;
   } catch (e) {
     console.error('Error creating task group: ', e);
 
-    return false;
+    await invalidate('/home');
+
+    return null;
   }
 };
 

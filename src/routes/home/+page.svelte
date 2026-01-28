@@ -107,7 +107,10 @@
   };
 
   const createTaskGroup = async () => {
-    await createTaskGroupFetch();
+    const newTaskGroup = await createTaskGroupFetch();
+    if (newTaskGroup) {
+      selectedGroup = newTaskGroup.id;
+    }
   };
 
   const updateTaskGroup = async (taskGroupId: string, updatedTaskGroup: Partial<TaskGroup>) => {
