@@ -31,6 +31,8 @@ export const createTaskGroupFetch = async (): Promise<TaskGroup | null> => {
 	} catch (e) {
 		console.error('Error creating task group: ', e);
 
+		await invalidate('/home');
+
 		return null;
 	}
 };
