@@ -1,18 +1,18 @@
 @import 'tailwindcss';
 
 html {
-	scroll-behavior: smooth;
+  scroll-behavior: smooth;
 }
 
 #color-picker::-webkit-color-swatch {
-	border: transparent;
+  border: transparent;
 }
 
 #color-picker::-moz-color-swatch {
-	border: transparent;
+  border: transparent;
 }
 
 .height-control {
-	height: 100vh;
-	height: 100dvh;
+  height: 100vh;
+  height: 100dvh;
 }

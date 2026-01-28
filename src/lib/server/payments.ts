@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import { Stripe } from 'stripe';
 import dotenv from 'dotenv';
 import type { DefaultSubscriptions } from '$lib/models/subscription';
-import { updateUser, grantPremium } from './users';
+import { grantPremium } from './users';
 
 dotenv.config();
 

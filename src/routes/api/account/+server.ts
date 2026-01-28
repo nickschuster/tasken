@@ -4,22 +4,22 @@ import { json } from '@sveltejs/kit';
 import type { RequestEvent } from './$types';
 
 export async function DELETE(event: RequestEvent) {
-	if (!event.locals.session) {
-		return json({ error: 'Unauthorized' }, { status: 401 });
-	}
+  if (!event.locals.session) {
+    return json({ error: 'Unauthorized' }, { status: 401 });
+  }
 
-	const userId = event.locals.session.userId;
+  const userId = event.locals.session.userId;
 
-	try {
-		await invalidateSession(event.locals.session.id);
+  try {
+    await invalidateSession(event.locals.session.id);
 
-		deleteSessionTokenCookie(event);
+    deleteSessionTokenCookie(event);
 
-		await deleteUserAccountAndData(userId);
+    await deleteUserAccountAndData(userId);
 
-		return json({ good: 'bye!' });
-	} catch (error) {
-		console.error('Error deleting user account and data:', error);
-		return json({ error: 'Failed to delete account' }, { status: 500 });
-	}
+    return json({ good: 'bye!' });
+  } catch (error) {
+    console.error('Error deleting user account and data:', error);
+    return json({ error: 'Failed to delete account' }, { status: 500 });
+  }
 }

@@ -5,27 +5,27 @@ import { UUIDV4 } from './helper';
 import { DateTime } from 'luxon';
 
 export const updateUser = async (userId: string, updates: Partial<User>) => {
-	const update = db
-		.update(userTable)
-		.set({ ...updates })
-		.where(eq(userTable.id, userId))
-		.returning();
+  const update = db
+    .update(userTable)
+    .set({ ...updates })
+    .where(eq(userTable.id, userId))
+    .returning();
 
-	const [updateResult] = await update.execute();
+  const [updateResult] = await update.execute();
 
-	return updateResult;
+  return updateResult;
 };
 
 export async function upsertUserByEmailOnLogin(email: string) {
 	let [user] = await db.select().from(userTable).where(eq(userTable.email, email));
 
-	if (!user) {
-		const userId = UUIDV4();
+  if (!user) {
+    const userId = UUIDV4();
 
-		[user] = await db.insert(userTable).values({ id: userId, email }).returning();
-	}
+    [user] = await db.insert(userTable).values({ id: userId, email }).returning();
+  }
 
-	return user;
+  return user;
 }
 
 export async function grantPremium(userId: string) {
