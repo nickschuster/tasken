@@ -2,7 +2,7 @@ import { DateTime } from 'luxon';
 import { Stripe } from 'stripe';
 import dotenv from 'dotenv';
 import type { DefaultSubscriptions } from '$lib/models/subscription';
-import { updateUser } from './users';
+import { grantPremium } from './users';
 
 dotenv.config();
 
@@ -103,9 +103,7 @@ export class PaymentProcessor {
   }
 
   async grantPremium(userId: string) {
-    return updateUser(userId, {
-      premiumExpiresAt: DateTime.now().plus({ days: 45 }).toJSDate()
-    });
+    return grantPremium(userId);
   }
 
   async constructEvent(data: Buffer<ArrayBufferLike>, signature: string, secret: string) {
