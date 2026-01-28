@@ -114,7 +114,10 @@
 					rel="noopener noreferrer"
 					class="hover:text-black dark:hover:text-white">GitHub</a
 				>
-				<a href="https://www.schustersoftware.ca/src/tasken/legal.html" class="hover:text-black dark:hover:text-white">Terms & Privacy</a>
+				<a
+					href="https://www.schustersoftware.ca/src/tasken/legal.html"
+					class="hover:text-black dark:hover:text-white">Terms & Privacy</a
+				>
 			</div>
 		</div>
 	</div>
