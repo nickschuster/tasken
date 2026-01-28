@@ -27,13 +27,13 @@ export const actions = {
       return fail(400, { error: 'Email is required' });
     }
 
-		if ((PUBLIC_DEV || PUBLIC_CI) && email === 'dev@tasken.app') {
-			let user = await upsertUserByEmailOnLogin(email);
+    if ((PUBLIC_DEV || PUBLIC_CI) && email === 'dev@tasken.app') {
+      let user = await upsertUserByEmailOnLogin(email);
 
-			// In CI environment, automatically grant premium to bypass Stripe
-			if (PUBLIC_CI) {
-				user = await grantPremium(user.id);
-			}
+      // In CI environment, automatically grant premium to bypass Stripe
+      if (PUBLIC_CI) {
+        user = await grantPremium(user.id);
+      }
 
       const sessionToken = auth.generateSessionToken();
       const session = await auth.createSession(sessionToken, user.id);

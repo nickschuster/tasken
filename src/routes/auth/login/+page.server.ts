@@ -30,7 +30,7 @@ export const load: PageServerLoad = async (event) => {
       return redirect(302, '/auth/signup');
     }
 
-		const user = await upsertUserByEmailOnLogin(email);
+    const user = await upsertUserByEmailOnLogin(email);
 
     const sessionToken = auth.generateSessionToken();
     const session = await auth.createSession(sessionToken, user.id);

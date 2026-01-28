@@ -17,7 +17,7 @@ export const updateUser = async (userId: string, updates: Partial<User>) => {
 };
 
 export async function upsertUserByEmailOnLogin(email: string) {
-	let [user] = await db.select().from(userTable).where(eq(userTable.email, email));
+  let [user] = await db.select().from(userTable).where(eq(userTable.email, email));
 
   if (!user) {
     const userId = UUIDV4();
@@ -29,7 +29,7 @@ export async function upsertUserByEmailOnLogin(email: string) {
 }
 
 export async function grantPremium(userId: string) {
-	return updateUser(userId, {
-		premiumExpiresAt: DateTime.now().plus({ days: 45 }).toJSDate()
-	});
+  return updateUser(userId, {
+    premiumExpiresAt: DateTime.now().plus({ days: 45 }).toJSDate()
+  });
 }

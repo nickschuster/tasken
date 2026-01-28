@@ -42,8 +42,8 @@ export async function GET(event: RequestEvent) {
     });
   }
 
-	// TODO: not the best, should use a sub per OAuth provider
-	const user = await upsertUserByEmailOnLogin(googleUserEmail);
+  // TODO: not the best, should use a sub per OAuth provider
+  const user = await upsertUserByEmailOnLogin(googleUserEmail);
 
   const sessionToken = generateSessionToken();
   const session = await createSession(sessionToken, user.id);
