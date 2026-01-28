@@ -8,6 +8,7 @@ import type { PageServerLoad } from './$types';
 import { PUBLIC_DEV, PUBLIC_CI } from '$env/static/public';
 import { upsertUserByEmailOnLogin } from '$lib/server/users';
 import * as auth from '$lib/server/auth';
+import { PaymentProcessor } from '$lib/server/payments';
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -28,7 +29,13 @@ export const actions = {
 		}
 
 		if ((PUBLIC_DEV || PUBLIC_CI) && email === 'dev@tasken.app') {
-			const user = await upsertUserByEmailOnLogin(email);
+			let user = await upsertUserByEmailOnLogin(email);
+
+			// In CI environment, automatically grant premium to bypass Stripe
+			if (PUBLIC_CI) {
+				const paymentProcessor = PaymentProcessor.getInstance();
+				user = await paymentProcessor.grantPremium(user.id);
+			}
 
 			const sessionToken = auth.generateSessionToken();
 			const session = await auth.createSession(sessionToken, user.id);

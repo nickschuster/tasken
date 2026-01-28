@@ -1,55 +1,13 @@
 import { test as setup, expect } from '@playwright/test';
 import { markAuthFinished } from './utils';
 
-setup('authenticate', async ({ page, context }, testInfo) => {
+setup('authenticate', async ({ page, context }) => {
 	await page.goto('/auth/signup');
 	await page.getByPlaceholder('Email').fill('dev@tasken.app');
 
 	await page.getByRole('button', { name: 'Continue with email' }).click();
 
 	await expect(page).toHaveURL(/home/);
-
-	const stripeButton = await page.getByText('Choose Your Plan').isVisible();
-
-	if (stripeButton) {
-		await expect(page.getByText('Choose Your Plan')).toBeVisible();
-
-		await page.getByRole('button', { name: 'Choose Basic' }).click();
-
-		await expect(page).toHaveURL(/checkout.stripe.com/);
-
-		await page.getByRole('textbox', { name: 'Card number' }).fill('4242424242424242');
-		await page.getByRole('textbox', { name: 'Expiration' }).fill('1230');
-		await page.getByRole('textbox', { name: 'CVC' }).fill('123');
-		await page.getByRole('textbox', { name: 'Cardholder name' }).fill('Test');
-
-		const subButton = page.getByRole('button', { name: 'Subscribe' });
-
-		await subButton.scrollIntoViewIfNeeded();
-
-		const zipInput = page.getByRole('textbox', { name: 'ZIP' });
-
-		if (await zipInput.isVisible()) {
-			await zipInput.fill('00000');
-		}
-
-		const saveInfo = page.getByRole('checkbox').first();
-
-		if (await saveInfo.isVisible()) {
-			await saveInfo.uncheck();
-		}
-
-		await subButton.click();
-
-		// stripe redirect can take a while
-		await page.waitForTimeout(20000);
-		const screenshot = await page.screenshot();
-		await testInfo.attach('screenshot', { body: screenshot, contentType: 'image/png' });
-
-		await page.waitForLoadState('networkidle', { timeout: 20000 });
-
-		await expect(page).toHaveURL(/home/, { timeout: 20000 });
-	}
 
 	await context.storageState({ path: 'e2e/.auth/user.json' });
 
