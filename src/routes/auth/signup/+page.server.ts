@@ -6,7 +6,7 @@ import {
 import { fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { PUBLIC_DEV, PUBLIC_CI } from '$env/static/public';
-import { upsertUserByEmailOnLogin } from '$lib/server/users';
+import { upsertUserByEmailOnLogin, grantPremium } from '$lib/server/users';
 import * as auth from '$lib/server/auth';
 
 export const load: PageServerLoad = async (event) => {
@@ -28,7 +28,12 @@ export const actions = {
 		}
 
 		if ((PUBLIC_DEV || PUBLIC_CI) && email === 'dev@tasken.app') {
-			const user = await upsertUserByEmailOnLogin(email);
+			let user = await upsertUserByEmailOnLogin(email);
+
+			// In CI environment, automatically grant premium to bypass Stripe
+			if (PUBLIC_CI) {
+				user = await grantPremium(user.id);
+			}
 
 			const sessionToken = auth.generateSessionToken();
 			const session = await auth.createSession(sessionToken, user.id);
