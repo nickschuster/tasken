@@ -165,18 +165,18 @@
 				>
 					<div class="flex flex-col items-center gap-3 text-center">
 						<div class="rounded-lg bg-neutral-100 p-4 dark:bg-neutral-900">
-							<Users class="h-10 w-10" />
+							<BellRing class="h-10 w-10" />
 						</div>
-						<h3 class="text-xl font-semibold">Shared Task Lists</h3>
+						<h3 class="text-xl font-semibold">Advanced Reminders</h3>
 						<span class="text-sm font-medium text-neutral-500 dark:text-neutral-500"
 							>IN PROGRESS</span
 						>
 					</div>
 					<div class="flex flex-col items-center gap-3 text-center">
 						<div class="rounded-lg bg-neutral-100 p-4 dark:bg-neutral-900">
-							<BellRing class="h-10 w-10" />
+							<Users class="h-10 w-10" />
 						</div>
-						<h3 class="text-xl font-semibold">Advanced Reminders</h3>
+						<h3 class="text-xl font-semibold">Shared Task Lists</h3>
 						<span class="text-sm font-medium text-neutral-500 dark:text-neutral-500">PLANNED</span>
 					</div>
 					<div class="flex flex-col items-center gap-3 text-center">
@@ -236,7 +236,7 @@
 						</p>
 					</div>
 					<div class="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-3">
-						<SubscriptionCards basicPrice={2000} />
+						<SubscriptionCards basicPrice={399} />
 					</div>
 				</div>
 			</section>

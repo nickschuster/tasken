@@ -9,11 +9,22 @@
 		choosePlan?: (plan: 'basic' | 'pro' | 'team') => void;
 	};
 
-	let { basicPrice = null, proPrice = null, teamPrice = null, choosePlan = () => {} }: Props =
-		$props();
+	let {
+		basicPrice = null,
+		proPrice = null,
+		teamPrice = null,
+		choosePlan = () => {}
+	}: Props = $props();
 </script>
 
 <div class="flex flex-col rounded-lg border-2 border-black p-8 dark:border-white">
+	{#if basicPrice}
+		<div
+			class="-mx-8 -mt-8 mb-4 rounded-t-lg bg-gradient-to-r from-orange-500 to-pink-500 px-4 py-2 text-center text-sm font-semibold text-white"
+		>
+			🎉 Founders Discount Price
+		</div>
+	{/if}
 	<h3 class="text-2xl font-semibold dark:text-white">Basic</h3>
 	<p class="mt-2 text-neutral-600 dark:text-neutral-400">For individuals and small projects.</p>
 	<div class="my-8">
@@ -35,7 +46,7 @@
 		</li>
 		<li class="flex items-center gap-3">
 			<Check class="h-5 w-5 flex-shrink-0 text-green-500" /><span class="dark:text-white"
-				>Advanced Reminders</span
+				>Keyboard Shortcuts</span
 			>
 		</li>
 		<li class="flex items-center gap-3">
