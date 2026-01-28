@@ -10,31 +10,31 @@ import { wsService } from './ws.service';
 import { Event } from '$lib/models/event';
 
 export const createTaskGroupFetch = async (): Promise<TaskGroup | null> => {
-	try {
-		const result = await fetch('/api/task-groups', {
-			method: 'POST'
-		});
+  try {
+    const result = await fetch('/api/task-groups', {
+      method: 'POST'
+    });
 
     if (result.ok) {
       const newTaskGroup = await result.json();
 
       addTaskGroup(newTaskGroup);
 
-			wsService.sendMessage(Event.TaskGroupAdded, newTaskGroup);
+      wsService.sendMessage(Event.TaskGroupAdded, newTaskGroup);
 
-			return newTaskGroup;
-		}
+      return newTaskGroup;
+    }
 
     await invalidate('/home');
 
-		return null;
-	} catch (e) {
-		console.error('Error creating task group: ', e);
+    return null;
+  } catch (e) {
+    console.error('Error creating task group: ', e);
 
-		await invalidate('/home');
+    await invalidate('/home');
 
-		return null;
-	}
+    return null;
+  }
 };
 
 export const updateTaskGroupFetch = async (

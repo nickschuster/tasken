@@ -1,163 +1,163 @@
 <script lang="ts">
-	import TaskInput from '$lib/ui/task/task-input/TaskInput.svelte';
-	import TaskComponent from '$lib/ui/task/Task.svelte';
-	import Sidebar from '$lib/ui/sidebar/Sidebar.svelte';
-	import { CircleCheckBigIcon, MenuIcon, ChevronDown } from '@lucide/svelte';
-	import { getTasks, setTasks, moveTask } from '$lib/states/task.state.svelte.js';
-	import { getTaskGroups, setTaskGroups } from '$lib/states/taskGroup.state.svelte.js';
-	import type { Task, TaskGroup } from '$lib/server/db/schema';
-	import SubscriptionsDialog from '$lib/ui/SubscriptionsDialog.svelte';
-	import {
-		createTaskGroupFetch,
-		deleteTaskGroupFetch,
-		updateTaskGroupFetch
-	} from '$lib/services/taskgroups.service.js';
-	import {
-		createTaskFetch,
-		updateTaskFetch,
-		getTasksFetch,
-		orderTaskFetch
-	} from '$lib/services/tasks.service.js';
-	import { wsService } from '$lib/services/ws.service.js';
-	import DetailedTaskView from '$lib/ui/DetailedTaskView.svelte';
-	import {
-		decrementCompletedCount,
-		getTotalCompletedCount,
-		incrementCompletedCount,
-		setTotalCompletedCount
-	} from '$lib/states/completedCount.state.svelte.js';
-	import Profile from '$lib/ui/Profile.svelte';
-	import { PostHog } from '$lib/services/posthog.service';
-	import { invalidate } from '$app/navigation';
+  import TaskInput from '$lib/ui/task/task-input/TaskInput.svelte';
+  import TaskComponent from '$lib/ui/task/Task.svelte';
+  import Sidebar from '$lib/ui/sidebar/Sidebar.svelte';
+  import { CircleCheckBigIcon, MenuIcon, ChevronDown } from '@lucide/svelte';
+  import { getTasks, setTasks, moveTask } from '$lib/states/task.state.svelte.js';
+  import { getTaskGroups, setTaskGroups } from '$lib/states/taskGroup.state.svelte.js';
+  import type { Task, TaskGroup } from '$lib/server/db/schema';
+  import SubscriptionsDialog from '$lib/ui/SubscriptionsDialog.svelte';
+  import {
+    createTaskGroupFetch,
+    deleteTaskGroupFetch,
+    updateTaskGroupFetch
+  } from '$lib/services/taskgroups.service.js';
+  import {
+    createTaskFetch,
+    updateTaskFetch,
+    getTasksFetch,
+    orderTaskFetch
+  } from '$lib/services/tasks.service.js';
+  import { wsService } from '$lib/services/ws.service.js';
+  import DetailedTaskView from '$lib/ui/DetailedTaskView.svelte';
+  import {
+    decrementCompletedCount,
+    getTotalCompletedCount,
+    incrementCompletedCount,
+    setTotalCompletedCount
+  } from '$lib/states/completedCount.state.svelte.js';
+  import Profile from '$lib/ui/Profile.svelte';
+  import { PostHog } from '$lib/services/posthog.service';
+  import { invalidate } from '$app/navigation';
 
-	let { data } = $props();
-	let newTaskContent = $state('');
-	let tasks = $derived(getTasks());
+  let { data } = $props();
+  let newTaskContent = $state('');
+  let tasks = $derived(getTasks());
 
-	let taskGroups = $derived(getTaskGroups());
-	let isSidebarOpen = $state(false);
-	let selectedGroup = $state('Tasks');
-	let selectedTaskId = $state<string | null>(null);
-	let selectedTask = $derived(tasks.find((t) => t.id === selectedTaskId) ?? null);
+  let taskGroups = $derived(getTaskGroups());
+  let isSidebarOpen = $state(false);
+  let selectedGroup = $state('Tasks');
+  let selectedTaskId = $state<string | null>(null);
+  let selectedTask = $derived(tasks.find((t) => t.id === selectedTaskId) ?? null);
 
-	let completedTasksLimit = $state(0);
-	let hasMoreCompletedTasks = $state((data.completedTasksCount ?? 0) !== 0);
-	let totalCompletedCount = $derived(getTotalCompletedCount());
+  let completedTasksLimit = $state(0);
+  let hasMoreCompletedTasks = $state((data.completedTasksCount ?? 0) !== 0);
+  let totalCompletedCount = $derived(getTotalCompletedCount());
 
-	let draggedTaskId = $state<string | null>(null);
-	let taskList = $state<HTMLDivElement | null>(null);
+  let draggedTaskId = $state<string | null>(null);
+  let taskList = $state<HTMLDivElement | null>(null);
 
-	const COMPLETED_TASKS_PAGE_SIZE = 50;
+  const COMPLETED_TASKS_PAGE_SIZE = 50;
 
-	wsService.setShouldReconnect(true);
-	wsService.connect();
+  wsService.setShouldReconnect(true);
+  wsService.connect();
 
-	PostHog.identify(data.user?.id ?? 'guest', { email: data.user?.email ?? '' });
+  PostHog.identify(data.user?.id ?? 'guest', { email: data.user?.email ?? '' });
 
-	setTasks(data.tasks);
-	setTotalCompletedCount(data.completedTasksCount ?? 0);
-	setTaskGroups(data.taskGroups);
+  setTasks(data.tasks);
+  setTotalCompletedCount(data.completedTasksCount ?? 0);
+  setTaskGroups(data.taskGroups);
 
-	const filterTasksByGroup = (group: string) => {
-		switch (group) {
-			case 'Tasks':
-				return tasks;
-			case 'Planned':
-				return tasks.filter((t) => t.dueDate !== null && !t.completedAt);
-			case 'Important':
-				return tasks.filter((t) => t.isImportant && !t.completedAt);
-			default:
-				return tasks.filter((t) => t.taskGroupId === group && !t.completedAt);
-		}
-	};
+  const filterTasksByGroup = (group: string) => {
+    switch (group) {
+      case 'Tasks':
+        return tasks;
+      case 'Planned':
+        return tasks.filter((t) => t.dueDate !== null && !t.completedAt);
+      case 'Important':
+        return tasks.filter((t) => t.isImportant && !t.completedAt);
+      default:
+        return tasks.filter((t) => t.taskGroupId === group && !t.completedAt);
+    }
+  };
 
-	const loadMoreTasks = async () => {
-		if (!hasMoreCompletedTasks) return;
+  const loadMoreTasks = async () => {
+    if (!hasMoreCompletedTasks) return;
 
-		completedTasksLimit += COMPLETED_TASKS_PAGE_SIZE;
+    completedTasksLimit += COMPLETED_TASKS_PAGE_SIZE;
 
-		const response = await getTasksFetch(completedTasksLimit);
+    const response = await getTasksFetch(completedTasksLimit);
 
-		if (response && response.tasks.length > 0) {
-			setTasks(response.tasks);
-			hasMoreCompletedTasks = response.hasMoreCompletedTasks;
-			completedTasksLimit = response.tasks.filter((t) => t.completedAt).length;
-		}
-	};
+    if (response && response.tasks.length > 0) {
+      setTasks(response.tasks);
+      hasMoreCompletedTasks = response.hasMoreCompletedTasks;
+      completedTasksLimit = response.tasks.filter((t) => t.completedAt).length;
+    }
+  };
 
-	const createTask = async (task: Partial<Task>) => {
-		if (newTaskContent.trim() === '') {
-			return;
-		}
+  const createTask = async (task: Partial<Task>) => {
+    if (newTaskContent.trim() === '') {
+      return;
+    }
 
-		const success = await createTaskFetch(task);
+    const success = await createTaskFetch(task);
 
-		if (success) {
-			newTaskContent = '';
-		}
-	};
+    if (success) {
+      newTaskContent = '';
+    }
+  };
 
-	const updateTask = async (taskId: string, updatedTask: Partial<Task>) => {
-		await updateTaskFetch(taskId, updatedTask);
+  const updateTask = async (taskId: string, updatedTask: Partial<Task>) => {
+    await updateTaskFetch(taskId, updatedTask);
 
-		if (updatedTask.completedAt === undefined) return;
+    if (updatedTask.completedAt === undefined) return;
 
-		if (updatedTask.completedAt) incrementCompletedCount();
-		else decrementCompletedCount();
-	};
+    if (updatedTask.completedAt) incrementCompletedCount();
+    else decrementCompletedCount();
+  };
 
-	const createTaskGroup = async () => {
-		const newTaskGroup = await createTaskGroupFetch();
-		if (newTaskGroup) {
-			selectedGroup = newTaskGroup.id;
-		}
-	};
+  const createTaskGroup = async () => {
+    const newTaskGroup = await createTaskGroupFetch();
+    if (newTaskGroup) {
+      selectedGroup = newTaskGroup.id;
+    }
+  };
 
-	const updateTaskGroup = async (taskGroupId: string, updatedTaskGroup: Partial<TaskGroup>) => {
-		await updateTaskGroupFetch(taskGroupId, updatedTaskGroup);
-	};
+  const updateTaskGroup = async (taskGroupId: string, updatedTaskGroup: Partial<TaskGroup>) => {
+    await updateTaskGroupFetch(taskGroupId, updatedTaskGroup);
+  };
 
-	const deleteTaskGroup = async (taskGroupId: string) => {
-		if (taskGroupId === selectedGroup) {
-			selectedGroup = 'Tasks';
-		}
+  const deleteTaskGroup = async (taskGroupId: string) => {
+    if (taskGroupId === selectedGroup) {
+      selectedGroup = 'Tasks';
+    }
 
-		await deleteTaskGroupFetch(taskGroupId);
-	};
+    await deleteTaskGroupFetch(taskGroupId);
+  };
 
-	const orderTask = async (taskId: string) => {
-		const active = tasks.filter((t) => !t.completedAt);
+  const orderTask = async (taskId: string) => {
+    const active = tasks.filter((t) => !t.completedAt);
 
-		const index = active.findIndex((t) => t.id === taskId);
+    const index = active.findIndex((t) => t.id === taskId);
 
-		const left = active[index - 1] ?? null;
-		const right = active[index + 1] ?? null;
-		const leftId = left ? left.id : null;
-		const rightId = right ? right.id : null;
+    const left = active[index - 1] ?? null;
+    const right = active[index + 1] ?? null;
+    const leftId = left ? left.id : null;
+    const rightId = right ? right.id : null;
 
-		const ok = await orderTaskFetch(taskId, leftId, rightId);
+    const ok = await orderTaskFetch(taskId, leftId, rightId);
 
-		if (!ok) {
-			invalidate('/home');
-		}
-	};
+    if (!ok) {
+      invalidate('/home');
+    }
+  };
 
-	const onDragOver = (e: DragEvent) => {
-		e.preventDefault();
-		const target = (e.target as HTMLElement).closest('.taskItem');
-		if (target && draggedTaskId && taskList && target.id !== draggedTaskId) {
-			const boundingBox = target.getBoundingClientRect();
-			const offset = boundingBox.y + boundingBox.height / 2;
-			const activeTasks = tasks.filter((t) => !t.completedAt).length;
-			const targetId =
-				e.clientY > offset ? (target.nextElementSibling as HTMLElement | null)?.id : target.id;
+  const onDragOver = (e: DragEvent) => {
+    e.preventDefault();
+    const target = (e.target as HTMLElement).closest('.taskItem');
+    if (target && draggedTaskId && taskList && target.id !== draggedTaskId) {
+      const boundingBox = target.getBoundingClientRect();
+      const offset = boundingBox.y + boundingBox.height / 2;
+      const activeTasks = tasks.filter((t) => !t.completedAt).length;
+      const targetId =
+        e.clientY > offset ? (target.nextElementSibling as HTMLElement | null)?.id : target.id;
 
-			const targetIndex = tasks.findIndex((t) => t.id === targetId);
-			if (targetIndex !== -1 && targetIndex < activeTasks) {
-				moveTask(draggedTaskId, targetIndex);
-			}
-		}
-	};
+      const targetIndex = tasks.findIndex((t) => t.id === targetId);
+      if (targetIndex !== -1 && targetIndex < activeTasks) {
+        moveTask(draggedTaskId, targetIndex);
+      }
+    }
+  };
 </script>
 
 <div class="height-control flex overflow-hidden dark:bg-black dark:text-white">
