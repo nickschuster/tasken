@@ -6,9 +6,8 @@ import {
 import { fail, redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { PUBLIC_DEV, PUBLIC_CI } from '$env/static/public';
-import { upsertUserByEmailOnLogin } from '$lib/server/users';
+import { upsertUserByEmailOnLogin, grantPremium } from '$lib/server/users';
 import * as auth from '$lib/server/auth';
-import { PaymentProcessor } from '$lib/server/payments';
 
 export const load: PageServerLoad = async (event) => {
 	if (event.locals.user) {
@@ -33,8 +32,7 @@ export const actions = {
 
 			// In CI environment, automatically grant premium to bypass Stripe
 			if (PUBLIC_CI) {
-				const paymentProcessor = PaymentProcessor.getInstance();
-				user = await paymentProcessor.grantPremium(user.id);
+				user = await grantPremium(user.id);
 			}
 
 			const sessionToken = auth.generateSessionToken();
