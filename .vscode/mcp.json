@@ -1,9 +1,9 @@
 {
-	"servers": {
-		"sveltekit": {
-			"url": "https://mcp.svelte.dev/mcp",
-			"type": "http"
-		}
-	},
-	"inputs": []
+  "servers": {
+    "sveltekit": {
+      "url": "https://mcp.svelte.dev/mcp",
+      "type": "http"
+    }
+  },
+  "inputs": []
 }

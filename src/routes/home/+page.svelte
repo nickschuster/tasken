@@ -161,108 +161,108 @@
 </script>
 
 <div class="height-control flex overflow-hidden dark:bg-black dark:text-white">
-	<SubscriptionsDialog
-		subscriptions={data.subscriptionDetails.subscriptions}
-		open={!data.subscriptionDetails.isPremium}
-	/>
+  <SubscriptionsDialog
+    subscriptions={data.subscriptionDetails.subscriptions}
+    open={!data.subscriptionDetails.isPremium}
+  />
 
-	<Sidebar
-		bind:isSidebarOpen
-		bind:selectedGroup
-		bind:taskGroups
-		{createTaskGroup}
-		{updateTaskGroup}
-		{deleteTaskGroup}
-	/>
+  <Sidebar
+    bind:isSidebarOpen
+    bind:selectedGroup
+    bind:taskGroups
+    {createTaskGroup}
+    {updateTaskGroup}
+    {deleteTaskGroup}
+  />
 
-	<div class="flex flex-1 flex-col">
-		<div class="flex w-full items-center justify-between p-2">
-			<div class="flex flex-row gap-2 text-3xl">
-				<button
-					class="cursor-pointer rounded bg-white p-2 hover:text-neutral-300 md:hidden dark:bg-black dark:text-white hover:dark:text-neutral-500"
-					onclick={() => (isSidebarOpen = true)}
-				>
-					<MenuIcon />
-				</button>
-				<h2 class="text-3xl">
-					{taskGroups.find((g) => g.id === selectedGroup)?.name ?? selectedGroup}
-				</h2>
-			</div>
+  <div class="flex flex-1 flex-col">
+    <div class="flex w-full items-center justify-between p-2">
+      <div class="flex flex-row gap-2 text-3xl">
+        <button
+          class="cursor-pointer rounded bg-white p-2 hover:text-neutral-300 md:hidden dark:bg-black dark:text-white hover:dark:text-neutral-500"
+          onclick={() => (isSidebarOpen = true)}
+        >
+          <MenuIcon />
+        </button>
+        <h2 class="text-3xl">
+          {taskGroups.find((g) => g.id === selectedGroup)?.name ?? selectedGroup}
+        </h2>
+      </div>
 
-			<div class="flex items-center gap-3">
-				<span
-					class="flex h-10 items-center gap-2 rounded-md border-2 border-neutral-200/50
+      <div class="flex items-center gap-3">
+        <span
+          class="flex h-10 items-center gap-2 rounded-md border-2 border-neutral-200/50
 		bg-neutral-50 px-4 text-sm font-semibold
 		text-neutral-800 dark:border-neutral-900 dark:bg-neutral-950 dark:text-neutral-100
 		"
-				>
-					<CircleCheckBigIcon size="16" class="text-neutral-700 dark:text-neutral-300" />
-					{totalCompletedCount}
-				</span>
+        >
+          <CircleCheckBigIcon size="16" class="text-neutral-700 dark:text-neutral-300" />
+          {totalCompletedCount}
+        </span>
 
-				<Profile
-					userNameFirstLetter={data.user ? data.user.email.charAt(0).toUpperCase() : ''}
-					userEmail={data.user ? data.user.email : ''}
-				/>
-			</div>
-		</div>
+        <Profile
+          userNameFirstLetter={data.user ? data.user.email.charAt(0).toUpperCase() : ''}
+          userEmail={data.user ? data.user.email : ''}
+        />
+      </div>
+    </div>
 
-		<div
-			class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2"
-			ondragover={onDragOver}
-			ondrop={(e) => {
-				e.preventDefault();
-				e.stopPropagation();
-			}}
-			role="figure"
-			id="taskList"
-			bind:this={taskList}
-		>
-			{#each filterTasksByGroup(selectedGroup) as task (task.id)}
-				<TaskComponent
-					{task}
-					{taskGroups}
-					{updateTask}
-					{orderTask}
-					bind:draggedTaskId
-					bind:selectedTaskId
-				/>
-			{/each}
+    <div
+      class="flex grow flex-col gap-2 overflow-x-hidden overflow-y-auto p-2"
+      ondragover={onDragOver}
+      ondrop={(e) => {
+        e.preventDefault();
+        e.stopPropagation();
+      }}
+      role="figure"
+      id="taskList"
+      bind:this={taskList}
+    >
+      {#each filterTasksByGroup(selectedGroup) as task (task.id)}
+        <TaskComponent
+          {task}
+          {taskGroups}
+          {updateTask}
+          {orderTask}
+          bind:draggedTaskId
+          bind:selectedTaskId
+        />
+      {/each}
 
-			{#if filterTasksByGroup(selectedGroup).length === 0}
-				<div
-					class="flex grow flex-col items-center justify-center text-gray-200 dark:text-neutral-950"
-				>
-					<CircleCheckBigIcon size="300" />
-				</div>
-			{/if}
+      {#if filterTasksByGroup(selectedGroup).length === 0}
+        <div
+          class="flex grow flex-col items-center justify-center text-gray-200 dark:text-neutral-950"
+        >
+          <CircleCheckBigIcon size="300" />
+        </div>
+      {/if}
 
-			{#if hasMoreCompletedTasks && selectedGroup === 'Tasks'}
-				<button
-					class="mt-4 flex w-full cursor-pointer justify-center bg-transparent py-6 text-neutral-400 transition
+      {#if hasMoreCompletedTasks && selectedGroup === 'Tasks'}
+        <button
+          class="mt-4 flex w-full cursor-pointer justify-center bg-transparent py-6 text-neutral-400 transition
 				select-none hover:bg-neutral-50 dark:text-neutral-500 dark:hover:bg-neutral-950"
-					onclick={loadMoreTasks}
-				>
-					<ChevronDown class="text-black dark:text-white/60" />
-				</button>
-			{/if}
-		</div>
+          onclick={loadMoreTasks}
+        >
+          <ChevronDown class="text-black dark:text-white/60" />
+        </button>
+      {/if}
+    </div>
 
-		<div class="task-input-container p-1 sm:p-4">
-			<TaskInput
-				onEnter={createTask}
-				activeTaskGroupId={selectedGroup}
-				bind:newTaskContent
-				{taskGroups}
-			/>
-		</div>
-	</div>
+    <div class="task-input-container p-1 sm:p-4">
+      <TaskInput
+        onEnter={createTask}
+        activeTaskGroupId={selectedGroup}
+        bind:newTaskContent
+        {taskGroups}
+      />
+    </div>
+  </div>
 
-	<DetailedTaskView bind:selectedTask bind:selectedTaskId {taskGroups} {updateTask} />
+  <DetailedTaskView bind:selectedTask bind:selectedTaskId {taskGroups} {updateTask} />
 </div>
 
 <style>
-	.task-input-container {
-		padding-bottom: calc(1rem + env(safe-area-inset-bottom));
-	}
+  .task-input-container {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
 </style>

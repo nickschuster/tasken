@@ -7,35 +7,35 @@ import path from 'path';
 const resend = new Resend(RESEND_API_KEY);
 
 export const sendEmail = async (
-	to: string[],
-	template: EmailType,
-	variables: Record<string, string>
+  to: string[],
+  template: EmailType,
+  variables: Record<string, string>
 ) => {
-	const html = renderTemplate(loadTemplate(template), variables);
+  const html = renderTemplate(loadTemplate(template), variables);
 
-	const subject = EmailSubjects[template];
+  const subject = EmailSubjects[template];
 
-	const from = RESEND_FROM_EMAIL || 'no-reply@example.com';
+  const from = RESEND_FROM_EMAIL || 'no-reply@example.com';
 
-	const fromWithName = `Tasken <${from}>`;
+  const fromWithName = `Tasken <${from}>`;
 
-	return await resend.emails.send({
-		from: fromWithName,
-		to,
-		subject,
-		html
-	});
+  return await resend.emails.send({
+    from: fromWithName,
+    to,
+    subject,
+    html
+  });
 };
 
 const renderTemplate = (html: string, variables: Record<string, string>) => {
-	for (const [key, value] of Object.entries(variables)) {
-		html = html.replaceAll(`{{${key}}}`, value);
-	}
+  for (const [key, value] of Object.entries(variables)) {
+    html = html.replaceAll(`{{${key}}}`, value);
+  }
 
-	return html;
+  return html;
 };
 
 const loadTemplate = (template: EmailType) => {
-	const filePath = path.resolve('src/lib/server/emails/templates', `${template}.html`);
-	return fs.readFileSync(filePath, 'utf-8');
+  const filePath = path.resolve('src/lib/server/emails/templates', `${template}.html`);
+  return fs.readFileSync(filePath, 'utf-8');
 };
