@@ -221,4 +221,58 @@ describe('Task component vibration', () => {
     expect(updates.completedAt).toBeInstanceOf(Date);
     expect(updates.dueDate).toBeUndefined();
   });
+
+  it('resets completion streak to 0 when completing a task after its due date', async () => {
+    const updateTask = vi.fn();
+    const orderTask = vi.fn();
+    const taskGroups: TaskGroup[] = [];
+    const draggedTaskId = '';
+    const selectedTaskId = '';
+    const pastDue = new Date(2026, 0, 1, 0, 0, 0); // January 1st
+    const task = {
+      id: 'task-4',
+      userId: '1',
+      content: 'Overdue repeating task',
+      completedAt: null,
+      isImportant: false,
+      taskGroupId: null,
+      dueDate: pastDue,
+      order: null,
+      repeatUnit: 'day',
+      repeatInterval: 1,
+      repeatDays: null,
+      repeatTime: null,
+      completionStreak: 5, // Had a 5-day streak
+      createdAt: new Date()
+    };
+
+    // Mock the current date to be after the due date
+    vi.setSystemTime(new Date(2026, 0, 5, 12, 0, 0)); // January 5th at noon
+
+    const { getByRole } = render(Task, {
+      task,
+      updateTask,
+      orderTask,
+      taskGroups,
+      draggedTaskId,
+      selectedTaskId
+    });
+
+    const button = getByRole('checkbox');
+
+    await fireEvent.click(button);
+
+    vi.advanceTimersByTime(ANIMATION_DURATION);
+
+    expect(updateTask).toHaveBeenCalledTimes(1);
+
+    const firstCall = updateTask.mock.calls[0];
+    expect(firstCall[0]).toBe(task.id);
+    const updates = firstCall[1];
+
+    // Streak should be reset to 0 because completion is after due date
+    expect(updates.completionStreak).toBe(0);
+    expect(updates.completedAt).toBeInstanceOf(Date);
+    expect(updates.dueDate).toBeInstanceOf(Date); // next due date scheduled
+  });
 });
