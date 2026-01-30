@@ -1,4 +1,4 @@
-import { pgTable, text, timestamp, boolean } from 'drizzle-orm/pg-core';
+import { pgTable, text, timestamp, boolean, integer } from 'drizzle-orm/pg-core';
 
 export const user = pgTable('user', {
   id: text('id').primaryKey(),
@@ -25,6 +25,11 @@ export const task = pgTable('task', {
   isImportant: boolean('is_important').notNull().default(false),
   taskGroupId: text('task_group_id').references(() => taskGroup.id, { onDelete: 'set null' }),
   order: text('order'),
+  repeatUnit: text('repeat_unit'),
+  repeatInterval: integer('repeat_interval'),
+  repeatDays: text('repeat_days'),
+  repeatTime: text('repeat_time'),
+  completionStreak: integer('completion_streak').notNull().default(0),
   dueDate: timestamp('due_date', { withTimezone: true, mode: 'date' }),
   completedAt: timestamp('completed_at', { withTimezone: true, mode: 'date' }),
   createdAt: timestamp('created_at', { withTimezone: true, mode: 'date' }).notNull().defaultNow()

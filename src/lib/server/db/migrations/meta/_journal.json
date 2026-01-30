@@ -71,6 +71,20 @@
       "when": 1765110813391,
       "tag": "0009_bouncy_wendell_rand",
       "breakpoints": true
+    },
+    {
+      "idx": 10,
+      "version": "7",
+      "when": 1769596330206,
+      "tag": "0010_secret_rick_jones",
+      "breakpoints": true
+    },
+    {
+      "idx": 11,
+      "version": "7",
+      "when": 1769597962461,
+      "tag": "0011_mean_blonde_phantom",
+      "breakpoints": true
     }
   ]
 }
