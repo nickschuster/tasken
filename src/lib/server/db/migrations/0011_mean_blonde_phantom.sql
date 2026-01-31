@@ -1,0 +1,1 @@
+ALTER TABLE "task" ADD COLUMN "completion_streak" integer DEFAULT 0 NOT NULL;
