@@ -86,7 +86,7 @@
   };
 
   const createTask = async (task: Partial<Task>) => {
-    if (newTaskContent.trim() === '') {
+    if (!task.content || task.content.trim() === '') {
       return;
     }
 
