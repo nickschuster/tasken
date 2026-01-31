@@ -1,6 +1,6 @@
 import { generateSessionToken, createSession, setSessionTokenCookie } from '$lib/server/auth';
 import { githubOAuth } from '$lib/server/oauth';
-import { upsertUserByEmail } from '$lib/server/users';
+import { upsertUserByEmailOnLogin } from '$lib/server/users';
 import type { RequestEvent } from '@sveltejs/kit';
 
 export async function GET(event: RequestEvent): Promise<Response> {
@@ -44,7 +44,7 @@ export async function GET(event: RequestEvent): Promise<Response> {
   }
 
   // TODO: not the best, should use a sub per OAuth provider
-  const user = await upsertUserByEmail(githubUserEmail);
+  const user = await upsertUserByEmailOnLogin(githubUserEmail);
 
   const sessionToken = generateSessionToken();
   const session = await createSession(sessionToken, user.id);

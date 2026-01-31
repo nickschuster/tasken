@@ -2,7 +2,7 @@ import { redirect } from '@sveltejs/kit';
 import type { PageServerLoad } from './$types';
 import { getEmailFromMagicLinkToken, isValidMagicLinkToken } from '$lib/server/magiclink';
 import * as auth from '$lib/server/auth';
-import { upsertUserByEmail } from '$lib/server/users';
+import { upsertUserByEmailOnLogin } from '$lib/server/users';
 
 export const load: PageServerLoad = async (event) => {
   if (event.locals.user) {
@@ -30,7 +30,7 @@ export const load: PageServerLoad = async (event) => {
       return redirect(302, '/auth/signup');
     }
 
-    const user = await upsertUserByEmail(email);
+    const user = await upsertUserByEmailOnLogin(email);
 
     const sessionToken = auth.generateSessionToken();
     const session = await auth.createSession(sessionToken, user.id);
