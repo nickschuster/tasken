@@ -13,11 +13,10 @@ test('tasks can be completed and uncompleted', async ({ page }) => {
 
   await input.fill('First');
   await input.press('Enter');
+  await expect(page.getByText('First')).toBeVisible();
 
   await input.fill('Second');
   await input.press('Enter');
-
-  await expect(page.getByText('First')).toBeVisible();
   await expect(page.getByText('Second')).toBeVisible();
 
   await expect(page.getByRole('button', { name: 'Task' })).toHaveCount(2);
@@ -91,17 +90,16 @@ test('tasks have a persistent ordering', async ({ page }) => {
   await input.fill('Task A');
   await input.press('Enter');
   await expect(page.getByText('Tasks')).toHaveCount(2);
+  await expect(page.getByText('Task A')).toBeVisible();
 
   await input.fill('Task B');
   await input.press('Enter');
   await expect(page.getByText('Tasks')).toHaveCount(3);
+  await expect(page.getByText('Task B')).toBeVisible();
 
   await input.fill('Task C');
   await input.press('Enter');
   await expect(page.getByText('Tasks')).toHaveCount(4);
-
-  await expect(page.getByText('Task A')).toBeVisible();
-  await expect(page.getByText('Task B')).toBeVisible();
   await expect(page.getByText('Task C')).toBeVisible();
 
   const taskA = page.getByText('Task A', { exact: true });
