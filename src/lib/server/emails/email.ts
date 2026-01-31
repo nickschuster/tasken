@@ -1,10 +1,17 @@
 import { Resend } from 'resend';
-import { RESEND_API_KEY, RESEND_FROM_EMAIL } from '$env/static/private';
+import { env } from '$env/dynamic/private';
 import { EmailSubjects, EmailType } from '$lib/models/email';
 import fs from 'fs';
 import path from 'path';
 
-const resend = new Resend(RESEND_API_KEY);
+let resend: Resend;
+
+function getResend() {
+  if (!resend) {
+    resend = new Resend(env.RESEND_API_KEY!);
+  }
+  return resend;
+}
 
 export const sendEmail = async (
   to: string[],
@@ -15,11 +22,11 @@ export const sendEmail = async (
 
   const subject = EmailSubjects[template];
 
-  const from = RESEND_FROM_EMAIL || 'no-reply@example.com';
+  const from = env.RESEND_FROM_EMAIL || 'no-reply@example.com';
 
   const fromWithName = `Tasken <${from}>`;
 
-  return await resend.emails.send({
+  return await getResend().emails.send({
     from: fromWithName,
     to,
     subject,

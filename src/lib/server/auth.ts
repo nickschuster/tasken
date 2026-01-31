@@ -4,7 +4,7 @@ import { sha256 } from '@oslojs/crypto/sha2';
 import { encodeBase64url, encodeHexLowerCase } from '@oslojs/encoding';
 import { db } from '$lib/server/db';
 import * as table from '$lib/server/db/schema';
-import { PUBLIC_DEV } from '$env/static/public';
+import { env } from '$env/dynamic/public';
 
 const DAY_IN_MS = 1000 * 60 * 60 * 24;
 
@@ -75,7 +75,7 @@ export function setSessionTokenCookie(event: RequestEvent, token: string, expire
   event.cookies.set(sessionCookieName, token, {
     expires: expiresAt,
     path: '/',
-    secure: !PUBLIC_DEV
+    secure: !env.PUBLIC_DEV
   });
 }
 
