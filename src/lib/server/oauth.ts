@@ -1,16 +1,22 @@
 import { Google, GitHub, Apple } from 'arctic';
-import { env } from '$env/dynamic/private';
+import {
+  GOOGLE_OAUTH_CLIENT_ID,
+  GOOGLE_OAUTH_CLIENT_SECRET,
+  GITHUB_OAUTH_CLIENT_ID,
+  GITHUB_OAUTH_CLIENT_SECRET,
+  BASE_URL
+} from '$env/static/private';
 
-const GOOGLE_REDIRECT_URI = `${env.BASE_URL}/api/auth/google/callback`;
-const APPLE_REDIRECT_URI = `${env.BASE_URL}/api/auth/apple/callback`;
+const GOOGLE_REDIRECT_URI = `${BASE_URL}/api/auth/google/callback`;
+const APPLE_REDIRECT_URI = `${BASE_URL}/api/auth/apple/callback`;
 
 export const googleOAuth = new Google(
-  env.GOOGLE_OAUTH_CLIENT_ID!,
-  env.GOOGLE_OAUTH_CLIENT_SECRET!,
+  GOOGLE_OAUTH_CLIENT_ID,
+  GOOGLE_OAUTH_CLIENT_SECRET,
   GOOGLE_REDIRECT_URI
 );
 
-export const githubOAuth = new GitHub(env.GITHUB_OAUTH_CLIENT_ID!, env.GITHUB_OAUTH_CLIENT_SECRET!, null);
+export const githubOAuth = new GitHub(GITHUB_OAUTH_CLIENT_ID, GITHUB_OAUTH_CLIENT_SECRET, null);
 
 // export const appleOAuth = new Apple({
 // 	clientId: process.env.APPLE_OAUTH_CLIENT_ID!,

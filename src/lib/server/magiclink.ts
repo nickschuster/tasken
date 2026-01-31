@@ -7,7 +7,7 @@ import { eq } from 'drizzle-orm';
 import { VerificationStatus, VerificationType } from '$lib/models/verification';
 import { sendEmail } from './emails/email';
 import { EmailType } from '$lib/models/email';
-import { env } from '$env/dynamic/private';
+import { BASE_URL } from '$env/static/private';
 
 const MAGIC_LINK_EXPIRY_MS = 1000 * 60 * 15;
 
@@ -23,7 +23,7 @@ export const hashToken = (token: string) => {
 
 export const sendMagicLinkEmail = async (email: string, token: string) => {
   const { data, error } = await sendEmail([email], EmailType.MAGIC_LINK, {
-    link: `${env.BASE_URL}/auth/login?token=${token}`
+    link: `${BASE_URL}/auth/login?token=${token}`
   });
 
   if (error) {
