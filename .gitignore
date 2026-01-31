@@ -28,3 +28,4 @@ storybook-static
 
 # Playwright auth state
 .auth/
+e2e/.auth/user.json
