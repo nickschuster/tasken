@@ -9,12 +9,6 @@
 
   let showDeleteDialog = $state(false);
   let confirmDelete = $state(false);
-
-  // hard code this for now, billing portal link is static
-  const BILLING_PORTAL_URL = $derived(
-    'https://billing.stripe.com/p/login/9B6eVef7BcYT27zc571kA00' +
-      (userEmail ? `?prefilled_email=${encodeURIComponent(userEmail)}` : '')
-  );
 </script>
 
 <DialogContainer bind:open={showDeleteDialog}>
@@ -37,7 +31,6 @@
         <li>All tasks and task history</li>
         <li>All groups and group memberships</li>
         <li>Account settings and preferences</li>
-        <li>Subscription and billing information (any active subscriptions will be canceled)</li>
       </ul>
     </div>
 
@@ -87,9 +80,6 @@
 
   <DropdownMenu.Portal>
     <DropdownMenuContent contentProps={{ align: 'bottom' }}>
-      <DropdownMenuItem callback={() => window.open(BILLING_PORTAL_URL, '_blank')}>
-        <div>Manage Subscription</div>
-      </DropdownMenuItem>
       <DropdownMenuItem callback={logoutPost}>
         <div>Logout</div>
       </DropdownMenuItem>

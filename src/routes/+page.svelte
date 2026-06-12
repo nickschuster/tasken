@@ -1,5 +1,4 @@
 <script lang="ts">
-  import SubscriptionCards from '$lib/ui/SubscriptionCards.svelte';
   import {
     ArrowRight,
     Github,
@@ -44,9 +43,9 @@
   const frequentlyAskedQuestions = [
     {
       value: '1',
-      title: 'Is Tasken Free or Paid?',
+      title: 'Is Tasken Free?',
       content:
-        'Tasken is open source and free to self-host. For cloud sync and premium features, we offer affordable subscription plans.'
+        'Yes! Tasken is 100% free and open source. All features, including hosted cloud sync and cross-device sync, are fully unlocked for everyone at no charge.'
     },
     {
       value: '2',
@@ -56,9 +55,9 @@
     },
     {
       value: '3',
-      title: 'Can I cancel or change my plan?',
+      title: 'How does cloud sync work?',
       content:
-        'Yes, you can upgrade, downgrade, or cancel your subscription at any time through your account settings.'
+        'Simply sign up with your email. Your tasks will automatically sync securely across all your devices in real-time.'
     }
   ];
 </script>
@@ -70,9 +69,8 @@
     <div
       class="sticky top-0 z-50 border-b border-neutral-200 bg-neutral-100 px-4 py-2 text-center text-sm font-medium text-neutral-600 dark:border-neutral-800 dark:bg-neutral-900 dark:text-neutral-300"
     >
-      🚀 <span class="font-bold">Founders get a discount</span>
-      — Limited time offer
-      <a href="#pricing" class="ml-2 font-semibold underline hover:no-underline">Learn more</a>
+      🎉 <span class="font-bold">Tasken is now 100% free</span>
+      — All premium features and cloud sync are fully unlocked!
     </div>
 
     <header
@@ -225,18 +223,33 @@
       </section>
 
       <section class="bg-neutral-100 py-20 md:py-32 dark:bg-neutral-950" id="pricing">
-        <div class="mx-auto w-full max-w-6xl px-4">
+        <div class="mx-auto w-full max-w-3xl px-4">
           <div class="text-center">
             <h2 class="text-4xl font-bold tracking-tighter sm:text-5xl">
-              Radically Simple Pricing.
+              100% Free & Open Source.
             </h2>
-            <p class="mx-auto mt-4 max-w-2xl text-lg text-neutral-600 dark:text-neutral-400">
-              Tasken is free to self-host from our open-source code. For effortless cloud sync
-              across all your devices, subscribe and experience todo nirvana.
+            <p class="mx-auto mt-6 max-w-2xl text-lg text-neutral-600 dark:text-neutral-400">
+              No subscriptions, no paywalls, and no upgrade prompts. Enjoy hosted cloud sync, unlimited tasks, and all premium features at absolutely no cost.
             </p>
           </div>
-          <div class="mt-16 grid grid-cols-1 gap-8 lg:grid-cols-3">
-            <SubscriptionCards basicPrice={399} />
+          <div class="mt-12 overflow-hidden rounded-2xl border border-neutral-200 bg-white p-8 shadow-xl dark:border-neutral-800 dark:bg-neutral-900 md:p-12">
+            <div class="flex flex-col items-center text-center">
+              <span class="rounded-full bg-green-100 px-3 py-1 text-xs font-semibold text-green-800 dark:bg-green-900/30 dark:text-green-300">
+                COMMUNITY DRIVEN
+              </span>
+              <h3 class="mt-4 text-2xl font-bold tracking-tight md:text-3xl">
+                Feedback is my fuel!
+              </h3>
+              <p class="mt-3 max-w-md text-neutral-600 dark:text-neutral-400">
+                If you enjoy using Tasken or have suggestions for improvements, I'd love to hear from you.
+              </p>
+              <a
+                href="mailto:nick@schustersoftware.ca"
+                class="mt-8 inline-flex items-center justify-center gap-2 rounded-md bg-black px-8 py-3.5 font-semibold text-white transition hover:scale-105 dark:bg-white dark:text-black"
+              >
+                Let me know what you think: nick@schustersoftware.ca
+              </a>
+            </div>
           </div>
         </div>
       </section>
